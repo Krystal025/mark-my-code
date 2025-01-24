@@ -1,0 +1,15 @@
+version: "3.8"
+
+services:
+  db:
+    container_name: mmc-mysql
+    image: mysql:8.0.37  # MySQL 버전
+    environment:
+      - MYSQL_ROOT_PASSWORD=Root88*  # MySQL root 비밀번호
+      - MYSQL_DATABASE=mmc  # 데이터베이스 이름
+      - TZ=Asia/Seoul  # 타임존 설정
+    ports:
+      - "3307:3306"  # 호스트와 컨테이너의 포트 매핑
+    volumes:
+      - ./db:/var/lib/mysql  # 데이터베이스 데이터 저장 경로
+    restart: always  # MySQL 컨테이너가 종료되면 항상 재시작
