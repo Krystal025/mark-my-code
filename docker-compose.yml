@@ -9,7 +9,10 @@ services:
       - MYSQL_DATABASE=mmc  # 데이터베이스 이름
       - TZ=Asia/Seoul  # 타임존 설정
     ports:
-      - "3307:3306"  # 호스트와 컨테이너의 포트 매핑
+      - "3307:3306"  # 로컬의 3307과 도커의 3306 매핑
     volumes:
-      - ./db:/var/lib/mysql  # 데이터베이스 데이터 저장 경로
-    restart: always  # MySQL 컨테이너가 종료되면 항상 재시작
+      - db_data:/var/lib/mysql  # 데이터베이스 데이터 저장 경로
+    restart: always # MySQL 컨테이너가 종료되면 항상 재시작
+
+volumes:
+  db_data:
