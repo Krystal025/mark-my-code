@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Info</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+    <h1>User Information</h1>
+    <table class="table table-bordered mt-3">
+        <tr>
+            <th>Name</th>
+            <td th:text="${userInfo.userName}"></td>
+        </tr>
+        <tr>
+            <th>Email</th>
+            <td th:text="${userInfo.userEmail}"></td>
+        </tr>
+        <tr>
+            <th>Nickname</th>
+            <td th:text="${userInfo.userNickname}"></td>
+        </tr>
+        <tr>
+            <th>Created At</th>
+            <td th:text="${userInfo.userCreatedAt}"></td>
+        </tr>
+    </table>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
