@@ -8,5 +8,8 @@ spring:
     hibernate:
       ddl-auto: validate  # 엔티티와 테이블의 일치여부만 확인하고, 변경하지 않음
 
-  server:
-    port: 8080
+server:
+  port: 8080
+
+jwt:
+  secret: "D72jNk@dG73slP@Ue94R&ZgJ69Fn!Lr@wP$Yb7xQ2wF9nSb5Q"

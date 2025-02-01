@@ -7,6 +7,9 @@ import com.markmycode.mmc.user.enums.Status;
 import com.markmycode.mmc.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     // 사용자 회원가입
     public void createUser(UserRequestDto userRequestDto){
@@ -27,7 +31,7 @@ public class UserService {
             User user = User.builder()
                     .userName(userRequestDto.getUserName())
                     .userEmail(userRequestDto.getUserEmail())
-                    .userPwd(userRequestDto.getUserPwd())
+                    .userPwd(passwordEncoder.encode(userRequestDto.getUserPwd()))
                     .userNickname(userRequestDto.getUserNickname())
                     .build();
             userRepository.save(user);
@@ -51,9 +55,15 @@ public class UserService {
     // 사용자 정보 수정
     @Transactional // 트랜잭션이 성공적으로 완료되면 변경사항이 자동으로 커밋되어 DB에 반영됨
     public void updateUser(Long userId, UserRequestDto userRequestDto){
+        // 현재 인증된 사용자 이메일
+        String loggedInEmail = SecurityContextHolder.getContext().getAuthentication().getName();
         // 영속성 컨텍스트에 사용자가 존재하는지 확인
         User user = userRepository.findById(userId)
                 .orElseThrow(RuntimeException::new);
+        // 요청한 사용자 이메일
+        String userEmail = user.getUserEmail().replaceAll("\\s+", "").trim();
+        // JWT에서 추출한 이메일과 요청 이메일 비교
+        validateEmail(loggedInEmail, userEmail);
         // 닉네임 중복 체크
         if(userRequestDto.getUserNickname() != null &&
             userRepository.existsByUserNickname(userRequestDto.getUserNickname()) &&
@@ -71,12 +81,29 @@ public class UserService {
     // 사용자 비활성화(탈퇴)
     @Transactional
     public void deactivateUser(Long userId){
+        boolean isAdmin = SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
+                .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
+        // 현재 인증된 사용자 이메일
+        String loggedInEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        // 영속성 컨텍스트에 사용자가 존재하는지 확인
         User user = userRepository.findById(userId)
                 .orElseThrow(RuntimeException::new);
-
+        // 요청한 사용자 이메일
+        String userEmail = user.getUserEmail().replaceAll("\\s+", "").trim();
+        validateEmail(loggedInEmail, userEmail);
+        if(!isAdmin){
+            throw new BadCredentialsException("Forbidden");
+        }
         User deactivateUser = user.toBuilder()
                 .userStatus(Status.INACTIVE)
                 .build();
         userRepository.save(deactivateUser);
+    }
+
+    // 이메일 비교 메소드 (추후 AOP로 분리)
+    private void validateEmail(String loggedInEmail, String requestedEmail) {
+        if (!loggedInEmail.equals(requestedEmail)) {
+            throw new RuntimeException("Email does not match");
+        }
     }
 }
