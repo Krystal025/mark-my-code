@@ -22,7 +22,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         // 인증이 필요 없는 경로는 바로 필터 통과
         String requestURI = request.getRequestURI();
-        if (requestURI.startsWith("/auth/login") || requestURI.startsWith("/user/signup")) {
+        if (requestURI.startsWith("/auth/login") || requestURI.startsWith("/auth/refresh-token") || requestURI.startsWith("/user/signup")) {
             filterChain.doFilter(request, response);
             return;
         }
