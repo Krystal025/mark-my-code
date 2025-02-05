@@ -7,6 +7,8 @@ spring:
   jpa:
     hibernate:
       ddl-auto: validate  # 엔티티와 테이블의 일치여부만 확인하고, 변경하지 않음
+  profiles:
+    include: oauth
 
 server:
   port: 8080
