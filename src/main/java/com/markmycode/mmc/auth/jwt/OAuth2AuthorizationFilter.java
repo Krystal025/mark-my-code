@@ -34,27 +34,31 @@ public class OAuth2AuthorizationFilter extends OncePerRequestFilter {
         }
         // 3. "Bearer " 접두사 제거
         accessToken = accessToken.substring(7);
-        // 4. 토큰 만료 여부 확인
-        if(jwtTokenProvider.isExpired(accessToken)){
+        // 4. 토큰 만료 여부 확인 및 만료된 경우 Refresh Token으로 재발급 시도
+        if (jwtTokenProvider.isExpired(accessToken)) {
             System.out.println("Access_Token is Expired");
-            // 5. Refresh Token으로 새로운 Access Token 발급 시도
             String refreshToken = CookieUtils.getCookie(request, "Refresh_Token");
-            if(refreshToken != null && !jwtTokenProvider.isExpired(refreshToken)) {
+            if (refreshToken != null && !jwtTokenProvider.isExpired(refreshToken)) {
                 String newAccessToken = tokenService.refreshAccessToken(refreshToken).getAccessToken();
                 response.setHeader("Authorization", "Bearer " + newAccessToken);
                 accessToken = newAccessToken; // 새로운 Access Token으로 업데이트
-            }else {
-                // Refresh Token도 유효하지 않은 경우
+            } else {
                 System.out.println("Refresh_Token is Expired or Invalid");
                 filterChain.doFilter(request, response);
                 return;
             }
-            // 6. 유효한 토큰일 경우 JwtTokenProvider의 getAuthentication() 호출하여 Authentication 생성
-            Authentication authToken = jwtTokenProvider.getAuthentication(accessToken);
-            // 7. 인증 정보를 SecurityContext에 저장
-            SecurityContextHolder.getContext().setAuthentication(authToken);
-            // 8. 다음 필터로 요청 전달
-            filterChain.doFilter(request, response);
         }
+        // 5. 유효한 토큰일 경우 JwtTokenProvider의 getAuthentication() 호출하여 Authentication 생성
+        try {
+            Authentication authToken = jwtTokenProvider.getAuthentication(accessToken);
+            // 6. 생성된 인증 정보를 SecurityContext에 저장
+            SecurityContextHolder.getContext().setAuthentication(authToken);
+            System.out.println("OAuth2 Authentication success: " + authToken);
+        } catch (Exception e) {
+            System.out.println("OAuth2 JWT Authentication failed: " + e.getMessage());
+        }
+
+        // 7. 다음 필터로 요청 전달
+        filterChain.doFilter(request, response);
     }
 }
