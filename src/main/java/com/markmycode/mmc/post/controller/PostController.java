@@ -1,6 +1,5 @@
 package com.markmycode.mmc.post.controller;
 
-import com.markmycode.mmc.auth.dto.CustomUserDetails;
 import com.markmycode.mmc.auth.dto.UserPrincipal;
 import com.markmycode.mmc.post.dto.PostRequestDto;
 import com.markmycode.mmc.post.service.PostService;
@@ -24,10 +23,17 @@ public class PostController {
     }
 
     @PatchMapping("/{postId}")
-    public ResponseEntity<String> updatePost(@AuthenticationPrincipal CustomUserDetails userDetails,
+    public ResponseEntity<String> updatePost(@AuthenticationPrincipal UserPrincipal userPrincipal,
                                              @PathVariable("postId") Long postId,
                                              @RequestBody PostRequestDto postDto){
-        postService.updatePost(userDetails.getUserId(), postId, postDto);
+        postService.updatePost(userPrincipal.getUserId(), postId, postDto);
         return ResponseEntity.ok("Post updated");
+    }
+
+    @DeleteMapping("/{postId}")
+    public ResponseEntity<String> deletePost(@AuthenticationPrincipal UserPrincipal userPrincipal,
+                                             @PathVariable("postId") Long postId){
+        postService.deletePost(userPrincipal.getUserId(), postId);
+        return ResponseEntity.ok("Post deleted");
     }
 }

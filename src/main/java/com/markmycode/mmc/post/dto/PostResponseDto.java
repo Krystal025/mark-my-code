@@ -1,6 +1,5 @@
 package com.markmycode.mmc.post.dto;
 
-import com.markmycode.mmc.post.entity.Post;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -21,21 +20,5 @@ public class PostResponseDto {
     private LocalDateTime postCreatedAt;
     private LocalDateTime postUpdatedAt;
     private Integer postLike;
-
-    // Post 엔티티를 기반으로 ResponseDto 생성하는 메소드 (update시 사용)
-    public static PostResponseDto from(Post post, String username, String categoryName, String platformName, String languageName) {
-        return new PostResponseDto(
-                post.getPostId(),
-                username,
-                categoryName,
-                platformName,
-                languageName,
-                post.getPostTitle(),
-                post.getPostContent(),
-                post.getPostCreatedAt(),
-                post.getPostUpdatedAt(),
-                post.getPostLike()
-        );
-    }
 
 }

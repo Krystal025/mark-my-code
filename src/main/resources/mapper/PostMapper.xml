@@ -16,12 +16,14 @@
     <!-- 게시글 수정 -->
     <update id="updatePost" parameterType="com.markmycode.mmc.post.entity.Post">
         UPDATE post
-        SET platform_id = #{platformId},
-            category_id = #{categoryId},
-            language_id = #{languageId},
-            post_title = #{postTitle},
-            post_content = #{postContent},
+        <set>
+            <if test="platformId != null"> platform_id = #{platformId}, </if>
+            <if test="categoryId != null"> category_id = #{categoryId}, </if>
+            <if test="languageId != null"> language_id = #{languageId}, </if>
+            <if test="postTitle != null"> post_title = #{postTitle}, </if>
+            <if test="postContent != null"> post_content = #{postContent}, </if>
             post_updated_at = NOW()
+        </set>
         WHERE post_id = #{postId}
     </update>
 

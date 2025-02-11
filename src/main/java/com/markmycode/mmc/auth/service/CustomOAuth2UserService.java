@@ -1,7 +1,6 @@
 package com.markmycode.mmc.auth.service;
 
 import com.markmycode.mmc.auth.dto.CustomOAuth2User;
-import com.markmycode.mmc.auth.dto.OAuth2RequestDto;
 import com.markmycode.mmc.auth.dto.OAuth2Response;
 import com.markmycode.mmc.auth.dto.OAuth2UserInfo;
 import com.markmycode.mmc.auth.util.OAuth2ResponseFactory;
@@ -36,23 +35,17 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         // 소셜 제공자 이름과 사용자 식별 ID를 조합하여 고유 ID 생성
         String socialId = oAuth2Response.getSocialProvider() + " " + oAuth2Response.getSocialProviderId();
 
-        // 소셜 로그인 요청에 필요한 사용자 정보 DTO
-        OAuth2RequestDto oAuth2RequestDto = OAuth2RequestDto.builder()
-                .userName(oAuth2Response.getUserName())
-                .userEmail(oAuth2Response.getUserEmail())
-                .build();
-
         // DB에서 사용자 조회
-        User existData = userRepository.findBySocialId(socialId);
+        User existingUser = userRepository.findBySocialId(socialId);
 
-        if(existData == null){
+        if(existingUser == null){
             // 신규 사용자 등록
             User user = createUser(oAuth2Response, socialId);
             return createOAuth2User(user);
         } else{
             // 기존 사용자 정보 업데이트
-            updateUser(existData, oAuth2RequestDto);
-            return createOAuth2User(existData);
+            updateUser(existingUser, oAuth2Response);
+            return createOAuth2User(existingUser);
         }
     }
 
@@ -68,20 +61,12 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         return userRepository.save(user);
     }
 
-    private void updateUser(User user, OAuth2RequestDto oAuth2RequestDto) {
-        boolean isUpdated = false;
-
-        if (!user.getUserName().equals(oAuth2RequestDto.getUserName())) {
-            user.setUserName(oAuth2RequestDto.getUserName());
-            isUpdated = true;
-        }
-        if (!user.getUserEmail().equals(oAuth2RequestDto.getUserEmail())) {
-            user.setUserEmail(oAuth2RequestDto.getUserEmail());
-            isUpdated = true;
-        }
-        if (isUpdated) {
-            userRepository.save(user); // 수정된 사용자 정보 저장
-        }
+    private void updateUser(User user, OAuth2Response oAuth2Response) {
+        user = user.toBuilder()
+                .userName(oAuth2Response.getUserName() != null ? oAuth2Response.getUserName() : user.getUserName())
+                .userEmail(oAuth2Response.getUserEmail() != null ? oAuth2Response.getUserEmail() : user.getUserEmail())
+                .build();
+        userRepository.save(user); // 수정된 사용자 정보 저장
     }
 
     private OAuth2User createOAuth2User(User user){
