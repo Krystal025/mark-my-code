@@ -1,6 +1,10 @@
 package com.markmycode.mmc.auth.service;
 
-import com.markmycode.mmc.auth.dto.*;
+import com.markmycode.mmc.auth.dto.CustomOAuth2User;
+import com.markmycode.mmc.auth.dto.OAuth2RequestDto;
+import com.markmycode.mmc.auth.dto.OAuth2Response;
+import com.markmycode.mmc.auth.dto.OAuth2UserInfo;
+import com.markmycode.mmc.auth.util.OAuth2ResponseFactory;
 import com.markmycode.mmc.user.entity.User;
 import com.markmycode.mmc.user.enums.Provider;
 import com.markmycode.mmc.user.enums.Role;
@@ -22,72 +26,74 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     // 소셜 로그인 성공시 호출되는 메소드 (사용자 등록/업데이트 및 인증/인가에 사용될 사용자 정보 객체 반환)
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-        System.out.println("OAuth2UserRequest: " + userRequest);
         // OAuth2에서 사용자 정보를 가져옴
         OAuth2User oAuth2User = super.loadUser(userRequest);
-        // 어떤 소셜 로그인 제공자에서 요청이 왔는지 확인
-        OAuth2Response oAuth2Response = null;
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
-        System.out.println("Social Provider: " + registrationId);
-        // 제공자가 Google인 경우 사용자 데이터를 GoogleResponse 객체로 변환
-        if (registrationId.equals("GOOGLE")) {
-            oAuth2Response = new GoogleResponse(oAuth2User.getAttributes());
-        } else {
-            throw new OAuth2AuthenticationException("Google Login Failed");
-        }
+
+        // Factory 패턴을 사용해 OAuth2Response 객체 생성
+        OAuth2Response oAuth2Response = OAuth2ResponseFactory.getOAuth2Response(registrationId, oAuth2User.getAttributes());
+
         // 소셜 제공자 이름과 사용자 식별 ID를 조합하여 고유 ID 생성
         String socialId = oAuth2Response.getSocialProvider() + " " + oAuth2Response.getSocialProviderId();
-        // OAuth2RequestDto로 변환 (DTO에서 검증할 수 있도록 함)
+
+        // 소셜 로그인 요청에 필요한 사용자 정보 DTO
         OAuth2RequestDto oAuth2RequestDto = OAuth2RequestDto.builder()
                 .userName(oAuth2Response.getUserName())
                 .userEmail(oAuth2Response.getUserEmail())
-                .userNickname(oAuth2Response.getUserName())
                 .build();
-        // OAuth2 로그인을 통해 사용자 정보를 받아 해당 사용자가 존재하는지 확인
+
+        // DB에서 사용자 조회
         User existData = userRepository.findBySocialId(socialId);
-        // 새로운 사용자일 경우 User 엔티티를 생성하여 DB에 저장
+
         if(existData == null){
-            User user = User.builder()
-                    .userName(oAuth2RequestDto.getUserName())
-                    .userEmail(oAuth2RequestDto.getUserEmail())
-                    .userNickname(oAuth2RequestDto.getUserNickname()) // 기본 닉네임으로 사용자 이름 사용
-                    .socialId(socialId)
-                    .socialProvider(Provider.valueOf(oAuth2Response.getSocialProvider()))
-                    .build();
-            userRepository.save(user);
-            // OAuth2 사용자 정보를 애플리케이션에서 사용할 객체로 변환
-            OAuth2UserInfo oAuth2UserInfo = OAuth2UserInfo.builder()
-                    .userId(user.getUserId())
-                    .userName(user.getUserName())
-                    .userEmail(user.getUserEmail())
-                    .userRole(Role.ROLE_USER)
-                    .socialId(socialId)
-                    .socialProvider(Provider.valueOf(oAuth2Response.getSocialProvider()))
-                    .build();
-        return new CustomOAuth2User(oAuth2UserInfo); // Spring Security에서 사용할 객체
-    } else{
-            // 변경된 정보가 있을 경우 업데이트
-            boolean isUpdated = false;
-            if (!existData.getUserName().equals(oAuth2RequestDto.getUserName())) {
-                existData.setUserName(oAuth2RequestDto.getUserName());
-                isUpdated = true;
-            }
-            if (!existData.getUserEmail().equals(oAuth2RequestDto.getUserEmail())) {
-                existData.setUserEmail(oAuth2RequestDto.getUserEmail());
-                isUpdated = true;
-            }
-            if (isUpdated) {
-                userRepository.save(existData); // 수정된 사용자 정보 저장
-            }
-            OAuth2UserInfo oAuth2UserInfo = OAuth2UserInfo.builder()
-                    .userId(existData.getUserId())
-                    .userName(oAuth2RequestDto.getUserName())
-                    .userEmail(oAuth2RequestDto.getUserEmail())
-                    .userRole(existData.getUserRole())
-                    .socialId(existData.getSocialId())
-                    .socialProvider(existData.getSocialProvider())
-                    .build();
-            return new CustomOAuth2User(oAuth2UserInfo);
+            // 신규 사용자 등록
+            User user = createUser(oAuth2Response, socialId);
+            return createOAuth2User(user);
+        } else{
+            // 기존 사용자 정보 업데이트
+            updateUser(existData, oAuth2RequestDto);
+            return createOAuth2User(existData);
         }
+    }
+
+    private User createUser(OAuth2Response oAuth2Response, String socialId){
+        User user = User.builder()
+                .userName(oAuth2Response.getUserName())
+                .userEmail(oAuth2Response.getUserEmail())
+                .userNickname(oAuth2Response.getUserEmail()) // 임시 닉네임으로 이메일 사용 (추후 변경)
+                .userRole(Role.ROLE_USER)
+                .socialId(socialId)
+                .socialProvider(Provider.valueOf(oAuth2Response.getSocialProvider()))
+                .build();
+        return userRepository.save(user);
+    }
+
+    private void updateUser(User user, OAuth2RequestDto oAuth2RequestDto) {
+        boolean isUpdated = false;
+
+        if (!user.getUserName().equals(oAuth2RequestDto.getUserName())) {
+            user.setUserName(oAuth2RequestDto.getUserName());
+            isUpdated = true;
+        }
+        if (!user.getUserEmail().equals(oAuth2RequestDto.getUserEmail())) {
+            user.setUserEmail(oAuth2RequestDto.getUserEmail());
+            isUpdated = true;
+        }
+        if (isUpdated) {
+            userRepository.save(user); // 수정된 사용자 정보 저장
+        }
+    }
+
+    private OAuth2User createOAuth2User(User user){
+        OAuth2UserInfo oAuth2UserInfo = OAuth2UserInfo.builder()
+                .userId(user.getUserId())
+                .userName(user.getUserName())
+                .userEmail(user.getUserEmail())
+                .userRole(user.getUserRole())
+                .socialId(user.getSocialId())
+                .socialProvider(user.getSocialProvider())
+                .build();
+        return CustomOAuth2User.fromOAuth2UserInfo(oAuth2UserInfo);
+
     }
 }

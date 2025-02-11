@@ -3,7 +3,6 @@ package com.markmycode.mmc.auth.service;
 import com.markmycode.mmc.auth.dto.CustomUserDetails;
 import com.markmycode.mmc.auth.dto.LoginRequestDto;
 import com.markmycode.mmc.auth.dto.TokenResponseDto;
-import com.markmycode.mmc.auth.jwt.JwtTokenProvider;
 import com.markmycode.mmc.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -32,13 +31,14 @@ public class AuthService {
             System.out.println("인증 완료: " + authentication);
             // 인증된 사용자 정보 가져오기
             CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+            Long userId = customUserDetails.getUserId();
             String userEmail = customUserDetails.getUsername();
             String userRole = customUserDetails.getAuthorities().stream()
                     .findFirst()
                     .map(GrantedAuthority::getAuthority)
                     .orElse("ROLE_USER"); // 기본 역할 설정
-            String accessToken = jwtTokenProvider.generateAccessJwt(userEmail, userRole, null );
-            String refreshToken = jwtTokenProvider.generateRefreshJwt(customUserDetails.getUserId(), null);
+            String accessToken = jwtTokenProvider.generateAccessJwt(userId, userEmail, userRole, null );
+            String refreshToken = jwtTokenProvider.generateRefreshJwt(userId, null);
             System.out.println("JWT 발급 완료");
             // 토큰 반환
             return new TokenResponseDto(accessToken, refreshToken);

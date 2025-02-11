@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.markmycode.mmc.post.dao.PostMapper">
+
+    <!-- 게시글 등록 -->
+    <insert id="insertPost" parameterType="com.markmycode.mmc.post.entity.Post" useGeneratedKeys="true" keyProperty="postId">
+        INSERT INTO post
+            (user_id, platform_id, category_id, language_id, post_title, post_content)
+        VALUES
+            (#{userId}, #{platformId}, #{categoryId}, #{languageId}, #{postTitle}, #{postContent})
+    </insert>
+
+    <!-- 게시글 수정 -->
+    <update id="updatePost" parameterType="com.markmycode.mmc.post.entity.Post">
+        UPDATE post
+        SET platform_id = #{platformId},
+            category_id = #{categoryId},
+            language_id = #{languageId},
+            post_title = #{postTitle},
+            post_content = #{postContent},
+            post_updated_at = NOW()
+        WHERE post_id = #{postId}
+    </update>
+
+    <!-- 게시글 삭제 -->
+    <delete id="deletePost">
+        DELETE FROM post
+        WHERE post_id = #{postId}
+    </delete>
+
+    <!-- 전체 게시글 조회 -->
+    <select id="selectPostList" resultType="com.markmycode.mmc.post.entity.Post">
+        SELECT *
+        FROM post
+        ORDER BY post_created_at DESC
+    </select>
+
+    <!-- 특정 게시글 조회 -->
+    <select id="selectPost" resultType="com.markmycode.mmc.post.entity.Post">
+        SELECT
+        p.post_id,
+        p.user_id,
+        p.platform_id,
+        p.category_id,
+        p.language_id,
+        p.post_title,
+        p.post_content,
+        p.post_created_at,
+        p.post_updated_at,
+        p.post_like,
+        pl.platform_name,
+        c1.category_name AS parent_category,  <!--상위 카테고리-->
+        c2.category_name AS child_category,  <!--하위 카테고리-->
+        l.language_name
+        FROM post p
+        LEFT JOIN platform pl ON p.platform_id = pl.platform_id
+        LEFT JOIN category c2 ON p.category_id = c2.category_id  <!-- 하위 카테고리 조인 -->
+        LEFT JOIN category c1 ON c2.parent_id = c1.category_id  <!-- 상위 카테고리 조인 -->
+        LEFT JOIN programming_language l ON p.language_id = l.language_id
+        ORDER BY p.post_created_at DESC
+    </select>
+
+    <!-- 게시글 조회 -->
+    <select id="selectPostById" parameterType="Long" resultType="com.markmycode.mmc.post.entity.Post">
+        SELECT * FROM post WHERE post_id = #{postId}
+    </select>
+
+    <!-- 게시글 소유자 ID 조회 -->
+    <select id="selectUserIdByPostId" parameterType="Long" resultType="Long">
+        SELECT user_id FROM post WHERE post_id = #{postId}
+    </select>
+
+
+</mapper>

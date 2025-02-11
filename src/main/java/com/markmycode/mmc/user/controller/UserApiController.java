@@ -14,13 +14,13 @@ public class UserApiController {
 
     private final UserService userService;
 
-    @PostMapping("/signup")
+    @PostMapping
     public ResponseEntity<String> createUser(@RequestBody UserRequestDto userRequestDto){
         userService.createUser(userRequestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body("User registered");
     }
 
-    @PatchMapping("/update/{userId}")
+    @PatchMapping("/{userId}")
     public ResponseEntity<String> updateUser(@PathVariable("userId") Long userId,
                                              @RequestBody UserRequestDto userRequestDto){
         userService.updateUser(userId, userRequestDto);
@@ -28,7 +28,7 @@ public class UserApiController {
     }
 
 
-    @PatchMapping("/deactivate/{userId}")
+    @PatchMapping("/{userId}/deactivate")
     public ResponseEntity<String> deactivateUser(@PathVariable("userId") Long userId){
         userService.deactivateUser(userId);
         return ResponseEntity.ok("User Deactivated");

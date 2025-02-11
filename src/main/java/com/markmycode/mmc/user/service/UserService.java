@@ -40,18 +40,6 @@ public class UserService {
         }
     }
 
-    // 사용자 정보 조회
-    public UserResponseDto getUser(Long userId){
-        User user = userRepository.findById(userId)
-                .orElseThrow(RuntimeException::new);
-        return UserResponseDto.builder()
-                .userName(user.getUserName())
-                .userEmail(user.getUserEmail())
-                .userNickname(user.getUserEmail())
-                .userCreatedAt(user.getUserCreatedAt())
-                .build();
-    }
-
     // 사용자 정보 수정
     @Transactional // 트랜잭션이 성공적으로 완료되면 변경사항이 자동으로 커밋되어 DB에 반영됨
     public void updateUser(Long userId, UserRequestDto userRequestDto){
@@ -98,6 +86,18 @@ public class UserService {
                 .userStatus(Status.INACTIVE)
                 .build();
         userRepository.save(deactivateUser);
+    }
+
+    // 사용자 정보 조회
+    public UserResponseDto getUser(Long userId){
+        User user = userRepository.findById(userId)
+                .orElseThrow(RuntimeException::new);
+        return UserResponseDto.builder()
+                .userName(user.getUserName())
+                .userEmail(user.getUserEmail())
+                .userNickname(user.getUserEmail())
+                .userCreatedAt(user.getUserCreatedAt())
+                .build();
     }
 
     // 이메일 비교 메소드 (추후 AOP로 분리)

@@ -1,4 +1,5 @@
-spring:
+# JPA 설정
+spring: # spring.datasource : SpringBoot의 JPA와 관련된 DB 연결 정보를 설정하는 곳
   datasource:
     url: jdbc:mysql://localhost:3307/mmc   # 아직 애플리케이션은 로컬에서 실행중이므로 localhost로 접속 시도
     username: root
@@ -9,9 +10,16 @@ spring:
       ddl-auto: validate  # 엔티티와 테이블의 일치여부만 확인하고, 변경하지 않음
   profiles:
     include: oauth
+  server:
+    port: 8080
 
-server:
-  port: 8080
+# MyBatis 설정
+mybatis:
+  mapper-locations: classpath:mapper/*.xml  # XML 매퍼 위치
+  configuration:
+    map-underscore-to-camel-case: true  # DB 컬럼명 CamelCase로 자동 변환
 
+# JWT 설정
 jwt:
   secret: "D72jNk@dG73slP@Ue94R&ZgJ69Fn!Lr@wP$Yb7xQ2wF9nSb5Q"
+

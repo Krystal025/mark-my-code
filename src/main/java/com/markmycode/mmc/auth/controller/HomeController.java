@@ -12,7 +12,7 @@ public class HomeController {
     public String homePage(Authentication authentication, Model model) {
         if (authentication != null && authentication.getPrincipal() instanceof OAuth2User) {
             OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
-            String userEmail = oAuth2User.getAttribute("email");
+            String userEmail = oAuth2User.getName();
             model.addAttribute("userEmail", userEmail);
         }
         return "home";  // home.html을 렌더링

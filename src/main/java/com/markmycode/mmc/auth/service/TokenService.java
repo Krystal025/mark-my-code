@@ -1,7 +1,6 @@
 package com.markmycode.mmc.auth.service;
 
 import com.markmycode.mmc.auth.dto.TokenResponseDto;
-import com.markmycode.mmc.auth.jwt.JwtTokenProvider;
 import com.markmycode.mmc.user.entity.User;
 import com.markmycode.mmc.user.repository.UserRepository;
 import io.jsonwebtoken.Claims;
@@ -62,7 +61,7 @@ public class TokenService {
             String socialId = user.getSocialId();
 
             // 새로 발급된 Access Token 생성
-            String newAccessToken = jwtTokenProvider.generateAccessJwt(userEmail, userRole, socialId);
+            String newAccessToken = jwtTokenProvider.generateAccessJwt(userId, userEmail, userRole, socialId);
 
             // 기존의 Refresh Token과 함께 새로 발급된 Access Token 반환
             return new TokenResponseDto(newAccessToken, refreshToken);

@@ -1,4 +1,4 @@
-package com.markmycode.mmc.auth.jwt;
+package com.markmycode.mmc.auth.service;
 
 import com.markmycode.mmc.auth.dto.CustomOAuth2User;
 import com.markmycode.mmc.auth.dto.CustomUserDetails;
@@ -31,8 +31,9 @@ public class JwtTokenProvider {
     }
 
     // JWT Access 토큰 생성
-    public String generateAccessJwt(String userEmail, String userRole, String socialId){
+    public String generateAccessJwt(Long userId, String userEmail, String userRole, String socialId){
         return Jwts.builder()
+                .claim("userId", userId)
                 .claim("userEmail", userEmail)
                 .claim("userRole", userRole)
                 .claim("socialId", socialId)
@@ -97,6 +98,7 @@ public class JwtTokenProvider {
     public Authentication getAuthentication(String token) {
         // JWT 토큰에서 사용자 정보 추출
         Claims claims = parseToken(token);
+        Long userId = claims.get("userId", Long.class);
         String userEmail = claims.get("userEmail", String.class);
         String userRole = claims.get("userRole", String.class);
         String authType = claims.get("authType", String.class);
@@ -107,6 +109,7 @@ public class JwtTokenProvider {
             // 소셜 로그인 사용자 객체 생성
             String socialId = claims.get("socialId", String.class);
             OAuth2UserInfo oAuth2Info = OAuth2UserInfo.builder()
+                    .userId(userId)
                     .userEmail(userEmail)
                     .userName(userEmail) // 필요에 따라 다르게 설정 가능
                     .userRole(Role.valueOf(userRole))
@@ -118,6 +121,7 @@ public class JwtTokenProvider {
         }else{
             // 일반 로그인 사용자 객체 생성
             CustomUserDetails customUserDetails = CustomUserDetails.builder()
+                    .userId(userId)
                     .userEmail(userEmail)
                     .userPwd(null) // JWT 토큰이므로 비밀번호 없음
                     .userRole(Role.valueOf(userRole))

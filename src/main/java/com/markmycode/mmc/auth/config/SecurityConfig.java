@@ -1,8 +1,8 @@
 package com.markmycode.mmc.auth.config;
 
-import com.markmycode.mmc.auth.jwt.JwtAuthorizationFilter;
-import com.markmycode.mmc.auth.jwt.JwtTokenProvider;
-import com.markmycode.mmc.auth.jwt.OAuth2AuthorizationFilter;
+import com.markmycode.mmc.auth.filter.JwtAuthorizationFilter;
+import com.markmycode.mmc.auth.service.JwtTokenProvider;
+import com.markmycode.mmc.auth.filter.OAuth2AuthorizationFilter;
 import com.markmycode.mmc.auth.service.CustomOAuth2UserService;
 import com.markmycode.mmc.auth.service.TokenService;
 import lombok.RequiredArgsConstructor;

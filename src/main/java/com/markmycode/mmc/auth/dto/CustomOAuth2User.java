@@ -11,7 +11,7 @@ import java.util.Map;
 
 // Spring Security에서 인증을 처리하기 위해 OAuth2 사용자 정보를 변환하여 제공하는 인증 객체
 @RequiredArgsConstructor
-public class CustomOAuth2User implements OAuth2User {
+public class CustomOAuth2User implements OAuth2User, UserPrincipal {
     private final OAuth2UserInfo oAuth2UserInfo;
 
     @Override
@@ -44,4 +44,9 @@ public class CustomOAuth2User implements OAuth2User {
     public String getSocialId(){ return oAuth2UserInfo.getSocialId(); }
 
     public Provider getSocialProvider(){ return oAuth2UserInfo.getSocialProvider(); }
+
+    public static CustomOAuth2User fromOAuth2UserInfo(OAuth2UserInfo oAuth2UserInfo) {
+        return new CustomOAuth2User(oAuth2UserInfo);
+    }
+
 }

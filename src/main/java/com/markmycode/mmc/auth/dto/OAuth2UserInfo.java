@@ -5,12 +5,12 @@ import com.markmycode.mmc.user.enums.Role;
 import lombok.Builder;
 import lombok.Getter;
 
-// 소셜 로그인 사용자 정보를 애플리케이션에서 사용할 수 있도록 저장하는 DTO (데이터 전송 객체)
-@Builder
+// 소셜 로그인 후, 소셜 제공자가 인증을 처리하고 반환한 사용자 정보를 애플리케이션 내에서 사용할 수 있도록 변환한 DTO
 @Getter
+@Builder
 public class OAuth2UserInfo {
 
-    private Long userId;
+    private Long userId; // 사용자 ID
     private String userName; // 사용자 이름
     private String userEmail; // 사용자 이메일
     private Role userRole; // 사용자 권한

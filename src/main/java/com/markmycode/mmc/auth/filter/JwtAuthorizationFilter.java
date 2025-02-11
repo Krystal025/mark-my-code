@@ -1,5 +1,6 @@
-package com.markmycode.mmc.auth.jwt;
+package com.markmycode.mmc.auth.filter;
 
+import com.markmycode.mmc.auth.service.JwtTokenProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -57,10 +58,10 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             return;
         }
         try {
-            Authentication authToken = jwtTokenProvider.getAuthentication(accessToken);
-            System.out.println("Authentication success: " + authToken);
+            Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
+            System.out.println("JWT Authentication success: " + authentication);
             // 인증 정보를 SecurityContext라는 메모리에 저장하여 인증상태를 유지함
-            SecurityContextHolder.getContext().setAuthentication(authToken);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
         }catch (Exception e){
             System.out.println("JWT Authentication failed: " + e.getMessage());
         }

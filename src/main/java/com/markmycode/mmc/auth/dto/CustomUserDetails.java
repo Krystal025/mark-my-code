@@ -15,7 +15,7 @@ import java.util.List;
 @Getter
 @Builder
 @RequiredArgsConstructor
-public class CustomUserDetails implements UserDetails {
+public class CustomUserDetails implements UserDetails, UserPrincipal {
 
     private final Long userId;
     private final String userEmail;
@@ -58,6 +58,7 @@ public class CustomUserDetails implements UserDetails {
         return true;
     }
 
+
     // User 엔티티로부터 CustomUserDetails 생성
     public static CustomUserDetails fromUser(User user) {
         return CustomUserDetails.builder()
@@ -67,4 +68,5 @@ public class CustomUserDetails implements UserDetails {
                 .userRole(user.getUserRole())
                 .build();
     }
+
 }

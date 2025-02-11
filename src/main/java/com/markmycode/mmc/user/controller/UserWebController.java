@@ -17,7 +17,7 @@ public class UserWebController {
     private final UserService userService;
 
     @GetMapping("/{userId}")
-    public String getUserInfo(@PathVariable("userId") Long userId, Model model){
+    public String getUser(@PathVariable("userId") Long userId, Model model){
         UserResponseDto userResponseDto = userService.getUser(userId);
         model.addAttribute("userInfo", userResponseDto);
         return "user_info";
