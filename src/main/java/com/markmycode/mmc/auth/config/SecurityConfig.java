@@ -76,8 +76,8 @@ public class SecurityConfig {
                         .successHandler(OAuth2SuccessHandler));
         http
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/auth/login", "/auth/refresh-token", "/oauth2/callback", "/user/signup", "/login_success", "/home").permitAll()
-                        .requestMatchers("/admin").hasRole("ADMIN")
+                        .requestMatchers("/auth/**", "/oauth2/callback", "/user/signup", "/login_success", "/home", "/post/list").permitAll()
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated());
         http
                 // JWT 인증 필터를 UsernamePasswordAuthenticationFilter 이전에 실행하여 모든 요청의 JWT 유효성을 검사함

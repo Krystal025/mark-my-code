@@ -2,11 +2,15 @@ package com.markmycode.mmc.post.controller;
 
 import com.markmycode.mmc.auth.dto.UserPrincipal;
 import com.markmycode.mmc.post.dto.PostRequestDto;
+import com.markmycode.mmc.post.dto.PostResponseDto;
+import com.markmycode.mmc.post.dto.PostSummaryDto;
 import com.markmycode.mmc.post.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/post")
@@ -36,4 +40,16 @@ public class PostController {
         postService.deletePost(userPrincipal.getUserId(), postId);
         return ResponseEntity.ok("Post deleted");
     }
+
+    @GetMapping("/list")
+    public List<PostSummaryDto> getPostList(){
+        return postService.getPostList();
+    }
+
+    @GetMapping("/{postId}")
+    public PostResponseDto getPost(@AuthenticationPrincipal UserPrincipal userPrincipal,
+                                   @PathVariable("postId") Long postId){
+        return postService.getPost(postId);
+    }
+
 }

@@ -3,11 +3,13 @@ package com.markmycode.mmc.post.service;
 import com.markmycode.mmc.post.dao.PostMapper;
 import com.markmycode.mmc.post.dto.PostRequestDto;
 import com.markmycode.mmc.post.dto.PostResponseDto;
+import com.markmycode.mmc.post.dto.PostSummaryDto;
 import com.markmycode.mmc.post.entity.Post;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -62,12 +64,37 @@ public class PostService {
         postMapper.deletePost(postId);
     }
 
-    public List<PostResponseDto> getPostList() {
-        return postMapper.selectPostList();
+    public List<PostSummaryDto> getPostList() {
+        List<Post> postList = postMapper.selectPostList();
+        return postList.stream()
+                .map(post -> PostSummaryDto.builder() // post : postList에 저장된 각 Post 객체
+                        .postId(post.getPostId())
+                        .postTitle(post.getPostTitle())
+                        .postCreatedAt(post.getPostCreatedAt())
+                        .postLike(post.getPostLike())
+                        .userNickname(postMapper.selectUserNicknameByPostId(post.getPostId())) // post에서 userId를 가져와서 사용
+                        .build())
+                .collect(Collectors.toList());
     }
 
     public PostResponseDto getPost(Long postId){
-        return postMapper.selectPost(postId);
-    }
+        // 게시글 조회
+        Post post = postMapper.selectPostById(postId);
+        if (post == null) {
+            throw new IllegalArgumentException("게시글이 존재하지 않습니다.");
+        }
+        return PostResponseDto.builder()
+                .postId(post.getPostId())
+                .postTitle(post.getPostTitle())
+                .postContent(post.getPostContent())
+                .postCreatedAt(post.getPostCreatedAt())
+                .postUpdatedAt(post.getPostUpdatedAt())
+                .postLike(post.getPostLike())
+                .userNickname(postMapper.selectUserNicknameByPostId(post.getPostId()))
+                .platformName(postMapper.selectPlatformNameByPostId(post.getPostId()))
+                .categoryName(postMapper.selectCategoryNameByPostId(post.getPostId()))
+                .languageName(postMapper.selectLanguageNameByPostId(post.getPostId()))
+                .build();
 
+    }
 }

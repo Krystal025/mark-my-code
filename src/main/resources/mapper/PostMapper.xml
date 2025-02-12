@@ -75,5 +75,33 @@
         SELECT user_id FROM post WHERE post_id = #{postId}
     </select>
 
+    <select id="selectUserNicknameByPostId" parameterType="Long" resultType="String">
+        SELECT u.user_nickname
+        FROM user u
+        JOIN post p ON p.user_id = u.user_id
+        WHERE p.post_id = #{postId}
+    </select>
+
+    <select id="selectPlatformNameByPostId" parameterType="Long" resultType="String">
+        SELECT pl.platform_name
+        FROM platform pl
+        JOIN post p ON p.platform_id = pl.platform_id
+        WHERE p.post_id = #{postId}
+    </select>
+
+    <select id="selectCategoryNameByPostId" parameterType="Long" resultType="String">
+        SELECT c.category_name
+        FROM category c
+        JOIN post p ON p.category_id = c.category_id
+        WHERE p.post_id = #{postId}
+    </select>
+
+    <select id="selectLanguageNameByPostId" parameterType="Long" resultType="String">
+        SELECT pl.display_name
+        FROM programming_language pl
+        JOIN post p ON p.language_id = pl.language_id
+        WHERE p.post_id = #{postId}
+    </select>
+
 
 </mapper>

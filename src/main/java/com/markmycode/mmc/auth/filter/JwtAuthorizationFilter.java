@@ -23,11 +23,12 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         // 인증이 필요 없는 경로는 바로 필터 통과
         String requestURI = request.getRequestURI();
         if (requestURI.startsWith("/home")
-                || requestURI.startsWith("/login") ||
-                requestURI.startsWith("/auth/login") ||
-                requestURI.startsWith("/oauth2/authorization") ||
-                requestURI.startsWith("/auth/refresh-token") ||
-                requestURI.startsWith("/user/signup")) {
+                || requestURI.startsWith("/login")
+                || requestURI.startsWith("/auth/login")
+                || requestURI.startsWith("/oauth2/authorization")
+                || requestURI.startsWith("/auth/refresh-token")
+                || requestURI.startsWith("/user/signup")
+                || requestURI.startsWith("/post/list")) {
             filterChain.doFilter(request, response);
             return;
         }
