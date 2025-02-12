@@ -14,7 +14,7 @@ public class UserApiController {
 
     private final UserService userService;
 
-    @PostMapping
+    @PostMapping("/signup")
     public ResponseEntity<String> createUser(@RequestBody UserRequestDto userRequestDto){
         userService.createUser(userRequestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body("User registered");

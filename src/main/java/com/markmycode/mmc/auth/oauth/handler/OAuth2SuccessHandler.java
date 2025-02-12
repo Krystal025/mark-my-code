@@ -1,8 +1,8 @@
-package com.markmycode.mmc.auth.config;
+package com.markmycode.mmc.auth.oauth.handler;
 
-import com.markmycode.mmc.auth.dto.CustomOAuth2User;
-import com.markmycode.mmc.auth.service.JwtTokenProvider;
-import com.markmycode.mmc.auth.util.CookieUtils;
+import com.markmycode.mmc.auth.oauth.dto.CustomOAuth2User;
+import com.markmycode.mmc.auth.jwt.provider.JwtTokenProvider;
+import com.markmycode.mmc.config.util.CookieUtils;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -50,7 +50,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         System.out.println("Generated Refresh_Token: " + refreshToken);
 
         // 사용자가 로그인 후 이동할 페이지로 리다이렉트
-        response.sendRedirect("http://localhost:8080/home");
+        response.sendRedirect("http://localhost:8080/login_success");
     }
 
 }

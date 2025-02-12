@@ -1,10 +1,10 @@
-package com.markmycode.mmc.auth.config;
+package com.markmycode.mmc.config.config;
 
-import com.markmycode.mmc.auth.filter.JwtAuthorizationFilter;
-import com.markmycode.mmc.auth.service.JwtTokenProvider;
-import com.markmycode.mmc.auth.filter.OAuth2AuthorizationFilter;
-import com.markmycode.mmc.auth.service.CustomOAuth2UserService;
-import com.markmycode.mmc.auth.service.TokenService;
+import com.markmycode.mmc.auth.jwt.filter.JwtAuthorizationFilter;
+import com.markmycode.mmc.auth.jwt.provider.JwtTokenProvider;
+import com.markmycode.mmc.auth.oauth.filter.OAuth2AuthorizationFilter;
+import com.markmycode.mmc.auth.oauth.service.CustomOAuth2UserService;
+import com.markmycode.mmc.auth.oauth.service.TokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,7 +29,7 @@ public class SecurityConfig {
     private final TokenService tokenService;
     private final JwtTokenProvider jwtTokenProvider;
     private final CustomOAuth2UserService customOAuth2UserService;
-    private final OAuth2SuccessHandler OAuth2SuccessHandler;
+    private final com.markmycode.mmc.auth.oauth.handler.OAuth2SuccessHandler OAuth2SuccessHandler;
 
 //    // 사용자 인증(Authentication)을 처리하는 AuthenticationManager 반환
     @Bean

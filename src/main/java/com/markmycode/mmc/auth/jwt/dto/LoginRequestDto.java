@@ -1,4 +1,4 @@
-package com.markmycode.mmc.auth.dto;
+package com.markmycode.mmc.auth.jwt.dto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

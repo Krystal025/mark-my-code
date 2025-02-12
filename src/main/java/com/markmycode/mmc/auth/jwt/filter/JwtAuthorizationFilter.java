@@ -1,6 +1,6 @@
-package com.markmycode.mmc.auth.filter;
+package com.markmycode.mmc.auth.jwt.filter;
 
-import com.markmycode.mmc.auth.service.JwtTokenProvider;
+import com.markmycode.mmc.auth.jwt.provider.JwtTokenProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

@@ -1,4 +1,4 @@
-package com.markmycode.mmc.auth.config;
+package com.markmycode.mmc.config.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;

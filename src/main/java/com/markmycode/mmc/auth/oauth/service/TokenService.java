@@ -1,6 +1,7 @@
-package com.markmycode.mmc.auth.service;
+package com.markmycode.mmc.auth.oauth.service;
 
-import com.markmycode.mmc.auth.dto.TokenResponseDto;
+import com.markmycode.mmc.auth.jwt.dto.TokenResponseDto;
+import com.markmycode.mmc.auth.jwt.provider.JwtTokenProvider;
 import com.markmycode.mmc.user.entity.User;
 import com.markmycode.mmc.user.repository.UserRepository;
 import io.jsonwebtoken.Claims;

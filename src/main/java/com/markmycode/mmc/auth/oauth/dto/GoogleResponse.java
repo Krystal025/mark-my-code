@@ -1,4 +1,4 @@
-package com.markmycode.mmc.auth.dto;
+package com.markmycode.mmc.auth.oauth.dto;
 
 import lombok.RequiredArgsConstructor;
 

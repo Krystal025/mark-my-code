@@ -1,6 +1,6 @@
-package com.markmycode.mmc.auth.service;
+package com.markmycode.mmc.auth.jwt.service;
 
-import com.markmycode.mmc.auth.dto.CustomUserDetails;
+import com.markmycode.mmc.auth.jwt.dto.CustomUserDetails;
 import com.markmycode.mmc.user.entity.User;
 import com.markmycode.mmc.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;

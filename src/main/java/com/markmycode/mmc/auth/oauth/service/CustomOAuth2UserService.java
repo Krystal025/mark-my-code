@@ -1,9 +1,9 @@
-package com.markmycode.mmc.auth.service;
+package com.markmycode.mmc.auth.oauth.service;
 
-import com.markmycode.mmc.auth.dto.CustomOAuth2User;
-import com.markmycode.mmc.auth.dto.OAuth2Response;
-import com.markmycode.mmc.auth.dto.OAuth2UserInfo;
-import com.markmycode.mmc.auth.util.OAuth2ResponseFactory;
+import com.markmycode.mmc.auth.oauth.dto.CustomOAuth2User;
+import com.markmycode.mmc.auth.oauth.dto.OAuth2Response;
+import com.markmycode.mmc.auth.oauth.dto.OAuth2UserInfo;
+import com.markmycode.mmc.config.util.OAuth2ResponseFactory;
 import com.markmycode.mmc.user.entity.User;
 import com.markmycode.mmc.user.enums.Provider;
 import com.markmycode.mmc.user.enums.Role;

@@ -1,7 +1,7 @@
-package com.markmycode.mmc.auth.util;
+package com.markmycode.mmc.config.util;
 
-import com.markmycode.mmc.auth.dto.GoogleResponse;
-import com.markmycode.mmc.auth.dto.OAuth2Response;
+import com.markmycode.mmc.auth.oauth.dto.GoogleResponse;
+import com.markmycode.mmc.auth.oauth.dto.OAuth2Response;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 
 import java.util.Map;

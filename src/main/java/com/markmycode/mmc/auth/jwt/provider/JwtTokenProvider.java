@@ -1,8 +1,8 @@
-package com.markmycode.mmc.auth.service;
+package com.markmycode.mmc.auth.jwt.provider;
 
-import com.markmycode.mmc.auth.dto.CustomOAuth2User;
-import com.markmycode.mmc.auth.dto.CustomUserDetails;
-import com.markmycode.mmc.auth.dto.OAuth2UserInfo;
+import com.markmycode.mmc.auth.oauth.dto.CustomOAuth2User;
+import com.markmycode.mmc.auth.jwt.dto.CustomUserDetails;
+import com.markmycode.mmc.auth.oauth.dto.OAuth2UserInfo;
 import com.markmycode.mmc.user.enums.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

@@ -1,5 +1,6 @@
-package com.markmycode.mmc.auth.dto;
+package com.markmycode.mmc.auth.oauth.dto;
 
+import com.markmycode.mmc.config.model.UserPrincipal;
 import com.markmycode.mmc.user.enums.Provider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
