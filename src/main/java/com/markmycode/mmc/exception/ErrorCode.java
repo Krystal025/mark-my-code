@@ -13,6 +13,10 @@ public enum ErrorCode {
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 사용자를 찾을 수 없습니다."),
     POST_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 게시글을 찾을 수 없습니다."),
     POSTS_NOT_FOUND(HttpStatus.NOT_FOUND, "게시글을 찾을 수 없습니다."),
+    PLATFORM_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 플랫폼입니다."),
+    CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 카테고리입니다."),
+    LANGUAGE_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 언어입니다."),
+
 
     // DuplicateException
     EMAIL_ALREADY_EXISTS(HttpStatus.CONFLICT,  "이미 존재하는 이메일입니다."),

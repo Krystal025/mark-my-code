@@ -34,7 +34,7 @@
     </delete>
 
     <!-- 전체 게시글 조회 -->
-    <select id="selectPostList" resultType="com.markmycode.mmc.post.entity.Post">
+    <select id="selectPosts" resultType="com.markmycode.mmc.post.entity.Post">
         SELECT *
         FROM post
         ORDER BY post_created_at DESC
@@ -63,6 +63,26 @@
         LEFT JOIN category c1 ON c2.parent_id = c1.category_id  <!-- 상위 카테고리 조인 -->
         LEFT JOIN programming_language l ON p.language_id = l.language_id
         ORDER BY p.post_created_at DESC
+    </select>
+
+    <!-- 필터링 조건 적용된 게시글 조회 -->
+    <select id="selectPostsByFilters" parameterType="com.markmycode.mmc.post.dto.PostFilterRequestDto" resultType="com.markmycode.mmc.post.entity.Post">
+        SELECT *
+        FROM post
+        <!-- 필터링 조건이 있을 때만 WHERE 절이 추가됨 -->
+        <where>
+            <!-- test에 해당하는 조건이 true일 때만 SQL이 추가됨 -->
+            <if test="platformId != null">
+                AND platform_id = #{platformId}
+            </if>
+            <if test="categoryId != null">
+                AND category_id = #{categoryId}
+            </if>
+            <if test="languageId != null">
+                AND language_id = #{languageId}
+            </if>
+        </where>
+        ORDER BY post_created_at DESC
     </select>
 
     <!-- 게시글 조회 -->

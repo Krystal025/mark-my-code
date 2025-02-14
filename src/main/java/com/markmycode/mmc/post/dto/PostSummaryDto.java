@@ -14,6 +14,9 @@ import java.time.LocalDateTime;
 public class PostSummaryDto {
 
     private Long postId;
+    private Integer platformId;
+    private Integer categoryId;
+    private Integer languageId;
     private String postTitle;
     private LocalDateTime postCreatedAt;
     private Integer postLike;

@@ -1,9 +1,13 @@
 package com.markmycode.mmc.post.service;
 
+import com.markmycode.mmc.category.repository.CategoryRepository;
 import com.markmycode.mmc.exception.ErrorCode;
 import com.markmycode.mmc.exception.custom.ForbiddenException;
 import com.markmycode.mmc.exception.custom.NotFoundException;
+import com.markmycode.mmc.language.repository.LanguageRepository;
+import com.markmycode.mmc.platform.repository.PlatformRepository;
 import com.markmycode.mmc.post.dao.PostMapper;
+import com.markmycode.mmc.post.dto.PostFilterRequestDto;
 import com.markmycode.mmc.post.dto.PostRequestDto;
 import com.markmycode.mmc.post.dto.PostResponseDto;
 import com.markmycode.mmc.post.dto.PostSummaryDto;
@@ -18,20 +22,23 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class PostService {
     private final PostMapper postMapper;
+    private final PlatformRepository platformRepository;
+    private final CategoryRepository categoryRepository;
+    private final LanguageRepository languageRepository;
 
-    public void createPost(Long userId, PostRequestDto postDto){
+    public void createPost(Long userId, PostRequestDto requestDto){
         Post post = Post.builder()
                 .userId(userId)
-                .categoryId(postDto.getCategoryId())
-                .platformId(postDto.getPlatformId())
-                .languageId(postDto.getLanguageId())
-                .postTitle(postDto.getPostTitle())
-                .postContent(postDto.getPostContent())
+                .categoryId(requestDto.getCategoryId())
+                .platformId(requestDto.getPlatformId())
+                .languageId(requestDto.getLanguageId())
+                .postTitle(requestDto.getPostTitle())
+                .postContent(requestDto.getPostContent())
                 .build();
         postMapper.insertPost(post);
     }
 
-    public void updatePost(Long userId, Long postId, PostRequestDto postDto){
+    public void updatePost(Long userId, Long postId, PostRequestDto requestDto){
         // 게시글 조회
         Post post = postMapper.selectPostById(postId);
         if (post == null) {
@@ -41,11 +48,11 @@ public class PostService {
         validatePostOwnership(userId, postId);
         // 변경된 필드만 반영
         post = post.toBuilder()
-                .platformId(postDto.getPlatformId() != null ? postDto.getPlatformId() : post.getPlatformId())
-                .categoryId(postDto.getCategoryId() != null ? postDto.getCategoryId() : post.getCategoryId())
-                .languageId(postDto.getLanguageId() != null ? postDto.getLanguageId() : post.getLanguageId())
-                .postTitle(postDto.getPostTitle() != null ? postDto.getPostTitle() : post.getPostTitle())
-                .postContent(postDto.getPostContent() != null ? postDto.getPostContent() : post.getPostContent())
+                .platformId(requestDto.getPlatformId() != null ? requestDto.getPlatformId() : post.getPlatformId())
+                .categoryId(requestDto.getCategoryId() != null ? requestDto.getCategoryId() : post.getCategoryId())
+                .languageId(requestDto.getLanguageId() != null ? requestDto.getLanguageId() : post.getLanguageId())
+                .postTitle(requestDto.getPostTitle() != null ? requestDto.getPostTitle() : post.getPostTitle())
+                .postContent(requestDto.getPostContent() != null ? requestDto.getPostContent() : post.getPostContent())
                 .build();
         postMapper.updatePost(post);
     }
@@ -61,12 +68,12 @@ public class PostService {
         postMapper.deletePost(postId);
     }
 
-    public List<PostSummaryDto> getPostList() {
-        List<Post> postList = postMapper.selectPostList();
-        if(postList.isEmpty()){
+    public List<PostSummaryDto> getPosts() {
+        List<Post> posts = postMapper.selectPosts();
+        if(posts.isEmpty()){
             throw new NotFoundException(ErrorCode.POSTS_NOT_FOUND);
         }
-        return postList.stream()
+        return posts.stream()
                 .map(post -> PostSummaryDto.builder() // post : postList에 저장된 각 Post 객체
                         .postId(post.getPostId())
                         .postTitle(post.getPostTitle())
@@ -98,10 +105,46 @@ public class PostService {
 
     }
 
+    public List<PostSummaryDto> getFilteredPosts(PostFilterRequestDto filterRequestDto){
+        // 필터링 조건 유효성 검증 (JPA 사용)
+        validateFilters(
+                filterRequestDto.getPlatformId(),
+                filterRequestDto.getCategoryId(),
+                filterRequestDto.getLanguageId()
+        );
+        // 필터링된 게시글 조회
+        List<Post> posts = postMapper.selectPostsByFilters(filterRequestDto);
+        return posts.stream()
+                .map(post -> PostSummaryDto.builder()
+                        .postId(post.getPostId())
+                        .platformId(post.getPlatformId())
+                        .categoryId(post.getCategoryId())
+                        .languageId(post.getLanguageId())
+                        .postTitle(post.getPostTitle())
+                        .postCreatedAt(post.getPostCreatedAt())
+                        .postLike(post.getPostLike())
+                        .userNickname(postMapper.selectUserNicknameByPostId(post.getPostId()))
+                        .build())
+                .collect(Collectors.toList());
+    }
+
     private void validatePostOwnership(Long userId, Long postId){
         Long postOwnerId = postMapper.selectUserIdByPostId(postId);
         if(postOwnerId == null || !postOwnerId.equals(userId)){
             throw new ForbiddenException(ErrorCode.USER_NOT_MATCH);
         }
     }
+
+    private void validateFilters(Integer platformId, Integer categoryId, Integer languageId){
+        if (platformId != null && !platformRepository.existsById(platformId)) {
+            throw new NotFoundException(ErrorCode.PLATFORM_NOT_FOUND);
+        }
+        if (categoryId != null && !categoryRepository.existsById(categoryId)) {
+            throw new NotFoundException(ErrorCode.CATEGORY_NOT_FOUND);
+        }
+        if (languageId != null && !languageRepository.existsById(languageId)) {
+            throw new NotFoundException(ErrorCode.LANGUAGE_NOT_FOUND);
+        }
+    }
+
 }
