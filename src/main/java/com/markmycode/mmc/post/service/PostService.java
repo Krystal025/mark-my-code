@@ -1,5 +1,8 @@
 package com.markmycode.mmc.post.service;
 
+import com.markmycode.mmc.exception.ErrorCode;
+import com.markmycode.mmc.exception.custom.ForbiddenException;
+import com.markmycode.mmc.exception.custom.NotFoundException;
 import com.markmycode.mmc.post.dao.PostMapper;
 import com.markmycode.mmc.post.dto.PostRequestDto;
 import com.markmycode.mmc.post.dto.PostResponseDto;
@@ -32,13 +35,10 @@ public class PostService {
         // 게시글 조회
         Post post = postMapper.selectPostById(postId);
         if (post == null) {
-            throw new IllegalArgumentException("게시글이 존재하지 않습니다.");
+            throw new NotFoundException(ErrorCode.POST_NOT_FOUND);
         }
-        // 게시글 작성자 ID 조회
-        Long postOwnerId = postMapper.selectUserIdByPostId(postId);
-        if (postOwnerId == null || !postOwnerId.equals(userId)) {
-            throw new IllegalArgumentException("수정 권한이 없습니다.");
-        }
+        // 게시글 소유자가 요청한 사용자와 일치하는지 확인
+        validatePostOwnership(userId, postId);
         // 변경된 필드만 반영
         post = post.toBuilder()
                 .platformId(postDto.getPlatformId() != null ? postDto.getPlatformId() : post.getPlatformId())
@@ -54,18 +54,18 @@ public class PostService {
         // 게시글 조회
         Post post = postMapper.selectPostById(postId);
         if (post == null) {
-            throw new IllegalArgumentException("게시글이 존재하지 않습니다.");
+            throw new NotFoundException(ErrorCode.POST_NOT_FOUND);
         }
-        // 게시글 작성자 ID 조회
-        Long postOwnerId = postMapper.selectUserIdByPostId(postId);
-        if (postOwnerId == null || !postOwnerId.equals(userId)) {
-            throw new IllegalArgumentException("삭제 권한이 없습니다.");
-        }
+        // 게시글 소유자가 요청한 사용자와 일치하는지 확인
+        validatePostOwnership(userId, postId);
         postMapper.deletePost(postId);
     }
 
     public List<PostSummaryDto> getPostList() {
         List<Post> postList = postMapper.selectPostList();
+        if(postList.isEmpty()){
+            throw new NotFoundException(ErrorCode.POSTS_NOT_FOUND);
+        }
         return postList.stream()
                 .map(post -> PostSummaryDto.builder() // post : postList에 저장된 각 Post 객체
                         .postId(post.getPostId())
@@ -81,7 +81,7 @@ public class PostService {
         // 게시글 조회
         Post post = postMapper.selectPostById(postId);
         if (post == null) {
-            throw new IllegalArgumentException("게시글이 존재하지 않습니다.");
+            throw new NotFoundException(ErrorCode.POST_NOT_FOUND);
         }
         return PostResponseDto.builder()
                 .postId(post.getPostId())
@@ -96,5 +96,12 @@ public class PostService {
                 .languageName(postMapper.selectLanguageNameByPostId(post.getPostId()))
                 .build();
 
+    }
+
+    private void validatePostOwnership(Long userId, Long postId){
+        Long postOwnerId = postMapper.selectUserIdByPostId(postId);
+        if(postOwnerId == null || !postOwnerId.equals(userId)){
+            throw new ForbiddenException(ErrorCode.USER_NOT_MATCH);
+        }
     }
 }

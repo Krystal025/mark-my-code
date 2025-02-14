@@ -104,7 +104,7 @@ public class UserService {
     // 이메일 비교 메소드 (추후 AOP로 분리)
     private void validateEmail(String loggedInEmail, String requestedEmail) {
         if (!loggedInEmail.equals(requestedEmail)) {
-            throw new ForbiddenException(ErrorCode.EMAIL_MISMATCH);
+            throw new ForbiddenException(ErrorCode.USER_NOT_MATCH);
         }
     }
 }

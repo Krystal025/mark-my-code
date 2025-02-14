@@ -10,8 +10,9 @@ import org.springframework.http.HttpStatus;
 public enum ErrorCode {
 
     // NotFoundException
-    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다."),
-    POST_NOT_FOUND(HttpStatus.NOT_FOUND, "게시글을 찾을 수 없습니다."),
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 사용자를 찾을 수 없습니다."),
+    POST_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 게시글을 찾을 수 없습니다."),
+    POSTS_NOT_FOUND(HttpStatus.NOT_FOUND, "게시글을 찾을 수 없습니다."),
 
     // DuplicateException
     EMAIL_ALREADY_EXISTS(HttpStatus.CONFLICT,  "이미 존재하는 이메일입니다."),
@@ -22,7 +23,7 @@ public enum ErrorCode {
 
     // ForbiddenException (클라이언트가 인증은 되어 있지만 접근 권한이 없는 리소스에 접근하려 할 때)
     ACCESS_DENIED(HttpStatus.FORBIDDEN, "접근 권한이 없습니다."),
-    EMAIL_MISMATCH(HttpStatus.FORBIDDEN, "제공된 이메일이 로그인한 사용자와 일치하지 않습니다."),
+    USER_NOT_MATCH(HttpStatus.FORBIDDEN, "현재 사용자와 요청 정보가 일치하지 않습니다."),
 
     // ServerException
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류가 발생했습니다.");
