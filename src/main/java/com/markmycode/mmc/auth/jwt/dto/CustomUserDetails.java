@@ -1,6 +1,6 @@
 package com.markmycode.mmc.auth.jwt.dto;
 
-import com.markmycode.mmc.config.model.UserPrincipal;
+import com.markmycode.mmc.auth.model.UserPrincipal;
 import com.markmycode.mmc.user.entity.User;
 import com.markmycode.mmc.user.enums.Role;
 import lombok.Builder;

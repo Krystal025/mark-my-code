@@ -2,7 +2,7 @@ package com.markmycode.mmc.auth.oauth.handler;
 
 import com.markmycode.mmc.auth.oauth.dto.CustomOAuth2User;
 import com.markmycode.mmc.auth.jwt.provider.JwtTokenProvider;
-import com.markmycode.mmc.config.util.CookieUtils;
+import com.markmycode.mmc.util.CookieUtils;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

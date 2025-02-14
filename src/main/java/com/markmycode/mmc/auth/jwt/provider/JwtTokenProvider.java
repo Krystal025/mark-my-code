@@ -102,6 +102,9 @@ public class JwtTokenProvider {
         String userEmail = claims.get("userEmail", String.class);
         String userRole = claims.get("userRole", String.class);
         String authType = claims.get("authType", String.class);
+
+        System.out.println("Extracted Role from Token: " + userRole);  // 디버깅 로그
+
         // 사용자 권한 설정
         List<GrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority(userRole));
 

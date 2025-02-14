@@ -1,6 +1,6 @@
 package com.markmycode.mmc.post.controller;
 
-import com.markmycode.mmc.config.model.UserPrincipal;
+import com.markmycode.mmc.auth.model.UserPrincipal;
 import com.markmycode.mmc.post.dto.PostRequestDto;
 import com.markmycode.mmc.post.dto.PostResponseDto;
 import com.markmycode.mmc.post.dto.PostSummaryDto;

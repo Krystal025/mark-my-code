@@ -4,7 +4,7 @@ import com.markmycode.mmc.auth.jwt.dto.LoginRequestDto;
 import com.markmycode.mmc.auth.jwt.dto.TokenResponseDto;
 import com.markmycode.mmc.auth.jwt.service.AuthService;
 import com.markmycode.mmc.auth.oauth.service.TokenService;
-import com.markmycode.mmc.config.util.CookieUtils;
+import com.markmycode.mmc.util.CookieUtils;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

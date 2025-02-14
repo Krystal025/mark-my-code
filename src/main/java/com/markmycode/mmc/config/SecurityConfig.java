@@ -1,4 +1,4 @@
-package com.markmycode.mmc.config.config;
+package com.markmycode.mmc.config;
 
 import com.markmycode.mmc.auth.jwt.filter.JwtAuthorizationFilter;
 import com.markmycode.mmc.auth.jwt.provider.JwtTokenProvider;
@@ -76,8 +76,8 @@ public class SecurityConfig {
                         .successHandler(OAuth2SuccessHandler));
         http
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/auth/**", "/oauth2/callback", "/user/signup", "/login_success", "/home", "/post/list").permitAll()
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/admin/**", "/auth/**", "/oauth2/callback", "/user/signup", "/login_success", "/home", "/post/list").permitAll()
+                        .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
                         .anyRequest().authenticated());
         http
                 // JWT 인증 필터를 UsernamePasswordAuthenticationFilter 이전에 실행하여 모든 요청의 JWT 유효성을 검사함

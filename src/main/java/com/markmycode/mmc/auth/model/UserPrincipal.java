@@ -1,4 +1,4 @@
-package com.markmycode.mmc.config.model;
+package com.markmycode.mmc.auth.model;
 
 public interface UserPrincipal {
     Long getUserId();

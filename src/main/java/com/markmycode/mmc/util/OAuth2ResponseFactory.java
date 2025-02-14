@@ -1,4 +1,4 @@
-package com.markmycode.mmc.config.util;
+package com.markmycode.mmc.util;
 
 import com.markmycode.mmc.auth.oauth.dto.GoogleResponse;
 import com.markmycode.mmc.auth.oauth.dto.OAuth2Response;

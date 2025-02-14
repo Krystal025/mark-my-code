@@ -16,10 +16,10 @@ public class UserWebController {
 
     private final UserService userService;
 
-    @GetMapping("/{userId}")
-    public String getUser(@PathVariable("userId") Long userId, Model model){
-        UserResponseDto userResponseDto = userService.getUser(userId);
-        model.addAttribute("userInfo", userResponseDto);
-        return "user_info";
-    }
+//    @GetMapping("/{userId}")
+//    public String getUser(@PathVariable("userId") Long userId, Model model){
+//        UserResponseDto userResponseDto = userService.getUser(userId);
+//        model.addAttribute("userInfo", userResponseDto);
+//        return "user_info";
+//    }
 }

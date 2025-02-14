@@ -1,4 +1,4 @@
-package com.markmycode.mmc.config.util;
+package com.markmycode.mmc.util;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;

@@ -17,7 +17,7 @@ public class AdminController {
 
     private final AdminService adminService;
 
-    @GetMapping
+    @GetMapping("/user_list")
     private String getUserList(Model model){
         List<UserResponseDto> userList = adminService.getUserList();
         model.addAttribute("userList", userList);

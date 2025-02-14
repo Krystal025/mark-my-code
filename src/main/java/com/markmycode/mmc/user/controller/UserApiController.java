@@ -1,6 +1,7 @@
 package com.markmycode.mmc.user.controller;
 
 import com.markmycode.mmc.user.dto.UserRequestDto;
+import com.markmycode.mmc.user.dto.UserResponseDto;
 import com.markmycode.mmc.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -32,5 +33,11 @@ public class UserApiController {
     public ResponseEntity<String> deactivateUser(@PathVariable("userId") Long userId){
         userService.deactivateUser(userId);
         return ResponseEntity.ok("User Deactivated");
+    }
+
+    @GetMapping("/{userId}")
+    public ResponseEntity<UserResponseDto> getUser(@PathVariable("userId") Long userId){
+        UserResponseDto userResponseDto = userService.getUser(userId);
+        return ResponseEntity.ok(userResponseDto);
     }
 }

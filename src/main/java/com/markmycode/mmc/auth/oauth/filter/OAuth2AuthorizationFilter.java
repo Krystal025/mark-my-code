@@ -2,7 +2,7 @@ package com.markmycode.mmc.auth.oauth.filter;
 
 import com.markmycode.mmc.auth.jwt.provider.JwtTokenProvider;
 import com.markmycode.mmc.auth.oauth.service.TokenService;
-import com.markmycode.mmc.config.util.CookieUtils;
+import com.markmycode.mmc.util.CookieUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
