@@ -85,7 +85,6 @@ public class PostService {
     }
 
     public PostResponseDto getPost(Long postId){
-        // 게시글 조회
         Post post = postMapper.selectPostById(postId);
         if (post == null) {
             throw new NotFoundException(ErrorCode.POST_NOT_FOUND);
@@ -112,8 +111,9 @@ public class PostService {
                 filterRequestDto.getCategoryId(),
                 filterRequestDto.getLanguageId()
         );
-        // 필터링된 게시글 조회
+        // 필터링된 게시글 조회 (myBatis 사용)
         List<Post> posts = postMapper.selectPostsByFilters(filterRequestDto);
+        // int offset = (filterRequestDto.getPage() - 1) * filterRequestDto.getSize(); // 시작 위치 계산
         return posts.stream()
                 .map(post -> PostSummaryDto.builder()
                         .postId(post.getPostId())
