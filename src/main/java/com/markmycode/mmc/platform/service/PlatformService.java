@@ -1,5 +1,7 @@
 package com.markmycode.mmc.platform.service;
 
+import com.markmycode.mmc.exception.ErrorCode;
+import com.markmycode.mmc.exception.custom.NotFoundException;
 import com.markmycode.mmc.platform.entity.Platform;
 import com.markmycode.mmc.platform.repository.PlatformRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +17,12 @@ public class PlatformService {
 
     public List<Platform> getPlatformList(){
         return platformRepository.findAll();
+    }
+
+    public void validatePlatform(Integer platformId) {
+        if (platformId != null && !platformRepository.existsById(platformId)) {
+            throw new NotFoundException(ErrorCode.PLATFORM_NOT_FOUND);
+        }
     }
 
 }

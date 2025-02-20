@@ -3,7 +3,7 @@ package com.markmycode.mmc.language.entity;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "programming_language")
+@Table(name = "problem_language")
 public class Language {
 
     @Id

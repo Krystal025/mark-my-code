@@ -76,7 +76,7 @@ public class SecurityConfig {
                         .successHandler(OAuth2SuccessHandler));
         http
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/admin/**", "/auth/**", "/oauth2/callback", "/user/signup", "/login_success", "/home", "/post/**").permitAll()
+                        .requestMatchers("/admin/**", "/auth/**", "/oauth2/callback", "/users/signup", "/login_success", "/home", "/posts/**").permitAll()
                         .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
                         .anyRequest().authenticated());
         http

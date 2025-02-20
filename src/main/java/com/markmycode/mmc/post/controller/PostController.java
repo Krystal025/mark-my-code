@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/post")
+@RequestMapping("/posts")
 @RequiredArgsConstructor
 public class PostController {
 
@@ -42,17 +42,12 @@ public class PostController {
         return ResponseEntity.ok("Post deleted");
     }
 
-    @GetMapping("/list")
-    public List<PostSummaryDto> getPosts(){
-        return postService.getPosts();
-    }
-
     @GetMapping("/{postId}")
     public PostResponseDto getPost(@PathVariable("postId") Long postId){
         return postService.getPost(postId);
     }
 
-    @GetMapping("/list/filtered")
+    @GetMapping
     public List<PostSummaryDto> getFilteredPosts(@RequestBody PostFilterRequestDto requestDto){
         return postService.getFilteredPosts(requestDto);
     }

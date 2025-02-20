@@ -1,11 +1,11 @@
 package com.markmycode.mmc.post.service;
 
-import com.markmycode.mmc.category.repository.CategoryRepository;
+import com.markmycode.mmc.category.service.CategoryService;
 import com.markmycode.mmc.exception.ErrorCode;
 import com.markmycode.mmc.exception.custom.ForbiddenException;
 import com.markmycode.mmc.exception.custom.NotFoundException;
-import com.markmycode.mmc.language.repository.LanguageRepository;
-import com.markmycode.mmc.platform.repository.PlatformRepository;
+import com.markmycode.mmc.language.service.LanguageService;
+import com.markmycode.mmc.platform.service.PlatformService;
 import com.markmycode.mmc.post.dao.PostMapper;
 import com.markmycode.mmc.post.dto.PostFilterRequestDto;
 import com.markmycode.mmc.post.dto.PostRequestDto;
@@ -22,14 +22,16 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class PostService {
     private final PostMapper postMapper;
-    private final PlatformRepository platformRepository;
-    private final CategoryRepository categoryRepository;
-    private final LanguageRepository languageRepository;
+    private final CategoryService categoryService;
+    private final PlatformService platformService;
+    private final LanguageService languageService;
 
     public void createPost(Long userId, PostRequestDto requestDto){
+        Integer parentCategoryId = postMapper.selectParentCategoryIdByChildCategoryId(requestDto.getChildCategoryId());
+        categoryService.validateCategory(parentCategoryId, requestDto.getChildCategoryId());
         Post post = Post.builder()
                 .userId(userId)
-                .categoryId(requestDto.getCategoryId())
+                .categoryId(requestDto.getChildCategoryId())
                 .platformId(requestDto.getPlatformId())
                 .languageId(requestDto.getLanguageId())
                 .postTitle(requestDto.getPostTitle())
@@ -48,8 +50,8 @@ public class PostService {
         validatePostOwnership(userId, postId);
         // 변경된 필드만 반영
         post = post.toBuilder()
+                .categoryId(requestDto.getChildCategoryId() != null ? requestDto.getChildCategoryId() : post.getCategoryId())
                 .platformId(requestDto.getPlatformId() != null ? requestDto.getPlatformId() : post.getPlatformId())
-                .categoryId(requestDto.getCategoryId() != null ? requestDto.getCategoryId() : post.getCategoryId())
                 .languageId(requestDto.getLanguageId() != null ? requestDto.getLanguageId() : post.getLanguageId())
                 .postTitle(requestDto.getPostTitle() != null ? requestDto.getPostTitle() : post.getPostTitle())
                 .postContent(requestDto.getPostContent() != null ? requestDto.getPostContent() : post.getPostContent())
@@ -68,22 +70,6 @@ public class PostService {
         postMapper.deletePost(postId);
     }
 
-    public List<PostSummaryDto> getPosts() {
-        List<Post> posts = postMapper.selectPosts();
-        if(posts.isEmpty()){
-            throw new NotFoundException(ErrorCode.POSTS_NOT_FOUND);
-        }
-        return posts.stream()
-                .map(post -> PostSummaryDto.builder() // post : postList에 저장된 각 Post 객체
-                        .postId(post.getPostId())
-                        .postTitle(post.getPostTitle())
-                        .postCreatedAt(post.getPostCreatedAt())
-                        .postLike(post.getPostLike())
-                        .userNickname(postMapper.selectUserNicknameByPostId(post.getPostId())) // post에서 userId를 가져와서 사용
-                        .build())
-                .collect(Collectors.toList());
-    }
-
     public PostResponseDto getPost(Long postId){
         Post post = postMapper.selectPostById(postId);
         if (post == null) {
@@ -98,7 +84,8 @@ public class PostService {
                 .postLike(post.getPostLike())
                 .userNickname(postMapper.selectUserNicknameByPostId(post.getPostId()))
                 .platformName(postMapper.selectPlatformNameByPostId(post.getPostId()))
-                .categoryName(postMapper.selectCategoryNameByPostId(post.getPostId()))
+                .parentCategoryName(postMapper.selectParentCategoryNameByPostId(post.getPostId()))
+                .childCategoryName(postMapper.selectChildCategoryNameByPostId(post.getPostId()))
                 .languageName(postMapper.selectLanguageNameByPostId(post.getPostId()))
                 .build();
 
@@ -106,24 +93,26 @@ public class PostService {
 
     public List<PostSummaryDto> getFilteredPosts(PostFilterRequestDto filterRequestDto){
         // 필터링 조건 유효성 검증 (JPA 사용)
-        validateFilters(
-                filterRequestDto.getPlatformId(),
-                filterRequestDto.getCategoryId(),
-                filterRequestDto.getLanguageId()
-        );
+        Integer parentCategoryId = postMapper.selectParentCategoryIdByChildCategoryId(filterRequestDto.getChildCategoryId());
+        categoryService.validateCategory(parentCategoryId, filterRequestDto.getChildCategoryId());
+        platformService.validatePlatform(filterRequestDto.getPlatformId());
+        languageService.validateLanguage(filterRequestDto.getLanguageId());
         // 필터링된 게시글 조회 (myBatis 사용)
         List<Post> posts = postMapper.selectPostsByFilters(filterRequestDto);
-        // int offset = (filterRequestDto.getPage() - 1) * filterRequestDto.getSize(); // 시작 위치 계산
+        if(posts.isEmpty()){
+            throw new NotFoundException(ErrorCode.POSTS_NOT_FOUND);
+        }
         return posts.stream()
                 .map(post -> PostSummaryDto.builder()
                         .postId(post.getPostId())
-                        .platformId(post.getPlatformId())
-                        .categoryId(post.getCategoryId())
-                        .languageId(post.getLanguageId())
                         .postTitle(post.getPostTitle())
                         .postCreatedAt(post.getPostCreatedAt())
                         .postLike(post.getPostLike())
                         .userNickname(postMapper.selectUserNicknameByPostId(post.getPostId()))
+                        .parentCategoryName(postMapper.selectParentCategoryNameByPostId(post.getPostId()))
+                        .childCategoryName(postMapper.selectChildCategoryNameByPostId(post.getPostId()))
+                        .platformName(postMapper.selectPlatformNameByPostId(post.getPostId()))
+                        .languageName(postMapper.selectLanguageNameByPostId(post.getPostId()))
                         .build())
                 .collect(Collectors.toList());
     }
@@ -132,18 +121,6 @@ public class PostService {
         Long postOwnerId = postMapper.selectUserIdByPostId(postId);
         if(postOwnerId == null || !postOwnerId.equals(userId)){
             throw new ForbiddenException(ErrorCode.USER_NOT_MATCH);
-        }
-    }
-
-    private void validateFilters(Integer platformId, Integer categoryId, Integer languageId){
-        if (platformId != null && !platformRepository.existsById(platformId)) {
-            throw new NotFoundException(ErrorCode.PLATFORM_NOT_FOUND);
-        }
-        if (categoryId != null && !categoryRepository.existsById(categoryId)) {
-            throw new NotFoundException(ErrorCode.CATEGORY_NOT_FOUND);
-        }
-        if (languageId != null && !languageRepository.existsById(languageId)) {
-            throw new NotFoundException(ErrorCode.LANGUAGE_NOT_FOUND);
         }
     }
 

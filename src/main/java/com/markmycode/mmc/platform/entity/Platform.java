@@ -3,6 +3,7 @@ package com.markmycode.mmc.platform.entity;
 import jakarta.persistence.*;
 
 @Entity
+@Table(name = "problem_platform")
 public class Platform {
 
     @Id

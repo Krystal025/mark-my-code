@@ -16,8 +16,8 @@ public class Post {
 
     private Long postId;
     private Long userId;
-    private Integer platformId;
     private Integer categoryId;
+    private Integer platformId;
     private Integer languageId;
     private String postTitle;
     private String postContent;

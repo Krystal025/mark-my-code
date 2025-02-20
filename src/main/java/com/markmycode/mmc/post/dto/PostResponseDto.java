@@ -19,7 +19,8 @@ public class PostResponseDto {
     private LocalDateTime postUpdatedAt;
     private Integer postLike;
     private String userNickname;
-    private String categoryName;
+    private String parentCategoryName;
+    private String childCategoryName;
     private String platformName;
     private String languageName;
 

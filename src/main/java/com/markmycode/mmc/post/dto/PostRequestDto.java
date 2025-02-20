@@ -10,8 +10,8 @@ import lombok.NoArgsConstructor;
 public class PostRequestDto {
 
     private Long userId;
+    private Integer childCategoryId;
     private Integer platformId;
-    private Integer categoryId;
     private Integer languageId;
     private String postTitle;
     private String postContent;

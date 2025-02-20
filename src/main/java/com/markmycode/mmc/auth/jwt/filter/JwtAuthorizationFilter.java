@@ -26,8 +26,8 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                 || requestURI.startsWith("/login")
                 || requestURI.startsWith("/auth/**")
                 || requestURI.startsWith("/oauth2/authorization")
-                || requestURI.startsWith("/user/signup")
-                || requestURI.startsWith("/post/**")) {
+                || requestURI.startsWith("/users/signup")
+                || requestURI.startsWith("/posts/**")) {
             filterChain.doFilter(request, response);
             return;
         }
