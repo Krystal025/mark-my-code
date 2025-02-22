@@ -18,8 +18,8 @@ public class PostSummaryDto {
     private LocalDateTime postCreatedAt;
     private Integer postLike;
     private String userNickname;
-    private String parentCategoryName;
     private String childCategoryName;
+    private String parentCategoryName;
     private String platformName;
     private String languageName;
 

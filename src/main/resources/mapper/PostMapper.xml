@@ -3,75 +3,75 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.markmycode.mmc.post.dao.PostMapper">
+<mapper namespace="com.markmycode.mmc.post.repository.PostMapper">
 
-    <!-- 게시글 등록 -->
-    <insert id="insertPost" parameterType="com.markmycode.mmc.post.entity.Post" useGeneratedKeys="true" keyProperty="postId">
-        INSERT INTO post
-            (user_id, category_id, platform_id, language_id, post_title, post_content)
-        VALUES
-            (#{userId}, #{categoryId}, #{platformId}, #{languageId}, #{postTitle}, #{postContent})
-    </insert>
+<!--    <insert id="insertPost" parameterType="com.markmycode.mmc.post.entity.Post" useGeneratedKeys="true" keyProperty="postId">-->
+<!--        INSERT INTO post-->
+<!--            (user_id, category_id, platform_id, language_id, post_title, post_content)-->
+<!--        VALUES-->
+<!--            (#{userId}, #{categoryId}, #{platformId}, #{languageId}, #{postTitle}, #{postContent})-->
+<!--    </insert>-->
 
-    <!-- 게시글 수정 -->
-    <update id="updatePost" parameterType="com.markmycode.mmc.post.entity.Post">
-        UPDATE post
-        <set>
-            <if test="categoryId != null"> category_id = #{categoryId}, </if>
-            <if test="platformId != null"> platform_id = #{platformId}, </if>
-            <if test="languageId != null"> language_id = #{languageId}, </if>
-            <if test="postTitle != null"> post_title = #{postTitle}, </if>
-            <if test="postContent != null"> post_content = #{postContent}, </if>
-            post_updated_at = NOW()
-        </set>
-        WHERE post_id = #{postId}
-    </update>
+<!--    <update id="updatePost" parameterType="com.markmycode.mmc.post.entity.Post">-->
+<!--        UPDATE post-->
+<!--        <set>-->
+<!--            <if test="categoryId != null"> category_id = #{categoryId}, </if>-->
+<!--            <if test="platformId != null"> platform_id = #{platformId}, </if>-->
+<!--            <if test="languageId != null"> language_id = #{languageId}, </if>-->
+<!--            <if test="postTitle != null"> post_title = #{postTitle}, </if>-->
+<!--            <if test="postContent != null"> post_content = #{postContent}, </if>-->
+<!--            post_updated_at = NOW()-->
+<!--        </set>-->
+<!--        WHERE post_id = #{postId}-->
+<!--    </update>-->
 
-    <!-- 게시글 삭제 -->
-    <delete id="deletePost">
-        DELETE FROM post
-        WHERE post_id = #{postId}
-    </delete>
+<!--    <delete id="deletePost">-->
+<!--        DELETE FROM post-->
+<!--        WHERE post_id = #{postId}-->
+<!--    </delete>-->
 
     <!-- 특정 게시글 조회 -->
-    <select id="selectPost" resultType="com.markmycode.mmc.post.entity.Post">
+    <select id="selectPost" resultType="com.markmycode.mmc.post.dto.PostResponseDto">
         SELECT
         p.post_id,
-        p.user_id,
         p.post_title,
         p.post_content,
         p.post_created_at,
         p.post_updated_at,
         p.post_like,
-        c1.category_name AS child_category,  <!--하위 카테고리-->
-        c2.category_name AS parent_category,  <!--상위 카테고리-->
+        u.user_nickname,
+        c1.category_name AS child_category_name,  <!--하위 카테고리-->
+        c2.category_name AS parent_category_name,  <!--상위 카테고리-->
         pl.platform_name,
         l.display_name AS language_name
         FROM post p
-        LEFT JOIN post_category c1 ON p.category_id = c1.category_id  <!-- 하위 카테고리 조인 -->
-        LEFT JOIN post_category c2 ON c1.parent_id = c2.category_id  <!-- 상위 카테고리 조인 -->
-        LEFT JOIN problem_platform pl ON p.platform_id = pl.platform_id
-        LEFT JOIN problem_language l ON p.language_id = l.language_id
+        JOIN user u ON p.user_id = u.user_id
+        JOIN post_category c1 ON p.category_id = c1.category_id  <!-- 하위 카테고리 조인 -->
+        LEFT JOIN post_category c2 ON c1.parent_id = c2.category_id  <!-- 부모 카테고리는 parent_id가 Null이므로 LEFT JOIN -->
+        JOIN problem_platform pl ON p.platform_id = pl.platform_id
+        JOIN problem_language l ON p.language_id = l.language_id
         WHERE p.post_id = #{postId}
         ORDER BY p.post_created_at DESC
     </select>
 
     <!-- 필터링 조건 적용된 게시글 조회 -->
-    <select id="selectPostsByFilters" parameterType="com.markmycode.mmc.post.dto.PostFilterRequestDto" resultType="com.markmycode.mmc.post.entity.Post">
+    <select id="selectPostsByFilters" parameterType="com.markmycode.mmc.post.dto.PostFilterRequestDto" resultType="com.markmycode.mmc.post.dto.PostSummaryDto">
         SELECT
         p.post_id,
         p.post_title,
         p.post_created_at,
         p.post_like,
+        u.user_nickname,
         c1.category_name AS child_category_name,
         c2.category_name AS parent_category_name,
         pl.platform_name,
         l.display_name AS language_name
         FROM post p
-        LEFT JOIN post_category c1 ON p.category_id = c1.category_id  <!-- 하위 카테고리 조인 -->
-        LEFT JOIN post_category c2 ON c1.parent_id = c2.category_id   <!-- 상위 카테고리 조인 -->
-        LEFT JOIN problem_platform pl ON p.platform_id = pl.platform_id
-        LEFT JOIN problem_language l ON p.language_id = l.language_id
+        JOIN user u ON p.user_id = u.user_id
+        JOIN post_category c1 ON p.category_id = c1.category_id  <!-- 하위 카테고리 조인 -->
+        LEFT JOIN post_category c2 ON c1.parent_id = c2.category_id  <!-- 부모 카테고리는 parent_id가 Null이므로 LEFT JOIN -->
+        JOIN problem_platform pl ON p.platform_id = pl.platform_id
+        JOIN problem_language l ON p.language_id = l.language_id
         <!-- 필터링 조건이 있을 때만 WHERE 절이 추가됨 -->
         <where>
             <if test="childCategoryId != null">
@@ -92,56 +92,56 @@
         LIMIT #{size} OFFSET #{offset}  <!-- LIMIT {가져올 데이터 개수} OFFSET {건너뛸 데이터 개수} -->
     </select>
 
-    <!-- 게시글 조회 -->
-    <select id="selectPostById" parameterType="Long" resultType="com.markmycode.mmc.post.entity.Post">
-        SELECT * FROM post WHERE post_id = #{postId}
-    </select>
-
-    <!-- 게시글 소유자 ID 조회 -->
-    <select id="selectUserIdByPostId" parameterType="Long" resultType="Long">
-        SELECT user_id FROM post WHERE post_id = #{postId}
-    </select>
-
-    <select id="selectUserNicknameByPostId" parameterType="Long" resultType="String">
-        SELECT u.user_nickname
-        FROM user u
-        JOIN post p ON p.user_id = u.user_id
-        WHERE p.post_id = #{postId}
-    </select>
-
-    <select id="selectParentCategoryNameByPostId" parameterType="Long" resultType="String">
-        SELECT c2.category_name
-        FROM post p
-        JOIN post_category c1 ON p.category_id = c1.category_id  <!-- 게시글 하위 카테고리 조회 -->
-        JOIN post_category c2 ON c1.parent_id = c2.category_id  <!-- 부모 카테고리 조회 -->
-        WHERE p.post_id = #{postId}
-    </select>
-
-    <select id="selectChildCategoryNameByPostId" parameterType="Long" resultType="String">
-        SELECT c.category_name
-        FROM post p
-        JOIN post_category c ON p.category_id = c.category_id  <!-- 게시글 하위 카테고리 조회 -->
-        WHERE p.post_id = #{postId}
-    </select>
-
-    <select id="selectPlatformNameByPostId" parameterType="Long" resultType="String">
-        SELECT pl.platform_name
-        FROM problem_platform pl
-        JOIN post p ON p.platform_id = pl.platform_id
-        WHERE p.post_id = #{postId}
-    </select>
-
-    <select id="selectLanguageNameByPostId" parameterType="Long" resultType="String">
-        SELECT pl.display_name
-        FROM problem_language pl
-        JOIN post p ON p.language_id = pl.language_id
-        WHERE p.post_id = #{postId}
-    </select>
-
-    <select id="selectParentCategoryIdByChildCategoryId" parameterType="Integer" resultType="Integer">
+    <select id="selectParentIdByCategoryId" parameterType="Integer" resultType="Integer">
         SELECT parent_id
         FROM post_category
         WHERE category_id = #{childCategoryId}
     </select>
+
+<!--    &lt;!&ndash; 게시글 조회 &ndash;&gt;-->
+<!--    <select id="selectPostById" parameterType="Long" resultType="com.markmycode.mmc.post.entity.Post">-->
+<!--        SELECT * FROM post WHERE post_id = #{postId}-->
+<!--    </select>-->
+
+<!--    &lt;!&ndash; 게시글 소유자 ID 조회 &ndash;&gt;-->
+<!--    <select id="selectUserIdByPostId" parameterType="Long" resultType="Long">-->
+<!--        SELECT user_id FROM post WHERE post_id = #{postId}-->
+<!--    </select>-->
+
+<!--    <select id="selectUserNicknameByPostId" parameterType="Long" resultType="String">-->
+<!--        SELECT u.user_nickname-->
+<!--        FROM user u-->
+<!--        JOIN post p ON p.user_id = u.user_id-->
+<!--        WHERE p.post_id = #{postId}-->
+<!--    </select>-->
+
+<!--    <select id="selectParentCategoryNameByPostId" parameterType="Long" resultType="String">-->
+<!--        SELECT c2.category_name-->
+<!--        FROM post p-->
+<!--        JOIN post_category c1 ON p.category_id = c1.category_id  &lt;!&ndash; 게시글 하위 카테고리 조회 &ndash;&gt;-->
+<!--        JOIN post_category c2 ON c1.parent_id = c2.category_id  &lt;!&ndash; 부모 카테고리 조회 &ndash;&gt;-->
+<!--        WHERE p.post_id = #{postId}-->
+<!--    </select>-->
+
+<!--    <select id="selectChildCategoryNameByPostId" parameterType="Long" resultType="String">-->
+<!--        SELECT c.category_name-->
+<!--        FROM post p-->
+<!--        JOIN post_category c ON p.category_id = c.category_id  &lt;!&ndash; 게시글 하위 카테고리 조회 &ndash;&gt;-->
+<!--        WHERE p.post_id = #{postId}-->
+<!--    </select>-->
+
+<!--    <select id="selectPlatformNameByPostId" parameterType="Long" resultType="String">-->
+<!--        SELECT pl.platform_name-->
+<!--        FROM problem_platform pl-->
+<!--        JOIN post p ON p.platform_id = pl.platform_id-->
+<!--        WHERE p.post_id = #{postId}-->
+<!--    </select>-->
+
+<!--    <select id="selectLanguageNameByPostId" parameterType="Long" resultType="String">-->
+<!--        SELECT pl.display_name-->
+<!--        FROM problem_language pl-->
+<!--        JOIN post p ON p.language_id = pl.language_id-->
+<!--        WHERE p.post_id = #{postId}-->
+<!--    </select>-->
 
 </mapper>

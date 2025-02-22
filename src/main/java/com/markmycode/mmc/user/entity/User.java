@@ -4,15 +4,12 @@ import com.markmycode.mmc.user.enums.Provider;
 import com.markmycode.mmc.user.enums.Role;
 import com.markmycode.mmc.user.enums.Status;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Entity
-@Data
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true) // 기존 인스턴스를 복사하여 새로운 인스턴스를 만들고, 일부 필드만 변경할 수 있도록 함
