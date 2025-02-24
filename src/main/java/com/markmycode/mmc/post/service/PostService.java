@@ -23,7 +23,9 @@ import com.markmycode.mmc.user.entity.User;
 import com.markmycode.mmc.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -59,36 +61,39 @@ public class PostService {
         postRepository.save(post);
     }
 
+    @Transactional
     public void updatePost(Long userId, Long postId, PostRequestDto requestDto){
-        // 게시글 조회
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.POST_NOT_FOUND));
+        Post post = getPost(postId);
+        User user = getUser(userId);
         // 게시글 소유자가 요청한 사용자와 일치하는지 확인
-        validatePostOwnership(userId, postId);
-        Category category = requestDto.getChildCategoryId() != null ? getCategory(requestDto.getChildCategoryId()) : post.getCategory();
-        Platform platform = requestDto.getPlatformId() != null ? getPlatform(requestDto.getPlatformId()) : post.getPlatform();
-        Language language = requestDto.getLanguageId() != null ? getLanguage(requestDto.getLanguageId()) : post.getLanguage();
+        validatePostOwnership(user, post);
         // 변경된 필드만 반영
-        post = post.toBuilder()
-                .category(category)
-                .platform(platform)
-                .language(language)
-                .postTitle(requestDto.getPostTitle() != null ? requestDto.getPostTitle() : post.getPostTitle())
-                .postContent(requestDto.getPostContent() != null ? requestDto.getPostContent() : post.getPostContent())
-                .build();
-        postRepository.save(post);
+        if (requestDto.getChildCategoryId() != null){
+            post.changeCategory(getCategory(requestDto.getChildCategoryId()));
+        }
+        if (requestDto.getPlatformId() != null){
+            post.changePlatform(getPlatform(requestDto.getPlatformId()));
+        }
+        if (requestDto.getLanguageId() != null){
+            post.changeLanguage(getLanguage(requestDto.getLanguageId()));
+        }
+        // 제목 및 내용은 단순 문자열로 외부 엔티티 조회 필요없이 값만 변경 (엔티티가 직접 Null 체크)
+        post.updateTitle(requestDto.getPostTitle());
+        post.updateContent(requestDto.getPostContent());
+        // JPA는 dirty checking을 통해 상태변경을 감지하므로, Repository의 save() 호출이 필요없음
+        // postRepository.save(post);
     }
 
+    @Transactional
     public void deletePost(Long userId, Long postId){
-        // 게시글 조회
-        postRepository.findById(postId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.POST_NOT_FOUND));
+        Post post = getPost(postId);
+        User user = getUser(userId);
         // 게시글 소유자가 요청한 사용자와 일치하는지 확인
-        validatePostOwnership(userId, postId);
-        postRepository.deleteById(postId);
+        validatePostOwnership(user, post);
+        postRepository.delete(post);
     }
 
-    public PostResponseDto getPost(Long postId){
+    public PostResponseDto getPostById(Long postId){
         PostResponseDto responseDto = postMapper.selectPost(postId);
         if (responseDto == null) {
             throw new NotFoundException(ErrorCode.POST_NOT_FOUND);
@@ -96,19 +101,16 @@ public class PostService {
         return responseDto;
     }
 
-    public List<PostSummaryDto> getFilteredPosts(PostFilterRequestDto filterRequestDto){
+    public List<PostSummaryDto> getPostsByFilters(PostFilterRequestDto filterRequestDto){
         validateFilterCondition(filterRequestDto);
         List<PostSummaryDto> posts = postMapper.selectPostsByFilters(filterRequestDto);
-        if(posts.isEmpty()){
-            throw new NotFoundException(ErrorCode.POSTS_NOT_FOUND);
-        }
-        return posts;
+        // 조회 API에서 빈 리스트는 예외가 아닌 빈 배열 반환이 더 적합함
+        return posts.isEmpty() ? Collections.emptyList() : posts;
     }
 
-    private void validatePostOwnership(Long userId, Long postId){
-        Post post = postRepository.findById(postId)
-                .orElseThrow(()-> new NotFoundException(ErrorCode.POST_NOT_FOUND));
-        if(!post.getUser().getUserId().equals(userId)){
+    private void validatePostOwnership(User user, Post post){
+        // JPA 엔티티는 equals()를 재정의하여 식별자 비교로 소유자 확인시 효율성을 높임
+        if(!post.getUser().equals(user)){
             throw new ForbiddenException(ErrorCode.USER_NOT_MATCH);
         }
     }
@@ -118,6 +120,11 @@ public class PostService {
         categoryService.validateCategory(parentCategoryId, filterRequestDto.getChildCategoryId());
         platformService.validatePlatform(filterRequestDto.getPlatformId());
         languageService.validateLanguage(filterRequestDto.getLanguageId());
+    }
+
+    private Post getPost(Long postId) {
+        return postRepository.findById(postId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.POST_NOT_FOUND));
     }
 
     private User getUser(Long userId) {

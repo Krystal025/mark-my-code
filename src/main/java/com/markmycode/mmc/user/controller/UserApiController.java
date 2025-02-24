@@ -37,7 +37,7 @@ public class UserApiController {
 
     @GetMapping("/{userId}")
     public ResponseEntity<UserResponseDto> getUser(@PathVariable("userId") Long userId){
-        UserResponseDto userResponseDto = userService.getUser(userId);
+        UserResponseDto userResponseDto = userService.getUserById(userId);
         return ResponseEntity.ok(userResponseDto);
     }
 }

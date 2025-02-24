@@ -44,12 +44,12 @@ public class PostController {
 
     @GetMapping("/{postId}")
     public PostResponseDto getPost(@PathVariable("postId") Long postId){
-        return postService.getPost(postId);
+        return postService.getPostById(postId);
     }
 
     @GetMapping
     public List<PostSummaryDto> getFilteredPosts(@RequestBody PostFilterRequestDto requestDto){
-        return postService.getFilteredPosts(requestDto);
+        return postService.getPostsByFilters(requestDto);
     }
 
 }

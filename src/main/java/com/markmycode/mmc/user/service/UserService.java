@@ -45,8 +45,7 @@ public class UserService {
         // 현재 인증된 사용자 이메일
         String loggedInEmail = SecurityContextHolder.getContext().getAuthentication().getName();
         // 영속성 컨텍스트에 사용자가 존재하는지 확인
-        User user = userRepository.findById(userId)
-                .orElseThrow(()-> new NotFoundException(ErrorCode.USER_NOT_FOUND));
+        User user = getUser(userId);
         // 요청한 사용자 이메일
         String userEmail = user.getUserEmail().replaceAll("\\s+", "").trim();
         // JWT에서 추출한 이메일과 요청 이메일 비교
@@ -73,8 +72,7 @@ public class UserService {
         // 현재 인증된 사용자 이메일
         String loggedInEmail = SecurityContextHolder.getContext().getAuthentication().getName();
         // 영속성 컨텍스트에 사용자가 존재하는지 확인
-        User user = userRepository.findById(userId)
-                .orElseThrow(()-> new NotFoundException(ErrorCode.USER_NOT_FOUND));
+        User user = getUser(userId);
         // 요청한 사용자 이메일
         String userEmail = user.getUserEmail().replaceAll("\\s+", "").trim();
         validateEmail(loggedInEmail, userEmail);
@@ -88,10 +86,8 @@ public class UserService {
     }
 
     // 사용자 정보 조회
-    public UserResponseDto getUser(Long userId){
-        // findById 메서드가 Optional.empty()를 반환하면, orElseThrow()에 의해 NotFoundException이 발생함
-        User user = userRepository.findById(userId)
-                .orElseThrow(()-> new NotFoundException(ErrorCode.USER_NOT_FOUND));
+    public UserResponseDto getUserById(Long userId){
+        User user = getUser(userId);
         return UserResponseDto.builder()
                 .userId(user.getUserId())
                 .userName(user.getUserName())
@@ -106,5 +102,10 @@ public class UserService {
         if (!loggedInEmail.equals(requestedEmail)) {
             throw new ForbiddenException(ErrorCode.USER_NOT_MATCH);
         }
+    }
+
+    private User getUser(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
     }
 }

@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
+// @DynamicUpdate  // 변경된 필드만 업데이트
 public class Post {
 
     @Id
@@ -66,4 +67,28 @@ public class Post {
         this.postUpdatedAt = LocalDateTime.now();
     }
 
+    // 게시글 정보 변경을 위한 도메인 메서드 (Setter 직접 노출 방지)
+    public void changeCategory(Category category) {
+        this.category = category;
+    }
+
+    public void changePlatform(Platform platform) {
+        this.platform = platform;
+    }
+
+    public void changeLanguage(Language language) {
+        this.language = language;
+    }
+
+    public void updateTitle(String title) {
+        if (title != null) {
+            this.postTitle = title;
+        }
+    }
+
+    public void updateContent(String content) {
+        if (content != null) {
+            this.postContent = content;
+        }
+    }
 }
