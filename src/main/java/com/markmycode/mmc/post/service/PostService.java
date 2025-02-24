@@ -30,11 +30,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PostService {
     private final PostMapper postMapper;
+
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
     private final PlatformRepository platformRepository;
     private final LanguageRepository languageRepository;
+
     private final CategoryService categoryService;
     private final PlatformService platformService;
     private final LanguageService languageService;
@@ -112,7 +114,7 @@ public class PostService {
     }
     // 필터링 조건 유효성 검증
     private void validateFilterCondition(PostFilterRequestDto filterRequestDto){
-        Integer parentCategoryId = categoryRepository.findParentIdByCategoryId(filterRequestDto.getChildCategoryId());
+        Integer parentCategoryId = postMapper.selectParentIdByCategoryId(filterRequestDto.getChildCategoryId());
         categoryService.validateCategory(parentCategoryId, filterRequestDto.getChildCategoryId());
         platformService.validatePlatform(filterRequestDto.getPlatformId());
         languageService.validateLanguage(filterRequestDto.getLanguageId());

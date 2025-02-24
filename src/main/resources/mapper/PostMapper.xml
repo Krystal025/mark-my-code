@@ -62,10 +62,10 @@
         p.post_created_at,
         p.post_like,
         u.user_nickname,
-        c1.category_name AS child_category_name,
-        c2.category_name AS parent_category_name,
+        c1.category_name AS childCategoryName,
+        c2.category_name AS parentCategoryName,
         pl.platform_name,
-        l.display_name AS language_name
+        l.display_name AS languageName
         FROM post p
         JOIN user u ON p.user_id = u.user_id
         JOIN post_category c1 ON p.category_id = c1.category_id  <!-- 하위 카테고리 조인 -->
