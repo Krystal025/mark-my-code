@@ -2,10 +2,13 @@ package com.markmycode.mmc.like.controller;
 
 import com.markmycode.mmc.auth.model.UserPrincipal;
 import com.markmycode.mmc.like.service.PostLikeService;
+import com.markmycode.mmc.post.dto.PostSummaryDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -28,4 +31,8 @@ public class PostLikeController {
         return ResponseEntity.ok("Post unliked");
     }
 
+    @GetMapping
+    public List<PostSummaryDto> getLikedPosts(@AuthenticationPrincipal UserPrincipal userPrincipal){
+        return postLikeService.getLikedPosts(userPrincipal.getUserId());
+    }
 }

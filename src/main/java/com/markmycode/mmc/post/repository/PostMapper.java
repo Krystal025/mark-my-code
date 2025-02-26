@@ -9,8 +9,9 @@ import java.util.List;
 
 @Mapper
 public interface PostMapper {
+    Integer selectParentIdByCategoryId(Integer childCategoryId);
     PostResponseDto selectPost(Long postId);
     List<PostSummaryDto> selectPostsByFilters(PostFilterRequestDto postFilterRequestDto);
-    Integer selectParentIdByCategoryId(Integer childCategoryId);
+    List<PostSummaryDto> selectLikedPostsByUser(Long userId);
 }
 

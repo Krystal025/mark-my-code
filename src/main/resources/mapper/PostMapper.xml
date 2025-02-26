@@ -5,20 +5,27 @@
 
 <mapper namespace="com.markmycode.mmc.post.repository.PostMapper">
 
+
+    <select id="selectParentIdByCategoryId" parameterType="Integer" resultType="Integer">
+        SELECT parent_id
+        FROM post_category
+        WHERE category_id = #{childCategoryId}
+    </select>
+
     <!-- 특정 게시글 조회 -->
     <select id="selectPost" resultType="com.markmycode.mmc.post.dto.PostResponseDto">
         SELECT
-        p.post_id,
-        p.post_title,
-        p.post_content,
-        p.post_created_at,
-        p.post_updated_at,
-        p.post_like_count,
-        u.user_nickname,
-        c1.category_name AS child_category_name,  <!--하위 카테고리-->
-        c2.category_name AS parent_category_name,  <!--상위 카테고리-->
-        ppl.platform_name,
-        l.display_name AS language_name
+            p.post_id,
+            p.post_title,
+            p.post_content,
+            p.post_created_at,
+            p.post_updated_at,
+            p.post_like_count,
+            u.user_nickname,
+            c1.category_name AS child_category_name,  <!--하위 카테고리-->
+            c2.category_name AS parent_category_name,  <!--상위 카테고리-->
+            ppl.platform_name,
+            l.display_name AS language_name
         FROM post p
         JOIN user u ON p.user_id = u.user_id
         JOIN post_category c1 ON p.category_id = c1.category_id  <!-- 하위 카테고리 조인 -->
@@ -32,15 +39,15 @@
     <!-- 필터링 조건 적용된 게시글 조회 -->
     <select id="selectPostsByFilters" parameterType="com.markmycode.mmc.post.dto.PostFilterRequestDto" resultType="com.markmycode.mmc.post.dto.PostSummaryDto">
         SELECT
-        p.post_id,
-        p.post_title,
-        p.post_created_at,
-        p.post_like_count,
-        u.user_nickname,
-        c1.category_name AS childCategoryName,
-        c2.category_name AS parentCategoryName,
-        ppl.platform_name,
-        l.display_name AS languageName
+            p.post_id,
+            p.post_title,
+            p.post_created_at,
+            p.post_like_count,
+            u.user_nickname,
+            c1.category_name AS childCategoryName,
+            c2.category_name AS parentCategoryName,
+            ppl.platform_name,
+            l.display_name AS languageName
         FROM post p
         JOIN user u ON p.user_id = u.user_id
         JOIN post_category c1 ON p.category_id = c1.category_id  <!-- 하위 카테고리 조인 -->
@@ -67,10 +74,19 @@
         LIMIT #{size} OFFSET #{offset}  <!-- LIMIT {가져올 데이터 개수} OFFSET {건너뛸 데이터 개수} -->
     </select>
 
-    <select id="selectParentIdByCategoryId" parameterType="Integer" resultType="Integer">
-        SELECT parent_id
-        FROM post_category
-        WHERE category_id = #{childCategoryId}
+    <select id="selectLikedPostsByUser" parameterType="Long" resultType="com.markmycode.mmc.post.dto.PostSummaryDto">
+        SELECT
+            p.post_id,
+            p.post_title,
+            p.post_created_at,
+            p.post_like_count,
+            u.user_nickname,
+            pl.like_created_at
+        FROM post_like pl
+        JOIN post p ON pl.post_id = p.post_id
+        JOIN user u ON p.user_id = u.user_id
+        WHERE pl.user_id = #{userId}
+        ORDER BY pl.like_created_at DESC
     </select>
 
 </mapper>

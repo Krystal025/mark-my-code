@@ -6,7 +6,9 @@ import com.markmycode.mmc.exception.custom.ForbiddenException;
 import com.markmycode.mmc.exception.custom.NotFoundException;
 import com.markmycode.mmc.like.entity.PostLike;
 import com.markmycode.mmc.like.repository.PostLikeRepository;
+import com.markmycode.mmc.post.dto.PostSummaryDto;
 import com.markmycode.mmc.post.entity.Post;
+import com.markmycode.mmc.post.repository.PostMapper;
 import com.markmycode.mmc.post.service.PostService;
 import com.markmycode.mmc.user.entity.User;
 import com.markmycode.mmc.user.service.UserService;
@@ -14,9 +16,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class PostLikeService {
+
+    private final PostMapper postMapper;
 
     private final PostLikeRepository postLikeRepository;
 
@@ -64,6 +70,15 @@ public class PostLikeService {
     }
 
     // 사용자가 좋아요를 누른 게시글 목록 조회 (-> PostService에서 처리)
-    // 사용자가 특정 게시글에 좋아요를 눌렀는지 확인
-    // 특정 게시글에 대한 좋아요를 누른 사용자 목록 조회
+    public List<PostSummaryDto> getLikedPosts(Long userId){
+        User user = userService.getUser(userId);
+        return postMapper.selectLikedPostsByUser(userId);
+    }
+
+//    // 특정 게시글에 대한 좋아요를 누른 사용자 목록 조회
+//    public List<UserSummaryDto> getUsersWhoLikedPost(Long postId){
+//        Post post = postService.getPost(postId);
+//        return postLikeRepository.findUserNicknamesByPost(post);
+//    }
+
 }
