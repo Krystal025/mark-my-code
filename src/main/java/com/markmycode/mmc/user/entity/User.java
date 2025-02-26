@@ -57,4 +57,17 @@ public class User {
         this.userCreatedAt = LocalDateTime.now();
     }
 
+    // 사용자 정보 변경을 위한 도메인 메서드 (Setter 직접 노출 방지)
+    public void updateNickname(String nickname){
+        if (nickname != null){
+            this.userNickname = nickname;
+        }
+    }
+
+    public void updatePwd(String password){
+        if (password != null){
+            this.userPwd = password;
+        }
+    }
+
 }

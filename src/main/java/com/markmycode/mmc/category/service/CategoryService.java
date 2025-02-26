@@ -15,18 +15,7 @@ public class CategoryService {
 
     private final CategoryRepository categoryRepository;
 
-    // 최상위 카테고리 조회
-    public List<Category> getParentCategoryList(){
-        return categoryRepository.findByParentCategoryIsNull();
-    }
-
-    // 특정 카테고리의 하위 카테고리 조회
-    public List<Category> getChildCategoryList(Integer parentCategoryId){
-        Category parentCategory = categoryRepository.findById(parentCategoryId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.CATEGORY_NOT_FOUND));
-        return categoryRepository.findByParentCategory(parentCategory);    }
-
-    // 카테고리 유효성 검증
+    // 유효성 검사
     public void validateCategory(Integer parentCategoryId, Integer childCategoryId) {
         // 상위 카테고리 검증 (상위 카테고리가 제공된 경우)
         if(parentCategoryId != null && !categoryRepository.existsById(parentCategoryId)){
@@ -49,5 +38,22 @@ public class CategoryService {
             }
         }
     }
+
+    // 해당 ID에 대한 엔티티 객체 반환
+    public Category getCategory(Integer categoryId) {
+        return categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.CATEGORY_NOT_FOUND));
+    }
+
+    // 최상위 카테고리 조회
+    public List<Category> getParentCategoryList(){
+        return categoryRepository.findByParentCategoryIsNull();
+    }
+
+    // 특정 카테고리의 하위 카테고리 조회
+    public List<Category> getChildCategoryList(Integer parentCategoryId){
+        Category parentCategory = categoryRepository.findById(parentCategoryId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.CATEGORY_NOT_FOUND));
+        return categoryRepository.findByParentCategory(parentCategory);    }
 
 }

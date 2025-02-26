@@ -19,9 +19,16 @@ public class LanguageService {
         return languageRepository.findAll();
     }
 
+    // 유효성 검사
     public void validateLanguage(Integer languageId) {
         if (languageId != null && !languageRepository.existsById(languageId)) {
             throw new NotFoundException(ErrorCode.LANGUAGE_NOT_FOUND);
         }
+    }
+
+    // 해당 ID에 대한 엔티티 객체 반환
+    public Language getLanguage(Integer languageId) {
+        return languageRepository.findById(languageId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.LANGUAGE_NOT_FOUND));
     }
 }

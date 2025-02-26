@@ -19,10 +19,16 @@ public class PlatformService {
         return platformRepository.findAll();
     }
 
+    // 유효성 검사
     public void validatePlatform(Integer platformId) {
         if (platformId != null && !platformRepository.existsById(platformId)) {
             throw new NotFoundException(ErrorCode.PLATFORM_NOT_FOUND);
         }
     }
 
+    // 해당 ID에 대한 엔티티 객체 반환
+    public Platform getPlatform(Integer platformId) {
+        return platformRepository.findById(platformId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.PLATFORM_NOT_FOUND));
+    }
 }

@@ -41,7 +41,7 @@ public class UserService {
 
     // 사용자 정보 수정
     @Transactional // 트랜잭션이 성공적으로 완료되면 변경사항이 자동으로 커밋되어 DB에 반영됨
-    public void updateUser(Long userId, UserRequestDto userRequestDto){
+    public void updateUser(Long userId, UserRequestDto requestDto){
         // 현재 인증된 사용자 이메일
         String loggedInEmail = SecurityContextHolder.getContext().getAuthentication().getName();
         // 영속성 컨텍스트에 사용자가 존재하는지 확인
@@ -51,17 +51,19 @@ public class UserService {
         // JWT에서 추출한 이메일과 요청 이메일 비교
         validateEmail(loggedInEmail, userEmail);
         // 닉네임 중복 체크
-        if(userRequestDto.getUserNickname() != null &&
-            userRepository.existsByUserNickname(userRequestDto.getUserNickname()) &&
-            !userRequestDto.getUserNickname().equals(user.getUserNickname())){
+        if(requestDto.getUserNickname() != null &&
+            userRepository.existsByUserNickname(requestDto.getUserNickname()) &&
+            !requestDto.getUserNickname().equals(user.getUserNickname())){
             throw new DuplicateException(ErrorCode.NICKNAME_ALREADY_EXIST);
         }
-        // 기존 객체의 상태를 유지하면서 일부 필드만 수정
-        User updatedUser = user.toBuilder() // 기존 객체를 기반으로 빌더 사용 (일부 필드 수정 가능)
-                    .userPwd(userRequestDto.getUserPwd() != null ? userRequestDto.getUserPwd() : user.getUserPwd())
-                    .userNickname(userRequestDto.getUserNickname() != null ? userRequestDto.getUserNickname() : user.getUserNickname())
-                    .build();
-        userRepository.save(updatedUser);
+        // 변경된 필드만 반영
+        if (requestDto.getUserNickname() != null){
+            user.updateNickname(requestDto.getUserNickname());
+        }
+        if (requestDto.getUserPwd() != null){
+            user.updatePwd(passwordEncoder.encode(requestDto.getUserPwd()));
+        }
+        // JPA는 dirty checking을 통해 상태변경을 감지하므로, Repository의 save() 호출이 필요 없음
     }
 
     // 사용자 비활성화(탈퇴)
@@ -104,7 +106,8 @@ public class UserService {
         }
     }
 
-    private User getUser(Long userId) {
+    // 해당 ID에 대한 엔티티 객체 반환
+    public User getUser(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
     }

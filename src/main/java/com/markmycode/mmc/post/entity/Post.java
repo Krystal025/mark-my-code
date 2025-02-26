@@ -24,19 +24,20 @@ public class Post {
     @GeneratedValue(strategy = GenerationType.IDENTITY) // AUTO_INCREMENT
     private Long postId;
 
-    @ManyToOne
+    // FetchType.LAZY : 해당 정보가 필요할 때 로딩하도록 설정
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;  // User 엔티티와의 관계
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "platform_id", nullable = false)
     private Platform platform;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "language_id", nullable = false)
     private Language language;
 
@@ -53,13 +54,13 @@ public class Post {
     private LocalDateTime postUpdatedAt;
 
     @Column(nullable = false)
-    private Integer postLike;
+    private long postLikeCount;
 
     @PrePersist // 처음 생성되는 엔티티가 DB에 저장되기 전에 호출됨
     private void onCreate(){
         this.postCreatedAt = LocalDateTime.now();
         this.postUpdatedAt = LocalDateTime.now();
-        this.postLike = 0;
+        this.postLikeCount = 0;
     }
 
     @PreUpdate // 이미 존재하는 엔티티가 수정되어 DB에 반영되기 전에 호출됨
@@ -91,4 +92,13 @@ public class Post {
             this.postContent = content;
         }
     }
+
+    public void incrementLikeCount(){
+        this.postLikeCount += 1;
+    }
+
+    public void decrementLikeCount(){
+        this.postLikeCount -= 1;
+    }
+
 }

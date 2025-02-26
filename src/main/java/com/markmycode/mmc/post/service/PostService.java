@@ -1,16 +1,13 @@
 package com.markmycode.mmc.post.service;
 
 import com.markmycode.mmc.category.entity.Category;
-import com.markmycode.mmc.category.repository.CategoryRepository;
 import com.markmycode.mmc.category.service.CategoryService;
 import com.markmycode.mmc.exception.ErrorCode;
 import com.markmycode.mmc.exception.custom.ForbiddenException;
 import com.markmycode.mmc.exception.custom.NotFoundException;
 import com.markmycode.mmc.language.entity.Language;
-import com.markmycode.mmc.language.repository.LanguageRepository;
 import com.markmycode.mmc.language.service.LanguageService;
 import com.markmycode.mmc.platform.entity.Platform;
-import com.markmycode.mmc.platform.repository.PlatformRepository;
 import com.markmycode.mmc.platform.service.PlatformService;
 import com.markmycode.mmc.post.dto.PostFilterRequestDto;
 import com.markmycode.mmc.post.dto.PostRequestDto;
@@ -20,7 +17,7 @@ import com.markmycode.mmc.post.entity.Post;
 import com.markmycode.mmc.post.repository.PostMapper;
 import com.markmycode.mmc.post.repository.PostRepository;
 import com.markmycode.mmc.user.entity.User;
-import com.markmycode.mmc.user.repository.UserRepository;
+import com.markmycode.mmc.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,11 +31,8 @@ public class PostService {
     private final PostMapper postMapper;
 
     private final PostRepository postRepository;
-    private final UserRepository userRepository;
-    private final CategoryRepository categoryRepository;
-    private final PlatformRepository platformRepository;
-    private final LanguageRepository languageRepository;
 
+    private final UserService userService;
     private final CategoryService categoryService;
     private final PlatformService platformService;
     private final LanguageService languageService;
@@ -46,10 +40,10 @@ public class PostService {
     public void createPost(Long userId, PostRequestDto requestDto){
         Integer parentCategoryId = postMapper.selectParentIdByCategoryId(requestDto.getChildCategoryId());
         categoryService.validateCategory(parentCategoryId, requestDto.getChildCategoryId());
-        User user = getUser(userId);
-        Category category = getCategory(requestDto.getChildCategoryId());
-        Platform platform = getPlatform(requestDto.getPlatformId());
-        Language language = getLanguage(requestDto.getLanguageId());
+        User user = userService.getUser(userId);
+        Category category = categoryService.getCategory(requestDto.getChildCategoryId());
+        Platform platform = platformService.getPlatform(requestDto.getPlatformId());
+        Language language = languageService.getLanguage(requestDto.getLanguageId());
         Post post = Post.builder()
                 .user(user)
                 .category(category)
@@ -64,30 +58,29 @@ public class PostService {
     @Transactional
     public void updatePost(Long userId, Long postId, PostRequestDto requestDto){
         Post post = getPost(postId);
-        User user = getUser(userId);
+        User user = userService.getUser(userId);
         // 게시글 소유자가 요청한 사용자와 일치하는지 확인
         validatePostOwnership(user, post);
         // 변경된 필드만 반영
         if (requestDto.getChildCategoryId() != null){
-            post.changeCategory(getCategory(requestDto.getChildCategoryId()));
+            post.changeCategory(categoryService.getCategory(requestDto.getChildCategoryId()));
         }
         if (requestDto.getPlatformId() != null){
-            post.changePlatform(getPlatform(requestDto.getPlatformId()));
+            post.changePlatform(platformService.getPlatform(requestDto.getPlatformId()));
         }
         if (requestDto.getLanguageId() != null){
-            post.changeLanguage(getLanguage(requestDto.getLanguageId()));
+            post.changeLanguage(languageService.getLanguage(requestDto.getLanguageId()));
         }
         // 제목 및 내용은 단순 문자열로 외부 엔티티 조회 필요없이 값만 변경 (엔티티가 직접 Null 체크)
         post.updateTitle(requestDto.getPostTitle());
         post.updateContent(requestDto.getPostContent());
         // JPA는 dirty checking을 통해 상태변경을 감지하므로, Repository의 save() 호출이 필요없음
-        // postRepository.save(post);
     }
 
     @Transactional
     public void deletePost(Long userId, Long postId){
         Post post = getPost(postId);
-        User user = getUser(userId);
+        User user = userService.getUser(userId);
         // 게시글 소유자가 요청한 사용자와 일치하는지 확인
         validatePostOwnership(user, post);
         postRepository.delete(post);
@@ -108,13 +101,14 @@ public class PostService {
         return posts.isEmpty() ? Collections.emptyList() : posts;
     }
 
+    // 게시글 작성자 유효성 검사
     private void validatePostOwnership(User user, Post post){
         // JPA 엔티티는 equals()를 재정의하여 식별자 비교로 소유자 확인시 효율성을 높임
         if(!post.getUser().equals(user)){
             throw new ForbiddenException(ErrorCode.USER_NOT_MATCH);
         }
     }
-    // 필터링 조건 유효성 검증
+    // 필터링 조건 유효성 검사
     private void validateFilterCondition(PostFilterRequestDto filterRequestDto){
         Integer parentCategoryId = postMapper.selectParentIdByCategoryId(filterRequestDto.getChildCategoryId());
         categoryService.validateCategory(parentCategoryId, filterRequestDto.getChildCategoryId());
@@ -122,30 +116,10 @@ public class PostService {
         languageService.validateLanguage(filterRequestDto.getLanguageId());
     }
 
-    private Post getPost(Long postId) {
+    // 해당 ID에 대한 엔티티 객체 반환
+    public Post getPost(Long postId) {
         return postRepository.findById(postId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.POST_NOT_FOUND));
     }
-
-    private User getUser(Long userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
-    }
-
-    private Category getCategory(Integer categoryId) {
-        return categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.CATEGORY_NOT_FOUND));
-    }
-
-    private Platform getPlatform(Integer platformId) {
-        return platformRepository.findById(platformId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.PLATFORM_NOT_FOUND));
-    }
-
-    private Language getLanguage(Integer languageId) {
-        return languageRepository.findById(languageId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.LANGUAGE_NOT_FOUND));
-    }
-
 
 }
