@@ -12,6 +12,5 @@ public interface PostMapper {
     Integer selectParentIdByCategoryId(Integer childCategoryId);
     PostResponseDto selectPost(Long postId);
     List<PostSummaryDto> selectPostsByFilters(PostFilterRequestDto postFilterRequestDto);
-    List<PostSummaryDto> selectLikedPostsByUser(Long userId);
 }
 
