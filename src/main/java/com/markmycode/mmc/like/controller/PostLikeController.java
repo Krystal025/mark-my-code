@@ -19,17 +19,10 @@ public class PostLikeController {
     private final PostLikeService postLikeService;
 
     @PostMapping("/{postId}")
-    public ResponseEntity<String> likePost(@AuthenticationPrincipal UserPrincipal userPrincipal,
-                                           @PathVariable("postId") Long postId){
-        postLikeService.likePost(userPrincipal.getUserId(), postId);
-        return ResponseEntity.ok("Post liked");
-    }
-
-    @DeleteMapping("/{postId}")
-    public ResponseEntity<String> unlikePost(@AuthenticationPrincipal UserPrincipal userPrincipal,
-                                             @PathVariable("postId") Long postId){
-        postLikeService.unlikePost(userPrincipal.getUserId(), postId);
-        return ResponseEntity.ok("Post unliked");
+    public ResponseEntity<String> toggleLikePost(@AuthenticationPrincipal UserPrincipal userPrincipal,
+                                                 @PathVariable("postId") Long postId){
+        postLikeService.toggleLikePost(userPrincipal.getUserId(), postId);
+        return ResponseEntity.ok("Post Like toggled");
     }
 
     @GetMapping
