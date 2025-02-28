@@ -22,16 +22,16 @@ public class PostController {
 
     @PostMapping
     public ResponseEntity<String> createPost(@AuthenticationPrincipal UserPrincipal userPrincipal,
-                                             @RequestBody PostRequestDto postDto){
-        postService.createPost(userPrincipal.getUserId(), postDto);
+                                             @RequestBody PostRequestDto requestDto){
+        postService.createPost(userPrincipal.getUserId(), requestDto);
         return ResponseEntity.ok("Post created");
     }
 
     @PatchMapping("/{postId}")
     public ResponseEntity<String> updatePost(@AuthenticationPrincipal UserPrincipal userPrincipal,
                                              @PathVariable("postId") Long postId,
-                                             @RequestBody PostRequestDto postDto){
-        postService.updatePost(userPrincipal.getUserId(), postId, postDto);
+                                             @RequestBody PostRequestDto requestDto){
+        postService.updatePost(userPrincipal.getUserId(), postId, requestDto);
         return ResponseEntity.ok("Post updated");
     }
 
