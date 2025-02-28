@@ -11,6 +11,6 @@ public interface CategoryRepository extends JpaRepository<Category, Integer> {
     List<Category> findByParentCategoryIsNull();
 
     // 특정 부모 카테고리에 속하는 하위 카테고리 조회
-    List<Category> findByParentCategory(Category parentCategory);
+    List<Category> findByParentCategory_CategoryId(Integer parentCategoryId);
 
 }

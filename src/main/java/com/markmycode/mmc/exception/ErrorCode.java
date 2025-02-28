@@ -10,10 +10,11 @@ import org.springframework.http.HttpStatus;
 public enum ErrorCode {
 
     // 400 BAD_REQUEST: 잘못된 요청
-    INVALID_PARENT_COMMENT(HttpStatus.BAD_REQUEST, "부모 댓글은 해당 게시글에 속해야 합니다."),
-    INVALID_CATEGORY(HttpStatus.BAD_REQUEST, "지원하지 않는 카테고리입니다."),
-    INVALID_PLATFORM(HttpStatus.BAD_REQUEST, "지원하지 않는 플랫폼입니다."),
-    INVALID_LANGUAGE(HttpStatus.BAD_REQUEST, "지원하지 않는 언어입니다."),
+    INVALID_COMMENT(HttpStatus.BAD_REQUEST, "해당 게시글에 속한 댓글이 아닙니다."),
+    INVALID_PARENT_CATEGORY(HttpStatus.BAD_REQUEST, "유효하지 않은 상위 카테고리입니다."),
+    INVALID_CATEGORY(HttpStatus.BAD_REQUEST, "유효하지 않은 카테고리입니다."),
+    INVALID_PLATFORM(HttpStatus.BAD_REQUEST, "유효하지 않은 플랫폼입니다."),
+    INVALID_LANGUAGE(HttpStatus.BAD_REQUEST, "유효하지 않은 언어입니다."),
 
     // 401 UNAUTHORIZED: 인증 실패
     TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "토큰이 만료되었습니다."),
@@ -29,6 +30,7 @@ public enum ErrorCode {
     POST_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 게시글을 찾을 수 없습니다."),
     POSTS_NOT_FOUND(HttpStatus.NOT_FOUND, "조건에 맞는 게시글이 존재하지 않습니다."),
     COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 댓글을 찾을 수 없습니다."),
+    PARENT_COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "부모 댓글을 찾을 수 없습니다."),
     LIKE_NOT_FOUND(HttpStatus.NOT_FOUND, "좋아요 기록이 존재하지 않습니다."),
 
     // 409 CONFLICT: 리소스 충돌

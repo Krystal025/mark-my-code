@@ -28,44 +28,43 @@ public class CommentService {
         // 게시글 확인
         Post post = postService.getPost(postId);
         // 댓글 유효성 검사
-        validateComment(requestDto.getParentCommentId(), postId);
+        Comment parentComment = validateAndGetParentComment(requestDto.getParentCommentId(), postId);
         // 댓글 엔티티 생성
         Comment comment = Comment.builder()
                 .user(user)
                 .post(post)
-                .parentComment(getParentComment(requestDto.getParentCommentId()))
+                .parentComment(parentComment)
                 .commentContent(requestDto.getCommentContent())
                 .build();
         // 댓글 저장
         commentRepository.save(comment);
     }
 
-    // 유효성 검사
-    public void validateComment(Long parentCommentId, Long postId){
-        // 부모 댓글 확인 (부모 댓글 ID가 전달된 경우)
-        if(parentCommentId != null){
-            Comment parentComment = commentRepository.findById(parentCommentId)
-                    .orElseThrow(()-> new NotFoundException(ErrorCode.COMMENT_NOT_FOUND));
-            // 부모 댓글이 해당 게시글에 속하는지 확인
-            if(!parentComment.getPost().getPostId().equals(postId)){
-                throw new BadRequestException(ErrorCode.INVALID_PARENT_COMMENT);
-            }
+    public void updateComment(Long userId, Long postId, CommentRequestDto requestDto){
+        User user = userService.getUser(userId);
+        Post post = postService.getPost(postId);
+
+    }
+
+    // 유효성 검사 및 부모 댓글 엔티티 객체 반환
+    public Comment validateAndGetParentComment(Long parentCommentId, Long postId){
+        if (parentCommentId == null){
+            return null; // 불필요한 DB 조회 방지
         }
+        // 부모 댓글 확인 (부모 댓글 ID가 전달된 경우)
+        Comment parentComment = commentRepository.findById(parentCommentId)
+                .orElseThrow(()-> new NotFoundException(ErrorCode.PARENT_COMMENT_NOT_FOUND));
+        // 부모 댓글이 해당 게시글에 속하는지 확인
+        if(!parentComment.getPost().getPostId().equals(postId)){
+            throw new BadRequestException(ErrorCode.INVALID_COMMENT);
+        }
+        return parentComment;
     }
 
     // 해당 ID에 대한 댓글 엔티티 객체 반환
     public Comment getComment(Long commentId) {
         return commentRepository.findById(commentId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.COMMENT_NOT_FOUND));
-    }
-
-    // 해당 ID에 대한 (부모)댓글 엔티티 객체 반환
-    public Comment getParentComment(Long parentCommentId){
-        if (parentCommentId == null){
-            return null;
-        }
-        return commentRepository.findById(parentCommentId)
-                .orElseThrow(()-> new NotFoundException(ErrorCode.COMMENT_NOT_FOUND));
     }
 
 }
