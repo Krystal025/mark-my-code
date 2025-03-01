@@ -74,7 +74,7 @@ public class PostService {
         // 제목 및 내용은 단순 문자열로 외부 엔티티 조회 필요없이 값만 변경 (엔티티가 직접 Null 체크)
         post.updateTitle(requestDto.getPostTitle());
         post.updateContent(requestDto.getPostContent());
-        // JPA는 dirty checking을 통해 상태변경을 감지하므로, Repository의 save() 호출이 필요없음
+        // JPA dirty checking으로 DB에 자동 반영
     }
 
     @Transactional

@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -21,7 +20,7 @@ public class PlatformService {
         List<Platform> platforms = platformRepository.findAll();
         return platforms.stream()
                 .map(c -> new PlatformResponseDto(c.getPlatformName()))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     // 유효성 검사

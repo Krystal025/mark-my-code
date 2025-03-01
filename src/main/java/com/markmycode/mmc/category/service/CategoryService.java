@@ -23,7 +23,7 @@ public class CategoryService {
         List<Category> parentCategories = categoryRepository.findByParentCategoryIsNull();
         return parentCategories.stream()
                 .map(c -> new CategoryResponseDto(c.getCategoryName()))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     // 특정 카테고리의 하위 카테고리 조회

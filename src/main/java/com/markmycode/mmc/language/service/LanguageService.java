@@ -2,6 +2,7 @@ package com.markmycode.mmc.language.service;
 
 import com.markmycode.mmc.exception.ErrorCode;
 import com.markmycode.mmc.exception.custom.BadRequestException;
+import com.markmycode.mmc.language.dto.LanguageResponseDto;
 import com.markmycode.mmc.language.entity.Language;
 import com.markmycode.mmc.language.repository.LanguageRepository;
 import lombok.RequiredArgsConstructor;
@@ -13,10 +14,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public class LanguageService {
 
-    private LanguageRepository languageRepository;
+    private final LanguageRepository languageRepository;
 
-    public List<Language> getLanguageList(){
-        return languageRepository.findAll();
+    public List<LanguageResponseDto> getLanguages(){
+        List<Language> languages = languageRepository.findAll();
+        return languages.stream()
+                .map(c -> new LanguageResponseDto(c.getDisplayName()))
+                .toList();
     }
 
     // 유효성 검사
