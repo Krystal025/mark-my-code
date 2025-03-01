@@ -1,8 +1,14 @@
 package com.markmycode.mmc.platform.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "problem_platform")
 public class Platform {
 

@@ -18,11 +18,34 @@ public class CategoryService {
 
     private final CategoryRepository categoryRepository;
 
+    // 최상위 카테고리 조회
+    public List<CategoryResponseDto> getParentCategories(){
+        List<Category> parentCategories = categoryRepository.findByParentCategoryIsNull();
+        return parentCategories.stream()
+                .map(c -> new CategoryResponseDto(c.getCategoryName()))
+                .collect(Collectors.toList());
+    }
+
+    // 특정 카테고리의 하위 카테고리 조회
+    public List<CategoryResponseDto> getChildCategories(Integer parentCategoryId){
+        // 부모 카테고리 유효성 검사
+        getCategory(parentCategoryId);
+        // 하위 카테고리 조회 후, DTO로 변환
+        List<Category> childCategories = categoryRepository.findByParentCategory_CategoryId(parentCategoryId);
+        // 부모 카테고리가 아닐 경우
+        if (childCategories.isEmpty()){
+            throw new NotFoundException(ErrorCode.INVALID_PARENT_CATEGORY);
+        }
+        return childCategories.stream()
+                .map(c -> new CategoryResponseDto(c.getCategoryName()))
+                .collect(Collectors.toList());
+    }
+
     // 유효성 검사
     public void validateCategory(Integer parentCategoryId, Integer childCategoryId) {
         // 상위 카테고리 검증 (상위 카테고리가 제공된 경우)
         if(parentCategoryId != null && !categoryRepository.existsById(parentCategoryId)){
-                throw new BadRequestException(ErrorCode.INVALID_CATEGORY);
+            throw new BadRequestException(ErrorCode.INVALID_CATEGORY);
         }
         // 하위 카테고리 검증 (하위 카테고리가 제공된 경우)
         if (childCategoryId != null){
@@ -45,29 +68,6 @@ public class CategoryService {
     public Category getCategory(Integer categoryId) {
         return categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new BadRequestException(ErrorCode.INVALID_CATEGORY));
-    }
-
-    // 최상위 카테고리 조회
-    public List<CategoryResponseDto> getParentCategories(){
-        List<Category> parentCategories = categoryRepository.findByParentCategoryIsNull();
-        return parentCategories.stream()
-                .map(c -> new CategoryResponseDto(c.getCategoryName()))
-                .collect(Collectors.toList());
-    }
-
-    // 특정 카테고리의 하위 카테고리 조회
-    public List<CategoryResponseDto> getChildCategories(Integer parentCategoryId){
-        // 부모 카테고리 유효성 검사
-        getCategory(parentCategoryId);
-        // 하위 카테고리 조회 후, DTO로 변환
-        List<Category> childCategories = categoryRepository.findByParentCategory_CategoryId(parentCategoryId);
-        // 부모 카테고리가 아닐 경우
-        if (childCategories.isEmpty()){
-            throw new NotFoundException(ErrorCode.INVALID_PARENT_CATEGORY);
-        }
-        return childCategories.stream()
-                .map(c -> new CategoryResponseDto(c.getCategoryName()))
-                .collect(Collectors.toList());
     }
 
 }

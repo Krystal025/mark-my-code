@@ -2,12 +2,14 @@ package com.markmycode.mmc.platform.service;
 
 import com.markmycode.mmc.exception.ErrorCode;
 import com.markmycode.mmc.exception.custom.BadRequestException;
+import com.markmycode.mmc.platform.dto.PlatformResponseDto;
 import com.markmycode.mmc.platform.entity.Platform;
 import com.markmycode.mmc.platform.repository.PlatformRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -15,8 +17,11 @@ public class PlatformService {
 
     private final PlatformRepository platformRepository;
 
-    public List<Platform> getPlatformList(){
-        return platformRepository.findAll();
+    public List<PlatformResponseDto> getPlatforms(){
+        List<Platform> platforms = platformRepository.findAll();
+        return platforms.stream()
+                .map(c -> new PlatformResponseDto(c.getPlatformName()))
+                .collect(Collectors.toList());
     }
 
     // 유효성 검사

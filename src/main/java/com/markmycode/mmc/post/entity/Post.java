@@ -14,9 +14,9 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder(toBuilder = true)
+@NoArgsConstructor // 기본 생성자 (JPA에서 객체 생성시 필요)
+@AllArgsConstructor // 빌더에서 사용하는 필드를 받는 생성자가 필요, final 또는 @NotNull이 아닌 필드를 포함하기 위해 @RequiredArgsConstructor 대신 사용
+@Builder(toBuilder = true) // 빌더 패턴으로 객체 생성, toBuilder=true로 빌더 객체에서 기존 객체를 수정 가능
 // @DynamicUpdate  // 변경된 필드만 업데이트
 public class Post {
 
