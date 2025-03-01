@@ -82,15 +82,11 @@ public class Post {
     }
 
     public void updateTitle(String title) {
-        if (title != null) {
-            this.postTitle = title;
-        }
+        this.postTitle = title;
     }
 
     public void updateContent(String content) {
-        if (content != null) {
-            this.postContent = content;
-        }
+        this.postContent = content;
     }
 
     public void incrementLikeCount(){

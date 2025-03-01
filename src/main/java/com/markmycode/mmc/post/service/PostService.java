@@ -57,9 +57,9 @@ public class PostService {
 
     @Transactional
     public void updatePost(Long userId, Long postId, PostRequestDto requestDto){
-        Post post = getPost(postId);
         User user = userService.getUser(userId);
-        // 게시글 소유자가 요청한 사용자와 일치하는지 확인
+        Post post = getPost(postId);
+        // 게시글 작성자와 요청한 사용자 간 일치 여부 확인
         validatePostOwnership(user, post);
         // 변경된 필드만 반영
         if (requestDto.getChildCategoryId() != null){
@@ -71,9 +71,12 @@ public class PostService {
         if (requestDto.getLanguageId() != null){
             post.changeLanguage(languageService.getLanguage(requestDto.getLanguageId()));
         }
-        // 제목 및 내용은 단순 문자열로 외부 엔티티 조회 필요없이 값만 변경 (엔티티가 직접 Null 체크)
-        post.updateTitle(requestDto.getPostTitle());
-        post.updateContent(requestDto.getPostContent());
+        if(requestDto.getPostTitle() != null){
+            post.updateTitle(requestDto.getPostTitle());
+        }
+        if(requestDto.getPostContent() != null){
+            post.updateContent(requestDto.getPostContent());
+        }
         // JPA dirty checking으로 DB에 자동 반영
     }
 
@@ -108,6 +111,7 @@ public class PostService {
             throw new ForbiddenException(ErrorCode.USER_NOT_MATCH);
         }
     }
+
     // 필터링 조건 유효성 검사
     private void validateFilterCondition(PostFilterRequestDto filterRequestDto){
         Integer parentCategoryId = postMapper.selectParentIdByCategoryId(filterRequestDto.getChildCategoryId());
