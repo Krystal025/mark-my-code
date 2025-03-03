@@ -32,6 +32,7 @@ public class User {
     private String userNickname;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "user_status")
     private Status userStatus;
 
     @Column(updatable = false)

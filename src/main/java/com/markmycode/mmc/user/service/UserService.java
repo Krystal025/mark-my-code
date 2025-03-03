@@ -68,19 +68,23 @@ public class UserService {
     // 사용자 비활성화(탈퇴)
     @Transactional
     public void deactivateUser(Long userId){
+        // 사용자 조회
+        User user = getUser(userId);
+        // 관리자 여부 확인
         boolean isAdmin = SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
                 .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
+        // 관리자일 경우 비활성화 처리 가능
+        if (isAdmin){
+            user.deactivate();
+            return;
+        }
         // 현재 인증된 사용자 이메일
         String loggedInEmail = SecurityContextHolder.getContext().getAuthentication().getName();
-        // 영속성 컨텍스트에 사용자가 존재하는지 확인
-        User user = getUser(userId);
         // 요청한 사용자 이메일
         String userEmail = user.getUserEmail().replaceAll("\\s+", "").trim();
+        // 이메일 유효성 검사
         validateEmail(loggedInEmail, userEmail);
-        if(!isAdmin){
-            throw new ForbiddenException(ErrorCode.ACCESS_DENIED);
-        }
-        // JPA dirty checking으로 DB에 자동 반영
+        // 본인 계정 비활성화(탈퇴)
         user.deactivate();
     }
 

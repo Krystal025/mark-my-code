@@ -31,6 +31,11 @@ public class CommentController {
         return ResponseEntity.ok("Comment updated");
     }
 
-
+    @PatchMapping("/{commentId}/deactivate")
+    public ResponseEntity<String> deactivateComment(@AuthenticationPrincipal UserPrincipal userPrincipal,
+                                                    @PathVariable("commentId") Long commentId){
+        commentService.deactivateComment(userPrincipal.getUserId(), commentId);
+        return ResponseEntity.ok("Comment deactivated");
+    }
 
 }

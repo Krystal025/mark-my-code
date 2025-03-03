@@ -12,6 +12,7 @@ import com.markmycode.mmc.post.service.PostService;
 import com.markmycode.mmc.user.entity.User;
 import com.markmycode.mmc.user.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,6 +53,22 @@ public class CommentService {
         if (requestDto.getCommentContent() != null){
             comment.updateContent(requestDto.getCommentContent());
         }
+    }
+
+    @Transactional
+    public void deactivateComment(Long userId, Long commentId){
+        User user = userService.getUser(userId);
+        Comment comment = getComment(commentId);
+        // 관리자일 경우 비활성화 처리 가능
+        boolean isAdmin = SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
+                .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
+        if (isAdmin){
+            comment.deactivate();
+            return;
+        }
+        validateCommentOwnership(user, comment);
+        // 본인 댓글 비활성화(삭제)
+        comment.deactivate();
     }
 
     // 유효성 검사 및 부모 댓글 엔티티 객체 반환

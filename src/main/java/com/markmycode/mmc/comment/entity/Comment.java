@@ -1,5 +1,6 @@
 package com.markmycode.mmc.comment.entity;
 
+import com.markmycode.mmc.comment.enums.Status;
 import com.markmycode.mmc.post.entity.Post;
 import com.markmycode.mmc.user.entity.User;
 import jakarta.persistence.*;
@@ -37,6 +38,10 @@ public class Comment {
     @Column(columnDefinition = "TEXT", nullable = false)
     private String commentContent;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "comment_status")
+    private Status commentStatus;
+
     @Column(updatable = false)
     private LocalDateTime commentCreatedAt;
 
@@ -45,6 +50,7 @@ public class Comment {
 
     @PrePersist
     private void onCreate(){
+        this.commentStatus = Status.ACTIVE;
         this.commentCreatedAt = LocalDateTime.now();
         this.commentUpdatedAt = LocalDateTime.now();
     }
@@ -56,6 +62,10 @@ public class Comment {
 
     public void updateContent(String content){
         this.commentContent = content;
+    }
+
+    public void deactivate(){
+        this.commentStatus = Status.INACTIVE;
     }
 
 }
