@@ -21,16 +21,17 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         // 인증이 필요 없는 경로는 바로 필터 통과
-        String requestURI = request.getRequestURI();
-        if (requestURI.startsWith("/home")
-                || requestURI.startsWith("/login")
-                || requestURI.startsWith("/auth/**")
-                || requestURI.startsWith("/oauth2/authorization")
-                || requestURI.startsWith("/users/signup")
-                || requestURI.startsWith("/posts/**")) {
-            filterChain.doFilter(request, response);
-            return;
-        }
+//        String requestURI = request.getRequestURI();
+//        if (requestURI.startsWith("/home")
+//                || requestURI.startsWith("/login")
+//                || requestURI.startsWith("/auth/**")
+//                || requestURI.startsWith("/oauth2/authorization")
+//                || requestURI.startsWith("/users/signup")
+//                || requestURI.startsWith("/posts/**")
+//                || requestURI.startsWith("/comments/**")&&(request.getMethod().equals("GET"))) {
+//            filterChain.doFilter(request, response);
+//            return;
+//        }
         // 헤더에서 Authorization에 있는 토큰 추출
         String accessToken = request.getHeader("Authorization");
         // 토큰이 없거나 "Bearer "로 시작하지 않으면 필터 체인 진행

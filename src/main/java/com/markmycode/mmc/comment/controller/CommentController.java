@@ -2,11 +2,14 @@ package com.markmycode.mmc.comment.controller;
 
 import com.markmycode.mmc.auth.model.UserPrincipal;
 import com.markmycode.mmc.comment.dto.CommentRequestDto;
+import com.markmycode.mmc.comment.dto.CommentResponseDto;
 import com.markmycode.mmc.comment.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/comments")
@@ -38,4 +41,8 @@ public class CommentController {
         return ResponseEntity.ok("Comment deactivated");
     }
 
+    @GetMapping("/{postId}")
+    public List<CommentResponseDto> getComments(@PathVariable("postId")Long postId){
+        return commentService.getComments(postId);
+    }
 }

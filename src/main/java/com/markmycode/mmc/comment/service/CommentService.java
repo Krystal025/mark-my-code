@@ -1,7 +1,9 @@
 package com.markmycode.mmc.comment.service;
 
 import com.markmycode.mmc.comment.dto.CommentRequestDto;
+import com.markmycode.mmc.comment.dto.CommentResponseDto;
 import com.markmycode.mmc.comment.entity.Comment;
+import com.markmycode.mmc.comment.repository.CommentMapper;
 import com.markmycode.mmc.comment.repository.CommentRepository;
 import com.markmycode.mmc.exception.ErrorCode;
 import com.markmycode.mmc.exception.custom.BadRequestException;
@@ -16,9 +18,13 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class CommentService {
+
+    private final CommentMapper commentMapper;
 
     private final CommentRepository commentRepository;
 
@@ -69,6 +75,10 @@ public class CommentService {
         validateCommentOwnership(user, comment);
         // 본인 댓글 비활성화(삭제)
         comment.deactivate();
+    }
+
+    public List<CommentResponseDto> getComments(Long postId){
+        return commentMapper.selectCommentsByPostId(postId);
     }
 
     // 유효성 검사 및 부모 댓글 엔티티 객체 반환

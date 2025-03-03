@@ -1,6 +1,8 @@
 package com.markmycode.mmc.post.controller;
 
 import com.markmycode.mmc.auth.model.UserPrincipal;
+import com.markmycode.mmc.comment.dto.CommentResponseDto;
+import com.markmycode.mmc.comment.service.CommentService;
 import com.markmycode.mmc.post.dto.PostFilterRequestDto;
 import com.markmycode.mmc.post.dto.PostRequestDto;
 import com.markmycode.mmc.post.dto.PostResponseDto;
@@ -19,6 +21,7 @@ import java.util.List;
 public class PostController {
 
     private final PostService postService;
+    private final CommentService commentService;
 
     @PostMapping
     public ResponseEntity<String> createPost(@AuthenticationPrincipal UserPrincipal userPrincipal,

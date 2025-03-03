@@ -6,8 +6,7 @@ import lombok.Getter;
 
 import java.time.LocalDateTime;
 
-// 클라이언트와 데이터를 주고받기 위해 사용되는 데이터 전송 객체
-@Getter
+@Getter // 클라이언트에서 필요
 @Builder
 @AllArgsConstructor
 public class PostResponseDto {
