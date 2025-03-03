@@ -9,7 +9,9 @@ import com.markmycode.mmc.exception.ErrorCode;
 import com.markmycode.mmc.exception.custom.BadRequestException;
 import com.markmycode.mmc.exception.custom.ForbiddenException;
 import com.markmycode.mmc.exception.custom.NotFoundException;
+import com.markmycode.mmc.post.dto.PostResponseDto;
 import com.markmycode.mmc.post.entity.Post;
+import com.markmycode.mmc.post.repository.PostMapper;
 import com.markmycode.mmc.post.service.PostService;
 import com.markmycode.mmc.user.entity.User;
 import com.markmycode.mmc.user.service.UserService;
@@ -24,6 +26,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CommentService {
 
+    private final PostMapper postMapper;
     private final CommentMapper commentMapper;
 
     private final CommentRepository commentRepository;
@@ -78,6 +81,10 @@ public class CommentService {
     }
 
     public List<CommentResponseDto> getComments(Long postId){
+        PostResponseDto postResponseDto = postMapper.selectPost(postId);
+        if (postResponseDto == null) {
+            throw new NotFoundException(ErrorCode.POST_NOT_FOUND);
+        }
         return commentMapper.selectCommentsByPostId(postId);
     }
 
