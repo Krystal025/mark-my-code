@@ -7,6 +7,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public class PlatformResponseDto {
 
+    private Integer platformId;
     private String platformName;
 
 }

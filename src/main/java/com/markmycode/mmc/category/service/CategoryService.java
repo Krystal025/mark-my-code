@@ -22,12 +22,16 @@ public class CategoryService {
     public List<CategoryResponseDto> getParentCategories(){
         List<Category> parentCategories = categoryRepository.findByParentCategoryIsNull();
         return parentCategories.stream()
-                .map(c -> new CategoryResponseDto(c.getCategoryName()))
+                .map(c -> new CategoryResponseDto(c.getCategoryId(), c.getCategoryName()))
                 .toList();
     }
 
     // 특정 카테고리의 하위 카테고리 조회
     public List<CategoryResponseDto> getChildCategories(Integer parentCategoryId){
+        // 부모 카테고리 ID가 null일 경우 기본값을 설정 (예: -1)
+        if (parentCategoryId == null) {
+            parentCategoryId = -1;  // 기본값 설정
+        }
         // 부모 카테고리 유효성 검사
         getCategory(parentCategoryId);
         // 하위 카테고리 조회 후, DTO로 변환
@@ -37,7 +41,7 @@ public class CategoryService {
             throw new NotFoundException(ErrorCode.INVALID_PARENT_CATEGORY);
         }
         return childCategories.stream()
-                .map(c -> new CategoryResponseDto(c.getCategoryName()))
+                .map(c -> new CategoryResponseDto(c.getCategoryId(), c.getCategoryName()))
                 .collect(Collectors.toList());
     }
 

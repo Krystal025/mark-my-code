@@ -19,7 +19,7 @@ public class PlatformService {
     public List<PlatformResponseDto> getPlatforms(){
         List<Platform> platforms = platformRepository.findAll();
         return platforms.stream()
-                .map(c -> new PlatformResponseDto(c.getPlatformName()))
+                .map(c -> new PlatformResponseDto(c.getPlatformId(), c.getPlatformName()))
                 .toList();
     }
 

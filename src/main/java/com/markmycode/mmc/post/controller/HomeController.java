@@ -11,8 +11,7 @@ public class HomeController {
 
     @GetMapping("/login_success")
     public String homePage(Authentication authentication, Model model) {
-        if (authentication != null && authentication.getPrincipal() instanceof OAuth2User) {
-            OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
+        if (authentication != null && authentication.getPrincipal() instanceof OAuth2User oAuth2User) {
             String userEmail = oAuth2User.getName();
             model.addAttribute("userEmail", userEmail);
         }

@@ -8,6 +8,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public class LanguageResponseDto {
 
+    private Integer languageId;
     private String languageName; // display_name
 
 }

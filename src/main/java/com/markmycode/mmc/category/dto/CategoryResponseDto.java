@@ -7,6 +7,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public class CategoryResponseDto {
 
+    private Integer categoryId;
     private String categoryName;
 
 }
