@@ -42,7 +42,6 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         }
         // "Bearer " 부분을 잘라내고 실제 토큰 부분만 추출
         accessToken = accessToken.substring(7);
-        System.out.println("Extracted Access Token: " + accessToken);
         // 소셜 로그인 사용자는 이 필터가 적용되지 않도록 함
         String authType = jwtTokenProvider.getAuthType(accessToken);
         System.out.println("Auth Type: " + authType);
@@ -60,7 +59,6 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         }
         try {
             Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
-            System.out.println("JWT Authentication success: " + authentication);
             // 인증 정보를 SecurityContext라는 메모리에 저장하여 인증상태를 유지함
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }catch (Exception e){

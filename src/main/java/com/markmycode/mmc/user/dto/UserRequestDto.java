@@ -8,11 +8,8 @@ import lombok.NoArgsConstructor;
 public class UserRequestDto {
 
     private String userName;
-
     private String userEmail;
-
     private String userPwd;
-
     private String userNickname;
 
 }

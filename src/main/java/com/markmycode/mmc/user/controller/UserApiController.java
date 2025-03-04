@@ -1,11 +1,13 @@
 package com.markmycode.mmc.user.controller;
 
+import com.markmycode.mmc.auth.model.UserPrincipal;
 import com.markmycode.mmc.user.dto.UserRequestDto;
 import com.markmycode.mmc.user.dto.UserResponseDto;
 import com.markmycode.mmc.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -22,9 +24,9 @@ public class UserApiController {
     }
 
     @PatchMapping("/{userId}")
-    public ResponseEntity<String> updateUser(@PathVariable("userId") Long userId,
-                                             @RequestBody UserRequestDto userRequestDto){
-        userService.updateUser(userId, userRequestDto);
+    public ResponseEntity<String> updateUser(@AuthenticationPrincipal UserPrincipal userPrincipal,
+                                             @RequestBody UserRequestDto requestDto){
+        userService.updateUser(userPrincipal.getUserId(), requestDto);
         return ResponseEntity.ok("User Information Updated");
     }
 

@@ -8,6 +8,7 @@ import com.markmycode.mmc.user.dto.UserRequestDto;
 import com.markmycode.mmc.user.dto.UserResponseDto;
 import com.markmycode.mmc.user.entity.User;
 import com.markmycode.mmc.user.repository.UserRepository;
+import com.markmycode.mmc.util.EmailUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -21,18 +22,19 @@ public class UserService {
     private final BCryptPasswordEncoder passwordEncoder;
 
     // 사용자 회원가입
-    public void createUser(UserRequestDto userRequestDto){
-        if(userRepository.existsByUserEmail(userRequestDto.getUserEmail())){
+    public void createUser(UserRequestDto requestDto){
+        String userEmail = EmailUtils.normalizeEmail(requestDto.getUserEmail());
+        if(userRepository.existsByUserEmail(userEmail)){
             throw new DuplicateException(ErrorCode.EMAIL_ALREADY_EXISTS);
         }
-        if(userRepository.existsByUserNickname(userRequestDto.getUserNickname())){
+        if(userRepository.existsByUserNickname(requestDto.getUserNickname())){
             throw new DuplicateException(ErrorCode.NICKNAME_ALREADY_EXIST);
         }
         User user = User.builder()
-                    .userName(userRequestDto.getUserName())
-                    .userEmail(userRequestDto.getUserEmail())
-                    .userPwd(passwordEncoder.encode(userRequestDto.getUserPwd()))
-                    .userNickname(userRequestDto.getUserNickname())
+                    .userName(requestDto.getUserName())
+                    .userEmail(userEmail)
+                    .userPwd(passwordEncoder.encode(requestDto.getUserPwd()))
+                    .userNickname(requestDto.getUserNickname())
                     .build();
         userRepository.save(user);
 
@@ -45,24 +47,23 @@ public class UserService {
         String loggedInEmail = SecurityContextHolder.getContext().getAuthentication().getName();
         // 영속성 컨텍스트에 사용자가 존재하는지 확인
         User user = getUser(userId);
-        // 요청한 사용자 이메일
-        String userEmail = user.getUserEmail().replaceAll("\\s+", "").trim();
+        // DB의 사용자 이메일과 JWT의 이메일 비교 (이메일 정규화 적용)
+        String dbEmail = EmailUtils.normalizeEmail(user.getUserEmail());
         // JWT에서 추출한 이메일과 요청 이메일 비교
-        validateEmail(loggedInEmail, userEmail);
+        validateEmail(loggedInEmail, dbEmail);
         // 닉네임 중복 체크
-        if(requestDto.getUserNickname() != null && // 새로운 닉네임 요청이 들어왔는지
-                !requestDto.getUserNickname().equals(user.getUserNickname()) && // 사용자의 기존 닉네임과 다른지
-                userRepository.existsByUserNickname(requestDto.getUserNickname())){ // 다른 사용자가 사용 중인 닉네임이 아닌지
+        if(requestDto.getUserNickname() != null  // 새로운 닉네임 요청이 들어왔는지
+                && !requestDto.getUserNickname().equals(user.getUserNickname()) // 사용자의 기존 닉네임과 다른지
+                && userRepository.existsByUserNickname(requestDto.getUserNickname())){ // 다른 사용자가 사용 중인 닉네임이 아닌지
             throw new DuplicateException(ErrorCode.NICKNAME_ALREADY_EXIST);
         }
         // 변경된 필드만 반영
-        if (requestDto.getUserNickname() != null){
-            user.updateNickname(requestDto.getUserNickname());
-        }
         if (requestDto.getUserPwd() != null){
             user.updatePwd(passwordEncoder.encode(requestDto.getUserPwd()));
         }
-        // JPA dirty checking으로 DB에 자동 반영
+        if (requestDto.getUserNickname() != null){
+            user.updateNickname(requestDto.getUserNickname());
+        }
     }
 
     // 사용자 비활성화(탈퇴)
@@ -81,9 +82,9 @@ public class UserService {
         // 현재 인증된 사용자 이메일
         String loggedInEmail = SecurityContextHolder.getContext().getAuthentication().getName();
         // 요청한 사용자 이메일
-        String userEmail = user.getUserEmail().replaceAll("\\s+", "").trim();
+        String dbEmail = EmailUtils.normalizeEmail(user.getUserEmail());
         // 이메일 유효성 검사
-        validateEmail(loggedInEmail, userEmail);
+        validateEmail(loggedInEmail, dbEmail);
         // 본인 계정 비활성화(탈퇴)
         user.deactivate();
     }
@@ -96,13 +97,14 @@ public class UserService {
                 .userName(user.getUserName())
                 .userEmail(user.getUserEmail())
                 .userNickname(user.getUserEmail())
+                .userStatus(user.getUserStatus())
                 .userCreatedAt(user.getUserCreatedAt())
                 .build();
     }
 
     // 이메일 비교 메소드 (추후 AOP로 분리)
-    private void validateEmail(String loggedInEmail, String requestedEmail) {
-        if (!loggedInEmail.equals(requestedEmail)) {
+    private void validateEmail(String loggedInEmail, String dbEmail) {
+        if (!EmailUtils.normalizeEmail(loggedInEmail).equals(dbEmail)) {
             throw new ForbiddenException(ErrorCode.USER_NOT_MATCH);
         }
     }

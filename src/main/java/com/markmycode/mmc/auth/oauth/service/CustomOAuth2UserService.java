@@ -3,11 +3,12 @@ package com.markmycode.mmc.auth.oauth.service;
 import com.markmycode.mmc.auth.oauth.dto.CustomOAuth2User;
 import com.markmycode.mmc.auth.oauth.dto.OAuth2Response;
 import com.markmycode.mmc.auth.oauth.dto.OAuth2UserInfo;
-import com.markmycode.mmc.util.OAuth2ResponseFactory;
 import com.markmycode.mmc.user.entity.User;
 import com.markmycode.mmc.user.enums.Provider;
 import com.markmycode.mmc.user.enums.Role;
 import com.markmycode.mmc.user.repository.UserRepository;
+import com.markmycode.mmc.util.EmailUtils;
+import com.markmycode.mmc.util.OAuth2ResponseFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -28,16 +29,12 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         // OAuth2에서 사용자 정보를 가져옴
         OAuth2User oAuth2User = super.loadUser(userRequest);
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
-
         // Factory 패턴을 사용해 OAuth2Response 객체 생성
         OAuth2Response oAuth2Response = OAuth2ResponseFactory.getOAuth2Response(registrationId, oAuth2User.getAttributes());
-
         // 소셜 제공자 이름과 사용자 식별 ID를 조합하여 고유 ID 생성
         String socialId = oAuth2Response.getSocialProvider() + " " + oAuth2Response.getSocialProviderId();
-
         // DB에서 사용자 조회
         User existingUser = userRepository.findBySocialId(socialId);
-
         if(existingUser == null){
             // 신규 사용자 등록
             User user = createUser(oAuth2Response, socialId);
@@ -52,7 +49,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     private User createUser(OAuth2Response oAuth2Response, String socialId){
         User user = User.builder()
                 .userName(oAuth2Response.getUserName())
-                .userEmail(oAuth2Response.getUserEmail())
+                .userEmail(EmailUtils.normalizeEmail(oAuth2Response.getUserEmail()))
                 .userNickname(oAuth2Response.getUserEmail()) // 임시 닉네임으로 이메일 사용 (추후 변경)
                 .userRole(Role.ROLE_USER)
                 .socialId(socialId)

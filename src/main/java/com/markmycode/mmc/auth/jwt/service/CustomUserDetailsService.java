@@ -1,6 +1,8 @@
 package com.markmycode.mmc.auth.jwt.service;
 
 import com.markmycode.mmc.auth.jwt.dto.CustomUserDetails;
+import com.markmycode.mmc.exception.ErrorCode;
+import com.markmycode.mmc.exception.custom.NotFoundException;
 import com.markmycode.mmc.user.entity.User;
 import com.markmycode.mmc.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +21,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String userEmail) throws UsernameNotFoundException {
         User user = userRepository.findByUserEmail(userEmail);
         if(user == null){
-            throw new UsernameNotFoundException("User not found");
+            throw new NotFoundException(ErrorCode.USER_NOT_FOUND);
         }
         return CustomUserDetails.fromUser(user);
     }
