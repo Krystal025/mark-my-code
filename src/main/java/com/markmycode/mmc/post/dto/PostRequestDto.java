@@ -1,9 +1,9 @@
 package com.markmycode.mmc.post.dto;
 
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Getter
+@Data
 @NoArgsConstructor
 public class PostRequestDto {
 

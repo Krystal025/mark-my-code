@@ -77,13 +77,14 @@ public class SecurityConfig {
                         .successHandler(OAuth2SuccessHandler));
         http
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/admin/**", "/auth/**", "/oauth2/callback", "/users/signup", "/login_success", "/home", "/posts/**").permitAll()
+                        .requestMatchers("/admin/**", "/auth/**", "/oauth2/callback", "/users/signup", "/login_success", "/home", "/posts/**", "/login").permitAll()
                         .requestMatchers(HttpMethod.GET, "/comments/**").permitAll()
                         .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
                         .anyRequest().authenticated());
+                System.out.println("✅ SecurityConfig 적용됨: /login 은 인증 없이 접근 가능");
         http
                 // JWT 인증 필터를 UsernamePasswordAuthenticationFilter 이전에 실행하여 모든 요청의 JWT 유효성을 검사함
-                .addFilterBefore(new JwtAuthorizationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtAuthorizationFilter(jwtTokenProvider, tokenService), UsernamePasswordAuthenticationFilter.class)
                 // OAuth2 로그인 인증 필터를 UsernamePasswordAuthenticationFilter 이전에 실행하여 소셜 로그인 처리를 수행함
                 .addFilterBefore(new OAuth2AuthorizationFilter(jwtTokenProvider, tokenService), UsernamePasswordAuthenticationFilter.class)
                 // 세션을 사용하지 않고 Stateless 방식으로 설정하여 서버가 세션을 생성하거나 저장하지 않도록 함

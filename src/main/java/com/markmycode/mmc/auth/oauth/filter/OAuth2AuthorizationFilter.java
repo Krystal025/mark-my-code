@@ -1,5 +1,6 @@
 package com.markmycode.mmc.auth.oauth.filter;
 
+import com.markmycode.mmc.auth.jwt.dto.TokenResponseDto;
 import com.markmycode.mmc.auth.jwt.provider.JwtTokenProvider;
 import com.markmycode.mmc.auth.oauth.service.TokenService;
 import com.markmycode.mmc.util.CookieUtils;
@@ -25,45 +26,43 @@ public class OAuth2AuthorizationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        // Authorization 헤더에서 토큰 추출
-        String accessToken = request.getHeader("Authorization");
+        // 쿠키에서 Access Token 추출
+        String accessToken = CookieUtils.getCookie(request, "Access_Token");
 
-        // 토큰 존재 여부 및 형식 확인
-        if (accessToken == null || !accessToken.startsWith("Bearer ")) {
+        // 토큰 존재 여부 확인
+        if (accessToken == null || accessToken.isEmpty()) {
             System.out.println("Access_Token is Null");
-            filterChain.doFilter(request, response);
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Access Token is missing");
             return;
         }
 
-        // "Bearer " 접두사 제거
-        accessToken = accessToken.substring(7);
-
-        // 토큰 만료 여부 확인 및 만료된 경우 Refresh Token으로 재발급 시도
+        // 토큰 만료 여부 확인 및 리프레시
         if (jwtTokenProvider.isExpired(accessToken)) {
             System.out.println("Access_Token is Expired");
-
             String refreshToken = CookieUtils.getCookie(request, "Refresh_Token");
             if (refreshToken != null && !jwtTokenProvider.isExpired(refreshToken)) {
-                String newAccessToken = tokenService.refreshAccessToken(refreshToken).getAccessToken();
-                response.setHeader("Authorization", "Bearer " + newAccessToken); // 새 Access Token 설정
-                accessToken = newAccessToken; // 새로운 Access Token으로 업데이트
+                TokenResponseDto newToken = tokenService.refreshAccessToken(refreshToken);
+                // 쿠키에 새 토큰 설정
+                CookieUtils.addCookie(response, "Access_Token", newToken.getAccessToken());
+                CookieUtils.addCookie(response, "Refresh_Token", newToken.getRefreshToken());
+                accessToken = newToken.getAccessToken();
             } else {
-                System.out.println("Refresh_Token is Expired or Invalid");
-                filterChain.doFilter(request, response);  // 토큰 만료시 그대로 넘어감
+                // 리프레시 토큰도 만료된 경우
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token expired");
                 return;
             }
         }
-        // 유효한 토큰일 경우 Authentication 생성
+
+        // 인증 정보 설정
         try {
             Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
-            // 생성된 인증 정보를 SecurityContext에 저장
             SecurityContextHolder.getContext().setAuthentication(authentication);
         } catch (Exception e) {
-            filterChain.doFilter(request, response);  // 인증 실패시 계속 필터 체인으로 넘어감
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid token");
             return;
         }
 
-        // 7. 다음 필터로 요청 전달
+        // 필터 체인 진행
         filterChain.doFilter(request, response);
     }
 }

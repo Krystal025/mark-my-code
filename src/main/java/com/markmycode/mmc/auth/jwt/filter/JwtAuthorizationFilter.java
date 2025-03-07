@@ -1,6 +1,9 @@
 package com.markmycode.mmc.auth.jwt.filter;
 
+import com.markmycode.mmc.auth.jwt.dto.TokenResponseDto;
 import com.markmycode.mmc.auth.jwt.provider.JwtTokenProvider;
+import com.markmycode.mmc.auth.oauth.service.TokenService;
+import com.markmycode.mmc.util.CookieUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -11,59 +14,88 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Set;
 
 // 일반 로그인 사용자 JWT 인가
 @RequiredArgsConstructor
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
+    private final TokenService tokenService;
+
+    private static final Set<String> EXCLUDED_URLS = Set.of(
+            "/home",
+            "/login",
+            "/auth",
+            "/oauth2/authorization",
+            "/users/signup",
+            "/posts",
+            "/comments"
+    );
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         // 인증이 필요 없는 경로는 바로 필터 통과
-//        String requestURI = request.getRequestURI();
-//        if (requestURI.startsWith("/home")
-//                || requestURI.startsWith("/login")
-//                || requestURI.startsWith("/auth/**")
-//                || requestURI.startsWith("/oauth2/authorization")
-//                || requestURI.startsWith("/users/signup")
-//                || requestURI.startsWith("/posts/**")
-//                || requestURI.startsWith("/comments/**")&&(request.getMethod().equals("GET"))) {
-//            filterChain.doFilter(request, response);
-//            return;
-//        }
-        // 헤더에서 Authorization에 있는 토큰 추출
-        String accessToken = request.getHeader("Authorization");
-        // 토큰이 없거나 "Bearer "로 시작하지 않으면 필터 체인 진행
-        if(accessToken == null || !accessToken.startsWith("Bearer ")){
-            System.out.println("Access Token is Null");
+        String requestURI = request.getRequestURI();
+        // 🔥 로그인 요청은 필터링 제외
+        if (requestURI.startsWith("/home")
+                || requestURI.startsWith("/login")
+                || requestURI.startsWith("/auth/")
+                || requestURI.startsWith("/oauth2/authorization")
+                || requestURI.startsWith("/users/signup")
+                || (requestURI.startsWith("/posts/") || requestURI.startsWith("/comments/")) && request.getMethod().equals("GET")) {
             filterChain.doFilter(request, response);
             return;
         }
-        // "Bearer " 부분을 잘라내고 실제 토큰 부분만 추출
-        accessToken = accessToken.substring(7);
-        // 소셜 로그인 사용자는 이 필터가 적용되지 않도록 함
-        String authType = jwtTokenProvider.getAuthType(accessToken);
-        System.out.println("Auth Type: " + authType);
-        if("social".equals(authType)){
+
+        // ✅ 여기까지 왔다면, JWT 검증 진행
+        System.out.println("🔍 JWT 검사 진행 중: " + requestURI);
+
+        // 쿠키에서 Access Token 추출
+        String accessToken = CookieUtils.getCookie(request, "Access_Token");
+
+        // 토큰 존재 여부 확인
+        if (accessToken == null) {
+            System.out.println("Access Token is Null");
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Access Token is missing");
+            return;
+        }
+
+        // 토큰 만료 여부 확인 및 리프레시
+        if (jwtTokenProvider.isExpired(accessToken)) {
+            String refreshToken = CookieUtils.getCookie(request, "Refresh_Token");
+
+            if (refreshToken != null && !jwtTokenProvider.isExpired(refreshToken)) {
+                TokenResponseDto newToken = tokenService.refreshAccessToken(refreshToken);
+                // 새 토큰을 쿠키에 설정
+                CookieUtils.addCookie(response, "Access_Token", newToken.getAccessToken());
+                CookieUtils.addCookie(response, "Refresh_Token", newToken.getRefreshToken());
+                accessToken = newToken.getAccessToken();
+            } else {
+                // 리프레시 토큰도 만료된 경우
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token expired");
+                return;
+            }
+        }
+
+        // 소셜 로그인 사용자 필터링
+        if("social".equals(jwtTokenProvider.getAuthType(accessToken))){
             System.out.println("Social login detected. Skipping JWT filter.");
             filterChain.doFilter(request, response);
             return;
         }
-        // Access 토큰 만료 여부 확인
-        if(jwtTokenProvider.isExpired(accessToken)){
-            System.out.println("Access Token is Expired");
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("Access Token is Expired");
-            return;
-        }
+
+        // 인증 정보 설정
         try {
             Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
-            // 인증 정보를 SecurityContext라는 메모리에 저장하여 인증상태를 유지함
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }catch (Exception e){
-            System.out.println("JWT Authentication failed: " + e.getMessage());
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid token");
+            return;
         }
+
+        // 필터 체인 진행
         filterChain.doFilter(request,response);
     }
+
 }

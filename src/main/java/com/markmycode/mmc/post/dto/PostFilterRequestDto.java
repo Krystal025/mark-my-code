@@ -1,12 +1,16 @@
 package com.markmycode.mmc.post.dto;
 
-import lombok.Getter;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
-@Getter
+@Data
+@ToString // DTO값 로그 확인용
+@NoArgsConstructor
 public class PostFilterRequestDto {
 
-    private Integer childCategoryId;
     private Integer parentCategoryId;
+    private Integer childCategoryId;
     private Integer platformId;
     private Integer languageId;
     private int page = 1; // 클라이언트가 요청한 페이지 번호 (기본값 : 1)
