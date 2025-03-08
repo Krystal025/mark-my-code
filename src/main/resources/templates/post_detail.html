@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Post Detail</title>
+
+    <!-- highlight.js 스타일 추가 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/styles/default.min.css">
+
 </head>
 <body>
     <h1>게시글 상세</h1>
@@ -20,7 +24,7 @@
         <!-- 게시글 언어 -->
         <p>언어: <span th:text="${post.languageName}"></span></p>
         <!-- 게시글 내용 -->
-        <p th:text="${post.postContent}"></p>
+        <div th:utext="${post.postContent}"></div>
         <!-- 좋아요 수 -->
         <p>좋아요 수: <span th:text="${post.postLikeCount}"></span></p>
         <!-- 작성일 -->
@@ -33,5 +37,15 @@
         <!-- 게시글 목록으로 돌아가는 링크 -->
         <a href="/posts">목록으로 돌아가기</a>
     </div>
+
+    <!-- highlight.js 스크립트 추가 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/highlight.min.js"></script>
+
+    <script>
+        // 페이지가 완전히 로드된 후 코드 하이라이팅 초기화
+        document.addEventListener("DOMContentLoaded", function() {
+            hljs.highlightAll();  // highlight.js로 코드 하이라이팅 실행
+        });
+    </script>
 </body>
 </html>
