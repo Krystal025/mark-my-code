@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 public enum ErrorCode {
 
     // 400 BAD_REQUEST: 잘못된 요청
+    INVALID_TOKEN(HttpStatus.BAD_REQUEST, "유효하지 않은 토큰입니다."),
+    INVALID_CREDENTIALS(HttpStatus.BAD_REQUEST, "유효하지 않은 이메일이나 비밀번호입니다."),
     INVALID_COMMENT(HttpStatus.BAD_REQUEST, "해당 게시글에 속한 댓글이 아닙니다."),
     INVALID_PARENT_CATEGORY(HttpStatus.BAD_REQUEST, "유효하지 않은 상위 카테고리입니다."),
     INVALID_CATEGORY(HttpStatus.BAD_REQUEST, "유효하지 않은 카테고리입니다."),
@@ -18,6 +20,7 @@ public enum ErrorCode {
 
     // 401 UNAUTHORIZED: 인증 실패
     TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "토큰이 만료되었습니다."),
+    ACCESS_TOKEN_MISSING(HttpStatus.UNAUTHORIZED, "토큰이 존재하지 않습니다."),
 
     // 403 FORBIDDEN: 권한 부족
     ACCESS_DENIED(HttpStatus.FORBIDDEN, "해당 리소스에 대한 접근 권한이 없습니다."),
