@@ -46,11 +46,8 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         CookieUtils.addCookie(response, "Access_Token", accessToken);
         CookieUtils.addCookie(response, "Refresh_Token", refreshToken);
 
-        // 생성된 JWT 토큰을 HTTP 헤더에 추가하여 클라이언트로 전달
-        // response.addHeader("Authorization", "Bearer " + accessToken);
-
         // 토큰 발급 확인용 로그 (디버깅용)
-        System.out.println("Generated Access_Token: " + "Bearer " + accessToken);
+        System.out.println("Generated Access_Token: " + accessToken);
         System.out.println("Generated Refresh_Token: " + refreshToken);
 
         // 사용자가 로그인 후 이동할 페이지로 리다이렉트

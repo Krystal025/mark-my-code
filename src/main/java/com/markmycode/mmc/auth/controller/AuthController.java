@@ -7,6 +7,7 @@ import com.markmycode.mmc.auth.oauth.service.TokenService;
 import com.markmycode.mmc.util.CookieUtils;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -39,7 +40,7 @@ public class AuthController {
             TokenResponseDto tokenResponseDto = tokenService.refreshAccessToken(refreshToken);
             // 컨트롤러에서 헤더 추가 후 응답
             return ResponseEntity.ok()
-                    .header("Authorization", "Bearer " + tokenResponseDto.getAccessToken()) // 컨트롤러에서 헤더 추가
+                    .header(HttpHeaders.SET_COOKIE, tokenResponseDto.getAccessToken())
                     .body(tokenResponseDto);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);

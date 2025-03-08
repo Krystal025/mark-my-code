@@ -3,6 +3,7 @@ package com.markmycode.mmc.auth.jwt.filter;
 import com.markmycode.mmc.auth.jwt.dto.TokenResponseDto;
 import com.markmycode.mmc.auth.jwt.provider.JwtTokenProvider;
 import com.markmycode.mmc.auth.oauth.service.TokenService;
+import com.markmycode.mmc.exception.custom.UnauthorizedException;
 import com.markmycode.mmc.util.CookieUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -48,9 +49,6 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             return;
         }
 
-        // ✅ 여기까지 왔다면, JWT 검증 진행
-        System.out.println("🔍 JWT 검사 진행 중: " + requestURI);
-
         // 쿠키에서 Access Token 추출
         String accessToken = CookieUtils.getCookie(request, "Access_Token");
 
@@ -62,21 +60,47 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         }
 
         // 토큰 만료 여부 확인 및 리프레시
-        if (jwtTokenProvider.isExpired(accessToken)) {
+        try {
+            // 액세스 토큰 검증
+            jwtTokenProvider.isExpired(accessToken);  // 유효하지 않으면 UnauthorizedException 발생
+            // 리프레시 토큰 처리
             String refreshToken = CookieUtils.getCookie(request, "Refresh_Token");
-
-            if (refreshToken != null && !jwtTokenProvider.isExpired(refreshToken)) {
-                TokenResponseDto newToken = tokenService.refreshAccessToken(refreshToken);
-                // 새 토큰을 쿠키에 설정
-                CookieUtils.addCookie(response, "Access_Token", newToken.getAccessToken());
-                CookieUtils.addCookie(response, "Refresh_Token", newToken.getRefreshToken());
-                accessToken = newToken.getAccessToken();
-            } else {
-                // 리프레시 토큰도 만료된 경우
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token expired");
-                return;
+            if (refreshToken != null) {
+                try {
+                    // 리프레시 토큰 검증
+                    jwtTokenProvider.isExpired(refreshToken);  // 유효하지 않으면 UnauthorizedException 발생
+                    // 액세스 토큰 갱신
+                    TokenResponseDto newToken = tokenService.refreshAccessToken(refreshToken);
+                    // 새 토큰을 쿠키에 설정
+                    CookieUtils.addCookie(response, "Access_Token", newToken.getAccessToken());
+                    CookieUtils.addCookie(response, "Refresh_Token", newToken.getRefreshToken());
+                    accessToken = newToken.getAccessToken();
+                } catch (UnauthorizedException ex) {
+                    // 리프레시 토큰도 만료된 경우
+                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Refresh token expired");
+                    return;
+                }
             }
+        } catch (UnauthorizedException e) {
+            // 액세스 토큰이 만료된 경우
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Access token expired");
         }
+
+//        if (jwtTokenProvider.isExpired(accessToken)) {
+//            String refreshToken = CookieUtils.getCookie(request, "Refresh_Token");
+//
+//            if (refreshToken != null && !jwtTokenProvider.isExpired(refreshToken)) {
+//                TokenResponseDto newToken = tokenService.refreshAccessToken(refreshToken);
+//                // 새 토큰을 쿠키에 설정
+//                CookieUtils.addCookie(response, "Access_Token", newToken.getAccessToken());
+//                CookieUtils.addCookie(response, "Refresh_Token", newToken.getRefreshToken());
+//                accessToken = newToken.getAccessToken();
+//            } else {
+//                // 리프레시 토큰도 만료된 경우
+//                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token expired");
+//                return;
+//            }
+//        }
 
         // 소셜 로그인 사용자 필터링
         if("social".equals(jwtTokenProvider.getAuthType(accessToken))){

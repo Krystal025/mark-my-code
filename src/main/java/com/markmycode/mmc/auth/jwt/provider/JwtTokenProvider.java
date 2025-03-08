@@ -1,10 +1,13 @@
 package com.markmycode.mmc.auth.jwt.provider;
 
-import com.markmycode.mmc.auth.oauth.dto.CustomOAuth2User;
 import com.markmycode.mmc.auth.jwt.dto.CustomUserDetails;
+import com.markmycode.mmc.auth.oauth.dto.CustomOAuth2User;
 import com.markmycode.mmc.auth.oauth.dto.OAuth2UserInfo;
+import com.markmycode.mmc.exception.ErrorCode;
+import com.markmycode.mmc.exception.custom.UnauthorizedException;
 import com.markmycode.mmc.user.enums.Role;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -39,7 +42,7 @@ public class JwtTokenProvider {
                 .claim("socialId", socialId)
                 .claim("authType", (socialId == null ? "basic" : "social"))
                 .issuedAt(new Date(System.currentTimeMillis())) // 토큰 발행시점 설정
-                .expiration(new Date(System.currentTimeMillis() + 100 * 60 * 1000L)) // 토큰 유효시간 : 100분
+                .expiration(new Date(System.currentTimeMillis() + 1 * 60 * 1000L)) // 유효시간 : 1분
                 .signWith(secretKey) // JWT 서명(signature)시 사용할 암호키 지정
                 .compact(); // JWT의 Header, Payload, Signature를 결합하여 문자열로 반환
     }
@@ -50,12 +53,12 @@ public class JwtTokenProvider {
                 .claim("userId", userId)
                 .claim("authType", (authType == null ? "basic" : "social"))
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + 30 * 24 * 60 * 60 * 1000L)) // 토큰 유효시간 : 30일
+                .expiration(new Date(System.currentTimeMillis() + 24 * 60 * 60 * 1000L)) // 유효시간 : 1일
                 .signWith(secretKey)
                 .compact();
     }
 
-    // JWT 토큰 검증 메소드
+    // WT 토큰을 파싱하여 Claims 객체 반환
     public Claims parseToken(String token) {
         return Jwts.parser()
                 .verifyWith(secretKey)  // Deprecated된 방식
@@ -64,37 +67,22 @@ public class JwtTokenProvider {
                 .getPayload();
     }
 
-    // JWT 토큰에서 사용자 이메일 추출
-    public String getUserEmail(String token){
-        return parseToken(token).get("userEmail", String.class);
-    }
-
-    // JWT 토큰에서 사용자 역할 추출
-    public String getUserRole(String token){
-        return parseToken(token).get("userRole", String.class);
-    }
-
-    // JWT 토큰에서 소셜 ID 추출
-    public String getSocialId(String token){
-        return parseToken(token).get("socialId", String.class);
-    }
-
-    // JWT 토큰에서 로그인 방식 추출
+    // JWT 토큰에서 로그인 방식 (authType) 추출
     public String getAuthType(String token){
+
         return parseToken(token).get("authType", String.class);
     }
 
-    // JWT 토큰의 유효기간 추출 및 현재 시간과의 비교를 통한 만료 여부 확인
-    public Boolean isExpired(String token){
-        return parseToken(token).getExpiration().before(new Date());
+    // JWT 토큰의 유효기간 확인
+    public void isExpired(String token){
+        try {
+            parseToken(token);
+        } catch (ExpiredJwtException e) {
+            throw new UnauthorizedException(ErrorCode.TOKEN_EXPIRED);
+        }
     }
 
-    /*
-     * JWT 토큰에서 사용자 정보를 추출하여 Authentication 객체를 생성하는 메소드.
-     * 이 메소드가 호출되면 JWT 토큰을 파싱해서 사용자 이메일, 역할, (소셜 로그인일 경우) 소셜 ID 등을 추출하고,
-     * 이 정보를 기반으로 UsernamePasswordAuthenticationToken을 생성하여 반환합니다.
-     */
-
+    // JWT 토큰에서 사용자 정보를 추출하여 인증 객체 생성
     public Authentication getAuthentication(String token) {
         // JWT 토큰에서 사용자 정보 추출
         Claims claims = parseToken(token);
@@ -102,8 +90,6 @@ public class JwtTokenProvider {
         String userEmail = claims.get("userEmail", String.class);
         String userRole = claims.get("userRole", String.class);
         String authType = claims.get("authType", String.class);
-
-        System.out.println("Extracted Role from Token: " + userRole);  // 디버깅 로그
 
         // 사용자 권한 설정
         List<GrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority(userRole));
@@ -114,7 +100,7 @@ public class JwtTokenProvider {
             OAuth2UserInfo oAuth2Info = OAuth2UserInfo.builder()
                     .userId(userId)
                     .userEmail(userEmail)
-                    .userName(userEmail) // 필요에 따라 다르게 설정 가능
+                    .userName(userEmail) // 소셜 로그인에서는 이메일을 사용자 이름으로 사용
                     .userRole(Role.valueOf(userRole))
                     .socialId(socialId)
                     .build();
