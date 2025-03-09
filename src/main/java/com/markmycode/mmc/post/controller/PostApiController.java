@@ -6,6 +6,7 @@ import com.markmycode.mmc.post.dto.PostRequestDto;
 import com.markmycode.mmc.post.dto.PostResponseDto;
 import com.markmycode.mmc.post.dto.PostSummaryDto;
 import com.markmycode.mmc.post.service.PostService;
+import com.markmycode.mmc.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -18,6 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PostApiController {
 
+    private final UserService userService;
     private final PostService postService;
 
     @PostMapping

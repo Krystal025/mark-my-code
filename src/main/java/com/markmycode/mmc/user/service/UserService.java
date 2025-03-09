@@ -15,6 +15,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Objects;
+
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -42,15 +44,11 @@ public class UserService {
 
     // 사용자 정보 수정
     @Transactional // 트랜잭션이 성공적으로 완료되면 변경사항이 자동으로 커밋되어 DB에 반영됨
-    public void updateUser(Long userId, UserRequestDto requestDto){
-        // 현재 인증된 사용자 이메일
-        String loggedInEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+    public void updateUser(Long loggedInUserId, Long userId, UserRequestDto requestDto){
         // 영속성 컨텍스트에 사용자가 존재하는지 확인
         User user = getUser(userId);
-        // DB의 사용자 이메일과 JWT의 이메일 비교 (이메일 정규화 적용)
-        String dbEmail = EmailUtils.normalizeEmail(user.getUserEmail());
         // JWT에서 추출한 이메일과 요청 이메일 비교
-        validateEmail(loggedInEmail, dbEmail);
+        validateUserOwnership(loggedInUserId, userId);
         // 닉네임 중복 체크
         if(requestDto.getUserNickname() != null  // 새로운 닉네임 요청이 들어왔는지
                 && !requestDto.getUserNickname().equals(user.getUserNickname()) // 사용자의 기존 닉네임과 다른지
@@ -68,7 +66,7 @@ public class UserService {
 
     // 사용자 비활성화(탈퇴)
     @Transactional
-    public void deactivateUser(Long userId){
+    public void deactivateUser(Long loggedInUserId, Long userId){
         // 사용자 조회
         User user = getUser(userId);
         // 관리자 여부 확인
@@ -79,12 +77,7 @@ public class UserService {
             user.deactivate();
             return;
         }
-        // 현재 인증된 사용자 이메일
-        String loggedInEmail = SecurityContextHolder.getContext().getAuthentication().getName();
-        // 요청한 사용자 이메일
-        String dbEmail = EmailUtils.normalizeEmail(user.getUserEmail());
-        // 이메일 유효성 검사
-        validateEmail(loggedInEmail, dbEmail);
+        validateUserOwnership(loggedInUserId, userId);
         // 본인 계정 비활성화(탈퇴)
         user.deactivate();
     }
@@ -102,16 +95,17 @@ public class UserService {
                 .build();
     }
 
-    // 이메일 비교 메소드 (추후 AOP로 분리)
-    private void validateEmail(String loggedInEmail, String dbEmail) {
-        if (!EmailUtils.normalizeEmail(loggedInEmail).equals(dbEmail)) {
-            throw new ForbiddenException(ErrorCode.USER_NOT_MATCH);
-        }
-    }
-
     // 해당 ID에 대한 엔티티 객체 반환
     public User getUser(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
     }
+
+    // 사용자 소유권 검증
+    private void validateUserOwnership(Long loggedInUserId, Long userId) {
+        if (!Objects.equals(loggedInUserId, userId)) {
+            throw new ForbiddenException(ErrorCode.USER_NOT_MATCH);
+        }
+    }
+
 }

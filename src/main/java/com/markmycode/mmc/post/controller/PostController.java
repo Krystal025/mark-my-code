@@ -57,7 +57,7 @@ public class PostController {
     }
 
     @GetMapping("/{postId}")
-    public String getPost(@PathVariable("postId") Long postId, Model model){
+    public String getPostDetail(@PathVariable("postId") Long postId, Model model){
         PostResponseDto post = postService.getPostById(postId);
         model.addAttribute("post", post);
         return "post_detail";

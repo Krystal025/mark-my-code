@@ -11,7 +11,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/api/users")
 @RequiredArgsConstructor
 public class UserApiController {
 
@@ -25,15 +25,17 @@ public class UserApiController {
 
     @PatchMapping("/{userId}")
     public ResponseEntity<String> updateUser(@AuthenticationPrincipal UserPrincipal userPrincipal,
+                                             @PathVariable("userId") Long userId,
                                              @RequestBody UserRequestDto requestDto){
-        userService.updateUser(userPrincipal.getUserId(), requestDto);
+        userService.updateUser(userPrincipal.getUserId(), userId, requestDto);
         return ResponseEntity.ok("User Information Updated");
     }
 
 
     @PatchMapping("/{userId}/deactivate")
-    public ResponseEntity<String> deactivateUser(@PathVariable("userId") Long userId){
-        userService.deactivateUser(userId);
+    public ResponseEntity<String> deactivateUser(@AuthenticationPrincipal UserPrincipal userPrincipal,
+                                                 @PathVariable("userId") Long userId){
+        userService.deactivateUser(userPrincipal.getUserId(), userId);
         return ResponseEntity.ok("User Deactivated");
     }
 

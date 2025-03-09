@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Detail</title>
+</head>
+<body>
+
+<h1>사용자 정보 페이지</h1>
+
+<div>
+    <h2>Basic Information</h2>
+    <p><strong>Username:</strong> <span th:text="${user.userName}"></span></p>
+    <p><strong>Email:</strong> <span th:text="${user.userEmail}"></span></p>
+    <p><strong>User ID:</strong> <span th:text="${user.userId}"></span></p>
+</div>
+
+<div>
+    <h2>Actions</h2>
+    <p>
+        <!-- 본인 페이지인지 확인 -->
+        <span th:if="${isMyPage}">This is your profile.</span>
+        <span th:if="${!isMyPage}">This is not your profile.</span>
+    </p>
+
+    <!-- 관리자 여부 확인 -->
+    <p th:if="${isAdmin}">
+        You have admin privileges.
+    </p>
+
+    <p th:if="${!isAdmin}">
+        You do not have admin privileges.
+    </p>
+</div>
+
+<div>
+    <h2>Update Profile</h2>
+    <!-- 사용자가 본인인 경우에만 프로필 수정이 가능 -->
+    <form th:action="@{/user/{userId}/update(userId=${user.userId})}" method="post" th:if="${isMyPage}">
+        <label for="userName">Name: </label>
+        <input type="text" id="userName" name="userName" th:value="${user.userName}" />
+        <br/>
+        <label for="userEmail">Email: </label>
+        <input type="email" id="userEmail" name="userEmail" th:value="${user.userEmail}" />
+        <br/>
+        <button type="submit">Update Profile</button>
+    </form>
+    <p th:if="${!isMyPage}">You cannot update this profile because it's not your own.</p>
+</div>
+
+</body>
+</html>

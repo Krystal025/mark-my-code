@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -59,7 +60,6 @@ public class PostService {
     public void updatePost(Long userId, Long postId, PostRequestDto requestDto){
         User user = userService.getUser(userId);
         Post post = getPost(postId);
-        // 게시글 작성자와 요청한 사용자 간 일치 여부 확인
         validatePostOwnership(user, post);
         // 변경된 필드만 반영
         if (requestDto.getChildCategoryId() != null){
@@ -82,8 +82,8 @@ public class PostService {
 
     @Transactional
     public void deletePost(Long userId, Long postId){
-        Post post = getPost(postId);
         User user = userService.getUser(userId);
+        Post post = getPost(postId);
         // 게시글 소유자가 요청한 사용자와 일치하는지 확인
         validatePostOwnership(user, post);
         postRepository.delete(post);
@@ -104,14 +104,6 @@ public class PostService {
         return posts.isEmpty() ? Collections.emptyList() : posts;
     }
 
-    // 게시글 작성자 유효성 검사
-    private void validatePostOwnership(User user, Post post){
-        // JPA 엔티티는 equals()를 재정의하여 식별자 비교로 소유자 확인시 효율성을 높임
-        if(!post.getUser().equals(user)){
-            throw new ForbiddenException(ErrorCode.USER_NOT_MATCH);
-        }
-    }
-
     // 필터링 조건 유효성 검사
     private void validateFilterCondition(PostFilterRequestDto filterRequestDto){
         Integer parentCategoryId = postMapper.selectParentIdByCategoryId(filterRequestDto.getChildCategoryId());
@@ -124,6 +116,14 @@ public class PostService {
     public Post getPost(Long postId) {
         return postRepository.findById(postId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.POST_NOT_FOUND));
+    }
+
+    // 게시글 작성자 유효성 검사
+    private void validatePostOwnership(User user, Post post){
+        // JPA 엔티티는 equals()를 재정의하여 식별자 비교로 소유자 확인시 효율성을 높임
+        if(!Objects.equals(user.getUserId(), post.getUser().getUserId())){
+            throw new ForbiddenException(ErrorCode.USER_NOT_MATCH);
+        }
     }
 
 }
