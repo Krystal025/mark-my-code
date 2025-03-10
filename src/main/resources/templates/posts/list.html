@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorate="~{layouts/default}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post List</title>
+</head>
+<body>
+<!--    <div layout:decorate="~{layouts/default}">-->
+        <div layout:fragment="content">
+
+            <h1>게시글 목록</h1>
+
+            <form th:action="@{/posts}" method="get">
+
+                <label for="selectParentCategory">Parent Category</label>
+                <select id="selectParentCategory" name="parentCategoryId" onchange="updateChildCategories(this.value)">
+                    <option value="">상위 카테고리 선택</option>
+                    <th:block th:each="parentCategory : ${parentCategories}">
+                        <option th:value="${parentCategory.categoryId}"
+                                th:text="${parentCategory.categoryName}"
+                                th:selected="${parentCategory.categoryId == selectedParentCategoryId}">
+                                </option>
+                    </th:block>
+                </select>
+
+                <label for="selectChildCategory">Child Category</label>
+                <select id="selectChildCategory" name="childCategoryId" data-selected-id="${selectedChildCategoryId}">
+                    <option value="">하위 카테고리 선택</option>
+                    <th:block th:each="childCategory : ${childCategories}">
+                        <option th:value="${childCategory.categoryId}"
+                                th:text="${childCategory.categoryName}"
+                                th:selected="${childCategory.categoryId == selectedChildCategoryId}">
+<!--                            th:data-selected-id="${childCategory.categoryId == selectedChildCategoryId ? childCategory.categoryId : null}"-->
+                        </option>
+                    </th:block>
+                </select>
+
+                <label for="selectPlatform">Platform</label>
+                <select id="selectPlatform" name="platformId">
+                    <option value="">플랫폼 선택</option>
+                    <th:block th:each="platform : ${platforms}">
+                        <option th:value="${platform.platformId}"
+                                th:text="${platform.platformName}"
+                                th:selected="${platform.platformId == selectedPlatformId}">
+                        </option>
+                    </th:block>
+                </select>
+
+                <label for="selectLanguage">Programming Language</label>
+                <select id="selectLanguage" name="languageId">
+                    <option value="">언어 선택</option>
+                    <th:block th:each="language : ${languages}">
+                        <option th:value="${language.languageId}"
+                                th:text="${language.languageName}"
+                                th:selected="${language.languageId == selectedLanguageId}">
+                        </option>
+                    </th:block>
+                </select>
+
+                <button type="submit">검색</button>
+            </form>
+
+            <button onclick="window.location.href='/posts/form'">게시글 작성하기</button>
+
+            <div id="postList">
+                <ul>
+                    <li th:each="post : ${posts}">
+                        <a th:href="@{/posts/{postId}(postId=${post.postId})}" th:text="${post.postTitle}"></a>
+                        <p th:text="'작성자: ' + ${post.userNickname}"></p>
+                        <p th:text="'카테고리: ' + ${post.parentCategoryName} + ' > ' + ${post.childCategoryName}"></p>
+                        <p th:text="'플랫폼: ' + ${post.platformName}"></p>
+                        <p th:text="'언어: ' + ${post.languageName}"></p>
+                        <p th:text="'좋아요 수: ' + ${post.postLikeCount}"></p>
+                        <p th:text="'작성일: ' + ${post.postCreatedAt}"></p>
+                    </li>
+                </ul>
+            </div>
+
+            <script>
+                // 상위 카테고리가 선택되면 해당 카테고리에 맞는 하위 카테고리를 서버에서 받아와서 업데이트시킴
+                function updateChildCategories(parentCategoryId) {
+                    const selectChildCategory = document.getElementById('selectChildCategory'); // 하위 카테고리 셀렉트 박스 선택
+                    // 상위 카테고리의 Id가 Null 또는 ""이 아닐 경우
+                    if (!parentCategoryId) {
+                        // 하위 카테고리 셀렉트 박스 초기화
+                        selectChildCategory.innerHTML = '<option value="">하위 카테고리 선택</option>';
+                        return; // 더 이상 진행하지 않고 함수를 종료
+                    }
+                    // 해당 부모 카테고리 ID에 맞는 하위 카테고리를 서버에서 JSON 형식으로 받아옴
+                    fetch(`/posts/categories/${parentCategoryId}`)
+                        .then(response => response.json()) // 응답을 JSON 형식으로 파싱
+                        .then(data => {
+                            // 기존 하위 카테고리 옵션을 초기화하고 기본값 설정
+                            selectChildCategory.innerHTML = '<option value="">하위 카테고리 선택</option>';
+                            // 서버에서 받은 하위 카테고리 목록을 HTML 옵션으로 생성하여 select box에 추가
+                            const selectedChildCategoryId = selectChildCategory.getAttribute('data-selected-id');
+                            data.forEach(childCategory => {
+                                const option = document.createElement('option'); // 새 option 태그 생성
+                                option.value = childCategory.categoryId; // option의 value 값 설정
+                                option.textContent = childCategory.categoryName; // option의 텍스트 설정
+                                // 선택된 하위 카테고리가 있다면 해당 값을 유지
+                                const selectedChildCategoryId = document.getElementById('selectChildCategory').getAttribute('data-selected-id');
+                                if (selectedChildCategoryId && option.value == selectedChildCategoryId) {
+                                    option.selected = true; // 선택된 하위 카테고리 설정
+                                }
+                                selectChildCategory.appendChild(option); // select box에 option 추가
+                            });
+                        })
+                        .catch(error => console.error('Error loading child categories:', error)); // 에러 처리
+                    // 부모 카테고리 선택을 취소하거나 초기화할 때 하위 카테고리 select box 초기화
+                }
+
+                // 페이지 로딩 시, 상위 카테고리가 선택되어 있을 경우 하위 카테고리 목록 초기화 또는 선택
+                window.onload = function() {
+                    const selectParentCategory = document.getElementById('selectParentCategory');
+                    const selectChildCategory = document.getElementById('selectChildCategory');
+                    const selectedParentCategoryId = selectParentCategory.value;  // 이미 선택된 값
+                    const selectedChildCategoryId = selectChildCategory.getAttribute('data-selected-id');
+
+                    if (selectedParentCategoryId) {
+                        updateChildCategories(selectedParentCategoryId);
+                    }
+
+                    // 선택된 하위 카테고리 값를 직접 설정 (옵션이 업데이트된 후 자동으로 th:selected 적용되지만, 동적 업데이트에는 필요)
+                    if (selectedChildCategoryId) {
+                        selectChildCategory.value = selectedChildCategoryId;
+                    }
+                }
+            </script>
+        </div>
+<!--    </div>-->
+</body>
+</html>

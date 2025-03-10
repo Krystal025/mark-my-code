@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -89,7 +90,20 @@ public class PostService {
         postRepository.delete(post);
     }
 
-    public PostResponseDto getPostById(Long postId){
+    public List<PostSummaryDto> getAllPosts() {
+        List<Post> posts = postRepository.findAll();
+        return posts.stream()
+                .map(post -> PostSummaryDto.builder()
+                        .postId(post.getPostId())
+                        .postTitle(post.getPostTitle())
+                        .postCreatedAt(post.getPostCreatedAt())
+                        .postLikeCount(post.getPostLikeCount())
+                        .userNickname(post.getUser().getUserNickname())
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+        public PostResponseDto getPostById(Long postId){
         PostResponseDto responseDto = postMapper.selectPost(postId);
         if (responseDto == null) {
             throw new NotFoundException(ErrorCode.POST_NOT_FOUND);
@@ -112,11 +126,6 @@ public class PostService {
         languageService.validateLanguage(filterRequestDto.getLanguageId());
     }
 
-    // 해당 ID에 대한 엔티티 객체 반환
-    public Post getPost(Long postId) {
-        return postRepository.findById(postId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.POST_NOT_FOUND));
-    }
 
     // 게시글 작성자 유효성 검사
     private void validatePostOwnership(User user, Post post){
@@ -124,6 +133,12 @@ public class PostService {
         if(!Objects.equals(user.getUserId(), post.getUser().getUserId())){
             throw new ForbiddenException(ErrorCode.USER_NOT_MATCH);
         }
+    }
+
+    // 해당 ID에 대한 엔티티 객체 반환
+    public Post getPost(Long postId) {
+        return postRepository.findById(postId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.POST_NOT_FOUND));
     }
 
 }

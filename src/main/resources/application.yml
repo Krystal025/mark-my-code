@@ -12,6 +12,12 @@ spring: # spring.datasource : SpringBoot의 JPA와 관련된 DB 연결 정보를
     include: oauth
   server:
     port: 8080
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    mode: HTML
+    encoding: UTF-8
+    layout-decorator: layouts/default
 
 # MyBatis 설정
 mybatis:

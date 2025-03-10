@@ -53,14 +53,14 @@ public class PostController {
         model.addAttribute("selectedPlatformId", requestDto.getPlatformId());
         model.addAttribute("selectedLanguageId", requestDto.getLanguageId());
         // 템플릿 렌더링하여 반환
-        return "post_list";
+        return "posts/list";
     }
 
     @GetMapping("/{postId}")
     public String getPostDetail(@PathVariable("postId") Long postId, Model model){
         PostResponseDto post = postService.getPostById(postId);
         model.addAttribute("post", post);
-        return "post_detail";
+        return "posts/detail";
     }
 
     @GetMapping("/form")
@@ -79,7 +79,7 @@ public class PostController {
         // 게시글 작성을 위한 빈 DTO 추가
         model.addAttribute("postRequestDto", new PostRequestDto());
 
-        return "post_form"; // post_form.html 템플릿 사용
+        return "posts/form";
     }
 
     @PostMapping

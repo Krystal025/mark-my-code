@@ -41,7 +41,8 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         // 인증이 필요 없는 경로는 바로 필터 통과
         String requestURI = request.getRequestURI();
         // 🔥 로그인 요청은 필터링 제외
-        if (requestURI.startsWith("/home")
+        if (requestURI.startsWith("/")
+                || requestURI.startsWith("/home")
                 || requestURI.startsWith("/login")
                 || requestURI.startsWith("/auth/")
                 || requestURI.startsWith("/oauth2/authorization")
