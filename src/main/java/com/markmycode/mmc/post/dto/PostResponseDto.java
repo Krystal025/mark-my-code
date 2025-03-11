@@ -12,14 +12,19 @@ import java.time.LocalDateTime;
 public class PostResponseDto {
 
     private Long postId;
+    private Long userId;
+    private Integer parentCategoryId;
+    private Integer childCategoryId;
+    private Integer platformId;
+    private Integer languageId;
     private String postTitle;
     private String postContent;
     private LocalDateTime postCreatedAt;
     private LocalDateTime postUpdatedAt;
     private long postLikeCount;
     private String userNickname;
-    private String childCategoryName;
     private String parentCategoryName;
+    private String childCategoryName;
     private String platformName;
     private String languageName;
 

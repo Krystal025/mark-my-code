@@ -24,13 +24,14 @@ public class UserController {
                                 Model model){
         // boolean isSocialLogin = userPrincipal instanceof CustomOAuth2User; // 겍체가 특정 클래스의 인스턴스인지 확인
         UserResponseDto user = userService.getUserById(userPrincipal.getUserId());
-        boolean isMyPage = userId.equals(userPrincipal.getUserId());
+        boolean isProfileOwner = userId.equals(userPrincipal.getUserId());
         boolean isAdmin = userPrincipal.getAuthorities().stream()
                 .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
 
         model.addAttribute("user", user);
-        model.addAttribute("isMyPage", isMyPage);
+        model.addAttribute("isProfileOwner", isProfileOwner);
         model.addAttribute("isAdmin", isAdmin);
-        return "user_detail";
+
+        return "users/profile";
     }
 }

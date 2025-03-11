@@ -5,13 +5,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Post List</title>
+    <title>Post Update</title>
 </head>
 <body>
-<div layout:fragment="content">
-    <h1>게시글 목록</h1>
-    <form th:action="@{/posts}" method="get" th:object="${requestDto}">
+<h1>게시글 수정</h1>
 
+<div layout:fragment="content">
+    <h1>게시글 수정</h1>
+    <form id="postUpdateForm" th:action="@{/posts/update/{postId}(postId=${postId})}" method="post"
+          th:object="${requestDto}">
+        <!-- 부모 카테고리 선택 -->
         <div>
             <label for="parentCategoryId">부모 카테고리:</label>
             <select id="parentCategoryId" th:field="*{parentCategoryId}" onchange="updateChildCategories()" required>
@@ -23,7 +26,7 @@
             </select>
         </div>
 
-
+        <!-- 자식 카테고리 선택 -->
         <div>
             <label for="childCategoryId">하위 카테고리:</label>
             <select id="childCategoryId" th:field="*{childCategoryId}" required>
@@ -35,7 +38,7 @@
             </select>
         </div>
 
-
+        <!-- 플랫폼 선택 -->
         <div>
             <label for="platformId">플랫폼:</label>
             <select id="platformId" th:field="*{platformId}" required>
@@ -47,6 +50,7 @@
             </select>
         </div>
 
+        <!-- 언어 선택 -->
         <div>
             <label for="languageId">언어:</label>
             <select id="languageId" th:field="*{languageId}" required>
@@ -58,22 +62,27 @@
             </select>
         </div>
 
+        <!-- 제목 입력 -->
+        <div>
+            <label for="postTitle">제목:</label>
+            <input type="text" id="postTitle" th:field="*{postTitle}" required/>
+        </div>
 
-        <button type="submit">검색</button>
+        <!-- 내용 입력 -->
+        <div>
+            <label for="postContent">내용:</label>
+            <textarea id="postContent" th:field="*{postContent}" rows="10" cols="50" required></textarea>
+        </div>
+
+        <div>
+            <button type="submit">수정하기</button>
+        </div>
     </form>
 
-    <div id="postList">
-        <ul>
-            <li th:each="post : ${posts}">
-                <a th:href="@{/posts/{postId}(postId=${post.postId})}" th:text="${post.postTitle}"></a>
-                <p th:text="'작성자: ' + ${post.userNickname}"></p>
-                <p th:text="'좋아요 수: ' + ${post.postLikeCount}"></p>
-                <p th:text="'작성일: ' + ${post.postCreatedAt}"></p>
-            </li>
-        </ul>
-    </div>
+    <a th:href="@{/posts/{postId}(postId=${postId})}">취소</a>
 
     <script>
+        // 상위 카테고리 선택 시 하위 카테고리 동적 로딩 함수
         function updateChildCategories() {
             var parentCategoryId = document.getElementById("parentCategoryId").value;
             if (parentCategoryId) {

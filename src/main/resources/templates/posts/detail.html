@@ -12,32 +12,30 @@
 
 </head>
 <body>
-    <h1>게시글 상세</h1>
+<h1>게시글 상세</h1>
 
-    <div>
-        <!-- 게시글 제목 -->
-        <h2 th:text="${post.postTitle}"></h2>
-        <!-- 게시글 작성자 -->
-        <p>작성자: <span th:text="${post.userNickname}"></span></p>
-        <!-- 게시글 카테고리 -->
-        <p>카테고리: <span th:text="${post.parentCategoryName} + ' > ' + ${post.childCategoryName}"></span></p>
-        <!-- 게시글 플랫폼 -->
-        <p>플랫폼: <span th:text="${post.platformName}"></span></p>
-        <!-- 게시글 언어 -->
-        <p>언어: <span th:text="${post.languageName}"></span></p>
-        <!-- 게시글 내용 -->
-        <div th:utext="${post.postContent}"></div>
-        <!-- 좋아요 수 -->
-        <p>좋아요 수: <span th:text="${post.postLikeCount}"></span></p>
-        <!-- 작성일 -->
-        <p>작성일: <span th:text="${post.postCreatedAt}"></span></p>
-        <!-- 수정일 -->
-        <p>수정일: <span th:text="${post.postUpdatedAt}"></span></p>
-    </div>
+<div layout:fragment="content">
+    <!-- 게시글 제목 -->
+    <h2 th:text="${post.postTitle}"></h2>
+    <!-- 게시글 작성자 -->
+    <p>작성자: <span th:text="${post.userNickname}"></span></p>
+    <!-- 게시글 카테고리 -->
+    <p>카테고리: <span th:text="${post.parentCategoryName} + ' > ' + ${post.childCategoryName}"></span></p>
+    <!-- 게시글 플랫폼 -->
+    <p>플랫폼: <span th:text="${post.platformName}"></span></p>
+    <!-- 게시글 언어 -->
+    <p>언어: <span th:text="${post.languageName}"></span></p>
+    <!-- 게시글 내용 -->
+    <div th:utext="${post.postContent}"></div>
+    <!-- 좋아요 수 -->
+    <p>좋아요 수: <span th:text="${post.postLikeCount}"></span></p>
+    <!-- 작성일 -->
+    <p>작성일: <span th:text="${post.postCreatedAt}"></span></p>
+    <!-- 수정일 -->
+    <p>수정일: <span th:text="${post.postUpdatedAt}"></span></p>
 
-    <div>
-        <!-- 게시글 목록으로 돌아가는 링크 -->
-        <a href="/posts">목록으로 돌아가기</a>
+    <div th:if="${isAuthor}">
+        <a th:href="@{/posts/update-form/{postId}(postId=${post.postId})}">수정하기</a>
     </div>
 
     <!-- highlight.js 스크립트 추가 -->
@@ -49,5 +47,6 @@
             hljs.highlightAll();  // highlight.js로 코드 하이라이팅 실행
         });
     </script>
+</div>
 </body>
 </html>

@@ -1,6 +1,6 @@
 package com.markmycode.mmc.post.repository;
 
-import com.markmycode.mmc.post.dto.PostFilterRequestDto;
+import com.markmycode.mmc.post.dto.PostListRequestDto;
 import com.markmycode.mmc.post.dto.PostResponseDto;
 import com.markmycode.mmc.post.dto.PostSummaryDto;
 import org.apache.ibatis.annotations.Mapper;
@@ -11,6 +11,9 @@ import java.util.List;
 public interface PostMapper {
     Integer selectParentIdByCategoryId(Integer childCategoryId);
     PostResponseDto selectPost(Long postId);
-    List<PostSummaryDto> selectPostsByFilters(PostFilterRequestDto postFilterRequestDto);
+    List<PostSummaryDto> selectPostsByFilters(PostListRequestDto postListRequestDto);
+    List<PostSummaryDto> selectRecentPosts();
+    List<PostSummaryDto> selectPopularPosts();
 }
+
 

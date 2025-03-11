@@ -1,7 +1,7 @@
 package com.markmycode.mmc.post.controller;
 
 import com.markmycode.mmc.auth.model.UserPrincipal;
-import com.markmycode.mmc.post.dto.PostFilterRequestDto;
+import com.markmycode.mmc.post.dto.PostListRequestDto;
 import com.markmycode.mmc.post.dto.PostRequestDto;
 import com.markmycode.mmc.post.dto.PostResponseDto;
 import com.markmycode.mmc.post.dto.PostSummaryDto;
@@ -50,8 +50,8 @@ public class PostApiController {
     }
 
     @GetMapping
-    public List<PostSummaryDto> getFilteredPosts(@RequestBody PostFilterRequestDto requestDto){
-        return postService.getPostsByFilters(requestDto);
+    public List<PostSummaryDto> getFilteredPosts(@RequestBody PostListRequestDto requestDto){
+        return postService.getFilteredPosts(requestDto);
     }
 
 }

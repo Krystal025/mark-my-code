@@ -7,34 +7,35 @@
     <title>Title</title>
 </head>
 <body>
-<!--    <div layout:decorate="~{layouts/default}">-->
-        <section layout:fragment="content">
-            <h1>환영합니다!</h1>
-            <p>이곳은 게시글 목록과 작성 페이지로 이동할 수 있는 메인 페이지입니다.</p>
-            <p>게시글을 작성하고 목록을 확인해보세요.</p>
+<section layout:fragment="content">
+    <h1>Mark My Code</h1>
+    <p>이곳은 게시글 목록과 작성 페이지로 이동할 수 있는 메인 페이지입니다.</p>
+    <p>게시글을 작성하고 목록을 확인해보세요.</p>
 
-            <!-- 최신 게시글 미리보기 -->
-            <div>
-                <h2>최신 게시글</h2>
-                <ul>
-                    <li th:each="post : ${posts}">
-                        <a th:href="@{/posts/{postId}(postId=${post.postId})}" th:text="${post.postTitle}"></a>
-                        <p th:text="'작성자: ' + ${post.userNickname}"></p>
-                    </li>
-                </ul>
-            </div>
+    <div>
+        <h2>최신 게시글</h2>
+        <ul>
+            <li th:each="post : ${recentPosts}">
+                <a th:href="@{/posts/{postId}(postId=${post.postId})}" th:text="${post.postTitle}"></a>
+                <p th:text="'작성자: ' + ${post.userNickname}"></p>
+                <p th:text="'좋아요 수: ' + ${post.postLikeCount}"></p>
+                <p th:text="'작성일: ' + ${post.postCreatedAt}"></p>
+            </li>
+        </ul>
+    </div>
 
-            <div>
-                <h3>전체 게시글 목록</h3>
-                <p><a href="/posts">게시글 목록보기</a></p>
-            </div>
+    <div>
+        <h2>인기 게시글</h2>
+        <ul>
+            <li th:each="post : ${popularPosts}">
+                <a th:href="@{/posts/{postId}(postId=${post.postId})}" th:text="${post.postTitle}"></a>
+                <p th:text="'작성자: ' + ${post.userNickname}"></p>
+                <p th:text="'좋아요 수: ' + ${post.postLikeCount}"></p>
+                <p th:text="'작성일: ' + ${post.postCreatedAt}"></p>
+            </li>
+        </ul>
+    </div>
 
-            <div>
-                <h3>게시글 작성</h3>
-                <p><a href="/posts/form">새 게시글 작성하기</a></p>
-            </div>
-
-        </section>
-<!--    </div>-->
+</section>
 </body>
 </html>

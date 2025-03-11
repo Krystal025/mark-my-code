@@ -5,7 +5,6 @@
 
 <mapper namespace="com.markmycode.mmc.post.repository.PostMapper">
 
-
     <select id="selectParentIdByCategoryId" parameterType="Integer" resultType="Integer">
         SELECT parent_id
         FROM post_category
@@ -15,17 +14,22 @@
     <!-- 특정 게시글 조회 -->
     <select id="selectPost" resultType="com.markmycode.mmc.post.dto.PostResponseDto">
         SELECT
-            p.post_id,
-            p.post_title,
-            p.post_content,
-            p.post_created_at,
-            p.post_updated_at,
-            p.post_like_count,
-            u.user_nickname,
-            c1.category_name AS child_category_name,  <!--하위 카테고리-->
-            c2.category_name AS parent_category_name,  <!--상위 카테고리-->
-            ppl.platform_name,
-            l.display_name AS language_name
+        p.post_id,
+        p.user_id,
+        c2.category_id AS parentCategoryId,
+        p.category_id AS childCategoryId,
+        p.platform_id,
+        p.language_id,
+        p.post_title,
+        p.post_content,
+        p.post_created_at,
+        p.post_updated_at,
+        p.post_like_count,
+        u.user_nickname,
+        c1.category_name AS child_category_name,  <!--하위 카테고리-->
+        c2.category_name AS parent_category_name,  <!--상위 카테고리-->
+        ppl.platform_name,
+        l.display_name AS language_name
         FROM post p
         JOIN user u ON p.user_id = u.user_id
         JOIN post_category c1 ON p.category_id = c1.category_id  <!-- 하위 카테고리 조인 -->
@@ -37,17 +41,19 @@
     </select>
 
     <!-- 필터링 조건 적용된 게시글 조회 -->
-    <select id="selectPostsByFilters" parameterType="com.markmycode.mmc.post.dto.PostFilterRequestDto" resultType="com.markmycode.mmc.post.dto.PostSummaryDto">
+    <select id="selectPostsByFilters" parameterType="com.markmycode.mmc.post.dto.PostListRequestDto"
+            resultType="com.markmycode.mmc.post.dto.PostSummaryDto">
         SELECT
-            p.post_id,
-            p.post_title,
-            p.post_created_at,
-            p.post_like_count,
-            u.user_nickname,
-            c1.category_name AS childCategoryName,
-            c2.category_name AS parentCategoryName,
-            ppl.platform_name,
-            l.display_name AS languageName
+        p.post_id,
+        p.user_id,
+        p.post_title,
+        p.post_created_at,
+        p.post_like_count,
+        u.user_nickname
+        <!--            c1.category_name AS childCategoryName,-->
+        <!--            c2.category_name AS parentCategoryName,-->
+        <!--            ppl.platform_name,-->
+        <!--            l.display_name AS languageName-->
         FROM post p
         JOIN user u ON p.user_id = u.user_id
         JOIN post_category c1 ON p.category_id = c1.category_id  <!-- 하위 카테고리 조인 -->
@@ -56,11 +62,11 @@
         JOIN problem_language l ON p.language_id = l.language_id
         <!-- 필터링 조건이 있을 때만 WHERE 절이 추가됨 -->
         <where>
-            <if test="childCategoryId != null">
-                AND p.category_id = #{childCategoryId}  <!-- 하위 카테고리 ID로 필터링 -->
-            </if>
             <if test="parentCategoryId != null">
                 AND c2.category_id = #{parentCategoryId}  <!-- 상위 카테고리 ID로 필터링 -->
+            </if>
+            <if test="childCategoryId != null">
+                AND p.category_id = #{childCategoryId}  <!-- 하위 카테고리 ID로 필터링 -->
             </if>
             <if test="platformId != null">
                 AND p.platform_id = #{platformId}  <!-- 플랫폼 ID로 필터링 -->
@@ -72,6 +78,36 @@
         ORDER BY p.post_created_at DESC
         <!-- 클라이언트에서 "page" 필드로 페이지를 요청하면 DTO의 getOffset()이 계산해서 전달 -->
         LIMIT #{size} OFFSET #{offset}  <!-- LIMIT {가져올 데이터 개수} OFFSET {건너뛸 데이터 개수} -->
+    </select>
+
+    <!-- 최신 게시글 조회 -->
+    <select id="selectRecentPosts" parameterType="Integer"
+            resultType="com.markmycode.mmc.post.dto.PostSummaryDto">
+        SELECT
+        p.post_id,
+        p.post_title,
+        p.post_created_at,
+        p.post_like_count,
+        u.user_nickname
+        FROM post p
+        JOIN user u ON p.user_id = u.user_id
+        ORDER BY p.post_created_at DESC
+        LIMIT 5 OFFSET 0
+    </select>
+
+    <!-- 좋아요 많이 받은 게시글 조회 -->
+    <select id="selectPopularPosts" parameterType="Integer"
+            resultType="com.markmycode.mmc.post.dto.PostSummaryDto">
+        SELECT
+        p.post_id,
+        p.post_title,
+        p.post_created_at,
+        p.post_like_count,
+        u.user_nickname
+        FROM post p
+        JOIN user u ON p.user_id = u.user_id
+        ORDER BY p.post_like_count DESC, p.post_created_at DESC
+        LIMIT 5 OFFSET 0
     </select>
 
 </mapper>

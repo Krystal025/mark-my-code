@@ -9,10 +9,7 @@ import com.markmycode.mmc.language.entity.Language;
 import com.markmycode.mmc.language.service.LanguageService;
 import com.markmycode.mmc.platform.entity.Platform;
 import com.markmycode.mmc.platform.service.PlatformService;
-import com.markmycode.mmc.post.dto.PostFilterRequestDto;
-import com.markmycode.mmc.post.dto.PostRequestDto;
-import com.markmycode.mmc.post.dto.PostResponseDto;
-import com.markmycode.mmc.post.dto.PostSummaryDto;
+import com.markmycode.mmc.post.dto.*;
 import com.markmycode.mmc.post.entity.Post;
 import com.markmycode.mmc.post.repository.PostMapper;
 import com.markmycode.mmc.post.repository.PostRepository;
@@ -103,7 +100,7 @@ public class PostService {
                 .collect(Collectors.toList());
     }
 
-        public PostResponseDto getPostById(Long postId){
+    public PostResponseDto getPostById(Long postId){
         PostResponseDto responseDto = postMapper.selectPost(postId);
         if (responseDto == null) {
             throw new NotFoundException(ErrorCode.POST_NOT_FOUND);
@@ -111,21 +108,30 @@ public class PostService {
         return responseDto;
     }
 
-    public List<PostSummaryDto> getPostsByFilters(PostFilterRequestDto filterRequestDto){
-        validateFilterCondition(filterRequestDto);
-        List<PostSummaryDto> posts = postMapper.selectPostsByFilters(filterRequestDto);
+    public List<PostSummaryDto> getFilteredPosts(PostListRequestDto requestDto){
+        validateFilterCondition(requestDto);
+        List<PostSummaryDto> posts = postMapper.selectPostsByFilters(requestDto);
         // 조회 API에서 빈 리스트는 예외가 아닌 빈 배열 반환이 더 적합함
         return posts.isEmpty() ? Collections.emptyList() : posts;
     }
 
-    // 필터링 조건 유효성 검사
-    private void validateFilterCondition(PostFilterRequestDto filterRequestDto){
-        Integer parentCategoryId = postMapper.selectParentIdByCategoryId(filterRequestDto.getChildCategoryId());
-        categoryService.validateCategory(parentCategoryId, filterRequestDto.getChildCategoryId());
-        platformService.validatePlatform(filterRequestDto.getPlatformId());
-        languageService.validateLanguage(filterRequestDto.getLanguageId());
+    public List<PostSummaryDto> getRecentPosts(){
+        List<PostSummaryDto> posts = postMapper.selectRecentPosts();
+        return posts.isEmpty() ? Collections.emptyList() : posts;
     }
 
+    public List<PostSummaryDto> getPopularPosts(){
+        List<PostSummaryDto> posts = postMapper.selectPopularPosts();
+        return posts.isEmpty() ? Collections.emptyList() : posts;
+    }
+
+    // 필터링 조건 유효성 검사
+    private void validateFilterCondition(PostListRequestDto requestDto){
+        Integer parentCategoryId = postMapper.selectParentIdByCategoryId(requestDto.getChildCategoryId());
+        categoryService.validateCategory(parentCategoryId, requestDto.getChildCategoryId());
+        platformService.validatePlatform(requestDto.getPlatformId());
+        languageService.validateLanguage(requestDto.getLanguageId());
+    }
 
     // 게시글 작성자 유효성 검사
     private void validatePostOwnership(User user, Post post){

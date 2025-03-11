@@ -2,12 +2,10 @@ package com.markmycode.mmc.post.dto;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 @Data
-@ToString // DTO값 로그 확인용
 @NoArgsConstructor
-public class PostFilterRequestDto {
+public class PostListRequestDto {
 
     private Integer parentCategoryId;
     private Integer childCategoryId;
