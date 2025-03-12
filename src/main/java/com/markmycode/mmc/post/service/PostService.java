@@ -36,7 +36,7 @@ public class PostService {
     private final PlatformService platformService;
     private final LanguageService languageService;
 
-    public void createPost(Long userId, PostRequestDto requestDto){
+    public Long createPost(Long userId, PostRequestDto requestDto){
         Integer parentCategoryId = postMapper.selectParentIdByCategoryId(requestDto.getChildCategoryId());
         categoryService.validateCategory(parentCategoryId, requestDto.getChildCategoryId());
         User user = userService.getUser(userId);
@@ -52,6 +52,7 @@ public class PostService {
                 .postContent(requestDto.getPostContent())
                 .build();
         postRepository.save(post);
+        return post.getPostId();
     }
 
     @Transactional

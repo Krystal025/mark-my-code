@@ -137,7 +137,7 @@ public class PostController {
     @PostMapping
     public String createPost(@AuthenticationPrincipal UserPrincipal userPrincipal,
                              @ModelAttribute PostRequestDto postRequestDto) {
-        postService.createPost(userPrincipal.getUserId(), postRequestDto);
-        return "redirect:/posts";
+        Long postId = postService.createPost(userPrincipal.getUserId(), postRequestDto);
+        return "redirect:/posts/" + postId;
     }
 }
