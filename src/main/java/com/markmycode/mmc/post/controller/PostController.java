@@ -102,11 +102,10 @@ public class PostController {
     }
 
     @GetMapping("/update-form/{postId}")
-    public String getPostEditForm(@PathVariable("postId") Long postId, Model model) {
+    public String getPostUpdateForm(@PathVariable("postId") Long postId, Model model) {
         // 기존 게시글 조회 (PostResponseDto에는 userId, childCategoryId, parentCategoryId 등 필요)
         PostResponseDto post = postService.getPostById(postId);
 
-        // 수정 폼용 DTO를 빌더 패턴으로 생성 (컨트롤러에서는 최소한의 처리만)
         PostRequestDto requestDto = PostRequestDto.builder()
                 .parentCategoryId(post.getParentCategoryId())
                 .childCategoryId(post.getChildCategoryId())
@@ -116,13 +115,11 @@ public class PostController {
                 .postContent(post.getPostContent())
                 .build();
 
-        // 부모 카테고리 목록 조회
         List<CategoryResponseDto> parentCategories = categoryService.getParentCategories();
         List<CategoryResponseDto> childCategories = categoryService.getChildCategories(post.getParentCategoryId());
         List<PlatformResponseDto> platforms = platformService.getPlatforms();
         List<LanguageResponseDto> languages = languageService.getLanguages();
 
-        // 모델에 값 추가
         model.addAttribute("post", post);
         model.addAttribute("requestDto", requestDto);
         model.addAttribute("postId", postId);

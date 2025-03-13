@@ -15,11 +15,6 @@ import java.util.Map;
 public class CustomOAuth2User implements OAuth2User, UserPrincipal {
     private final OAuth2UserInfo oAuth2UserInfo;
 
-    @Override
-    public Map<String, Object> getAttributes() {
-        return Map.of();
-    }
-
     // 사용자 권한 반환
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -38,9 +33,20 @@ public class CustomOAuth2User implements OAuth2User, UserPrincipal {
         return oAuth2UserInfo.getUserName();
     }
 
-    public Long getUserId(){ return oAuth2UserInfo.getUserId(); }
+    @Override
+    public Map<String, Object> getAttributes() {
+        return Map.of();
+    }
 
-    public String getUserEmail(){ return oAuth2UserInfo.getUserEmail(); }
+    @Override
+    public Long getUserId() {
+        return oAuth2UserInfo.getUserId();
+    }
+
+    @Override
+    public String getUserEmail() {
+        return oAuth2UserInfo.getUserEmail();
+    }
 
     public String getSocialId(){ return oAuth2UserInfo.getSocialId(); }
 

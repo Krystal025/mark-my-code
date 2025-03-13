@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorate="~{layouts/default}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Update Form</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <h1>사용자 정보 수정</h1>
+    <form id="userUpdateForm" th:action="@{/user/{userId}/update(userId=${user.userId})}" method="post"
+          th:object="${requestDto}">
+<!--        <div>-->
+<!--            <label for="userName">이름:</label>-->
+<!--            <input type="text" id="userName" th:field="*{userName}" required/>-->
+<!--        </div>-->
+<!--        <div>-->
+<!--            <label for="userEmail">이메일:</label>-->
+<!--            <input type="email" id="userEmail" th:field="*{userEmail}" required/>-->
+<!--        </div>-->
+<!--        <div>-->
+<!--            <label for="userPwd">비밀번호:</label>-->
+<!--            <input type="password" id="userPwd" th:field="*{userPwd}" required/>-->
+<!--        </div>-->
+        <div>
+            <label for="userNickname">닉네임:</label>
+            <input type="text" id="userNickname" th:field="*{userNickname}" required/>
+        </div>
+        <div>
+            <button type="submit">수정하기</button>
+        </div>
+    </form>
+    <a th:href="@{/user/{userId}(userId=${user.userId})}">취소</a>
+</div>
+</body>
+</html>

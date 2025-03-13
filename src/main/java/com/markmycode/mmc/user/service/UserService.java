@@ -55,10 +55,9 @@ public class UserService {
                 && userRepository.existsByUserNickname(requestDto.getUserNickname())){ // 다른 사용자가 사용 중인 닉네임이 아닌지
             throw new DuplicateException(ErrorCode.NICKNAME_ALREADY_EXIST);
         }
-        // 변경된 필드만 반영
-        if (requestDto.getUserPwd() != null){
-            user.updatePwd(passwordEncoder.encode(requestDto.getUserPwd()));
-        }
+//        if (requestDto.getUserPwd() != null){
+//            user.updatePwd(passwordEncoder.encode(requestDto.getUserPwd()));
+//        }
         if (requestDto.getUserNickname() != null){
             user.updateNickname(requestDto.getUserNickname());
         }

@@ -1,47 +1,30 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorate="~{layouts/default}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Detail</title>
 </head>
 <body>
+<h1>사용자 프로필</h1>
 
-<h1>사용자 정보 페이지</h1>
+<div layout:fragment="content">
+    <!-- 사용자 이름 -->
+    <h2 th:text="${user.userName}"></h2>
+    <!-- 사용자 이메일 -->
+    <p>이메일: <span th:text="${user.userEmail}"></span></p>
+    <!-- 사용자 닉네임 -->
+    <p>닉네임: <span th:text="${user.userNickname}"></span></p>
 
-<div>
-    <h2>Basic Information</h2>
-    <p><strong>이름:</strong> <span th:text="${user.userName}"></span></p>
-    <p><strong>이메일:</strong> <span th:text="${user.userEmail}"></span></p>
-    <p><strong>닉네임:</strong> <span th:text="${user.userNickname}"></span></p>
+    <!-- 프로필 수정 버튼: 프로필 소유자인 경우에만 보임 -->
+    <div th:if="${isProfileOwner}">
+        <button type="button"
+                onclick="location.href='[[@{/user/update-form/{userId}(userId=${user.userId})}]]'">
+            프로필 수정
+        </button>
+    </div>
 </div>
-
-<div>
-    <h2>Actions</h2>
-    <p th:if="${isProfileOwner}">
-        내 프로필
-    </p>
-
-    <p th:if="${isAdmin}">
-        관리자 권한이 있습니다.
-    </p>
-
-</div>
-
-<div>
-    <h2>Update Profile</h2>
-    <!-- 사용자가 본인인 경우에만 프로필 수정이 가능 -->
-    <form th:action="@{/user/{userId}/update(userId=${user.userId})}" method="post" th:if="${isMyPage}">
-        <label for="userName">이름: </label>
-        <input type="text" id="userName" name="userName" th:value="${user.userName}" />
-        <br/>
-        <label for="userEmail">이메일: </label>
-        <input type="email" id="userEmail" name="userEmail" th:value="${user.userEmail}" />
-        <br/>
-        <button type="submit">Update Profile</button>
-    </form>
-    <p th:if="${!isProfileOwner}">자신의 프로필만 수정할 수 있습니다.</p>
-</div>
-
 </body>
 </html>
