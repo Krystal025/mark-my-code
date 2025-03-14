@@ -1,6 +1,7 @@
 package com.markmycode.mmc.auth.jwt.dto;
 
 import com.markmycode.mmc.auth.model.UserPrincipal;
+import com.markmycode.mmc.user.dto.UserResponseDto;
 import com.markmycode.mmc.user.entity.User;
 import com.markmycode.mmc.user.enums.Role;
 import lombok.Builder;
@@ -20,6 +21,7 @@ public class CustomUserDetails implements UserDetails, UserPrincipal {
 
     private final Long userId;
     private final String userEmail;
+    private final String userNickname;
     private final String userPwd;
     private final Role userRole;
 
@@ -59,6 +61,15 @@ public class CustomUserDetails implements UserDetails, UserPrincipal {
         return true;
     }
 
+    // UserResponseDto 변환 메서드 구현
+    @Override
+    public UserResponseDto toResponseDto() {
+        return UserResponseDto.builder()
+                .userId(userId)
+                .userEmail(userEmail)
+                .userNickname(userNickname) // 일반 로그인 사용자의 닉네임 포함
+                .build();
+    }
 
     // User 엔티티로부터 CustomUserDetails 생성
     public static CustomUserDetails fromUser(User user) {

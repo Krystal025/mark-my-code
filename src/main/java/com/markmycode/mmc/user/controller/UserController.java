@@ -49,7 +49,7 @@ public class UserController {
     @PostMapping("/update/{userId}")
     public String updateUser(@AuthenticationPrincipal UserPrincipal userPrincipal,
                              @PathVariable("userId") Long userId,
-                             @RequestBody UserRequestDto requestDto){
+                             @ModelAttribute UserRequestDto requestDto){
         userService.updateUser(userPrincipal.getUserId(),userId,requestDto);
         return "redirect:/users/" + userId;
     }

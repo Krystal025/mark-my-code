@@ -88,7 +88,7 @@ public class UserService {
                 .userId(user.getUserId())
                 .userName(user.getUserName())
                 .userEmail(user.getUserEmail())
-                .userNickname(user.getUserEmail())
+                .userNickname(user.getUserNickname())
                 .userStatus(user.getUserStatus())
                 .userCreatedAt(user.getUserCreatedAt())
                 .build();

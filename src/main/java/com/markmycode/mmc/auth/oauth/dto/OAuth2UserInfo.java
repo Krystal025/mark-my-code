@@ -13,6 +13,7 @@ public class OAuth2UserInfo {
     private Long userId; // 사용자 ID
     private String userName; // 사용자 이름
     private String userEmail; // 사용자 이메일
+    private String userNickname; // 사용자 닉네임
     private Role userRole; // 사용자 권한
     private String socialId; // 소셜 제공자와 ID를 조합한 고유 식별자
     private Provider socialProvider; // 소셜 제공자

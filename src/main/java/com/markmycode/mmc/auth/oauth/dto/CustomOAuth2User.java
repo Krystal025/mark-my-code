@@ -1,6 +1,7 @@
 package com.markmycode.mmc.auth.oauth.dto;
 
 import com.markmycode.mmc.auth.model.UserPrincipal;
+import com.markmycode.mmc.user.dto.UserResponseDto;
 import com.markmycode.mmc.user.enums.Provider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
@@ -43,9 +44,12 @@ public class CustomOAuth2User implements OAuth2User, UserPrincipal {
         return oAuth2UserInfo.getUserId();
     }
 
-    @Override
     public String getUserEmail() {
         return oAuth2UserInfo.getUserEmail();
+    }
+
+    public String getUserNickname(){
+        return oAuth2UserInfo.getUserNickname();
     }
 
     public String getSocialId(){ return oAuth2UserInfo.getSocialId(); }
@@ -54,6 +58,17 @@ public class CustomOAuth2User implements OAuth2User, UserPrincipal {
 
     public static CustomOAuth2User fromOAuth2UserInfo(OAuth2UserInfo oAuth2UserInfo) {
         return new CustomOAuth2User(oAuth2UserInfo);
+    }
+
+    // UserResponseDto 변환 메서드 구현
+    @Override
+    public UserResponseDto toResponseDto() {
+        return UserResponseDto.builder()
+                .userId(getUserId())
+                .userName(getName())
+                .userEmail(getUserEmail())
+                .userNickname(getUserNickname())
+                .build();
     }
 
 }

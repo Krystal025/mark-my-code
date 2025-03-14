@@ -11,7 +11,6 @@ public class GlobalControllerAdvice {
 
     @ModelAttribute("loginUser")
     public UserResponseDto addUserToModel(@AuthenticationPrincipal UserPrincipal userPrincipal) {
-
-        return null;    }
-
+        return (userPrincipal != null) ? userPrincipal.toResponseDto() : null;
+    }
 }
