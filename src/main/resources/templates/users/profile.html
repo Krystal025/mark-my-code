@@ -22,7 +22,7 @@
 
     <!-- 프로필 수정 버튼: 프로필 소유자인 경우에만 보임 -->
     <div th:if="${isProfileOwner}">
-        <a th:href="@{/users/update-form/{userId}(userId=${loginUser.userId})}">수정하기</a>
+        <a th:href="@{/users/{userId}/edit(userId=${loginUser.userId})}">수정하기</a>
     </div>
 </div>
 </body>

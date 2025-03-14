@@ -12,7 +12,7 @@
                     <a href="/">MMC</a>
                 </div>
                 <ul class="main-menu">
-                <li><a href="/posts">게시판</a></li><li><a href="/posts/create-form">게시글 작성하기</a></li>
+                <li><a href="/posts">게시판</a></li><li><a href="/posts/new">게시글 작성하기</a></li>
 <!--                <li><a href="/notice">공지사항</a></li>-->
 <!--                <li><a href="/qna">Q&A</a></li>-->
                 </ul>
@@ -23,11 +23,12 @@
                             <li><a th:href="@{/users/{userId}(userId=${loginUser.userId})}">마이페이지</a></li>
 <!--                            <li><a href="/my-posts">내 글 보기</a></li>-->
 <!--                            <li><a href="/logout">로그아웃</a></li>-->
+                            <li><a href="/users/signup">회원가입</a></li>
                         </ul>
                     </div>
                     <div th:unless="${loginUser}">
 <!--                        <a href="/login">로그인</a>-->
-<!--                        <a href="/signup">회원가입</a>-->
+                        <a href="/users/signup">회원가입</a>
                     </div>
                 </div>
             </nav>

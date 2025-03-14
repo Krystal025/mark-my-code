@@ -35,7 +35,7 @@
     <p>수정일: <span th:text="${post.postUpdatedAt}"></span></p>
 
     <div th:if="${isAuthor}">
-        <a th:href="@{/posts/update-form/{postId}(postId=${post.postId})}">수정하기</a>
+        <a th:href="@{/posts/{postId}/edit(postId=${post.postId})}">수정하기</a>
     </div>
 
     <!-- highlight.js 스크립트 추가 -->

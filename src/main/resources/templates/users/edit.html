@@ -10,7 +10,7 @@
 <body>
 <div layout:fragment="content">
     <h1>사용자 정보 수정</h1>
-    <form id="userUpdateForm" th:action="@{/users/update/{userId}(userId=${loginUser.userId})}" method="post"
+    <form id="userUpdateForm" th:action="@{/users/{userId}/update(userId=${loginUser.userId})}" method="post"
           th:object="${requestDto}">
         <div>
             <label for="userNickname">닉네임:</label>

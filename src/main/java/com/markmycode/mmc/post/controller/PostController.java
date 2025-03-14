@@ -31,8 +31,34 @@ public class PostController {
     private final PlatformService platformService;
     private final LanguageService languageService;
 
+    // 게시글 등록
+    @PostMapping
+    public String create(@AuthenticationPrincipal UserPrincipal userPrincipal,
+                             @ModelAttribute PostRequestDto postRequestDto) {
+        Long postId = postService.createPost(userPrincipal.getUserId(), postRequestDto);
+        return "redirect:/posts/" + postId;
+    }
+
+    // 게시글 수정
+    @PostMapping("/{postId}/update")
+    public String update(@AuthenticationPrincipal UserPrincipal userPrincipal,
+                         @PathVariable("postId") Long postId,
+                         @ModelAttribute PostRequestDto requestDto){
+        postService.updatePost(userPrincipal.getUserId(), postId, requestDto);
+        return "redirect:/posts/" + postId;
+    }
+
+    // 게시글 삭제
+    @DeleteMapping("{postId}")
+    public String delete(@AuthenticationPrincipal UserPrincipal userPrincipal,
+                         @PathVariable("postId") Long postId) {
+        postService.deletePost(userPrincipal.getUserId(), postId);
+        return "redirect:/posts";
+    }
+
+    // 게시글 목록 조회 (필터링 포함)
     @GetMapping
-    public String getPostList(@ModelAttribute PostListRequestDto requestDto, Model model) {
+    public String getList(@ModelAttribute PostListRequestDto requestDto, Model model) {
         // 필터 목록 조회
         List<CategoryResponseDto> parentCategories = categoryService.getParentCategories();
         List<CategoryResponseDto> childCategories = new ArrayList<>(); // 부모 카테고리 선택 후 프론트에서 동적으로 변경
@@ -53,8 +79,9 @@ public class PostController {
         return "posts/list";
     }
 
+    // 게시글 상세페이지 조회
     @GetMapping("/{postId}")
-    public String getPostDetail(@AuthenticationPrincipal UserPrincipal userPrincipal,
+    public String getDetail(@AuthenticationPrincipal UserPrincipal userPrincipal,
                                 @PathVariable("postId") Long postId,
                                 Model model){
         PostResponseDto post = postService.getPostById(postId);
@@ -66,43 +93,27 @@ public class PostController {
         return "posts/detail";
     }
 
-
-    @PostMapping("/update/{postId}")
-    public String updatePost(@AuthenticationPrincipal UserPrincipal userPrincipal,
-                             @PathVariable("postId") Long postId,
-                             @ModelAttribute PostRequestDto requestDto){
-        postService.updatePost(userPrincipal.getUserId(), postId, requestDto);
-        return "redirect:/posts/" + postId;
-    }
-
-    @DeleteMapping("{postId}")
-    public String deletePost(@AuthenticationPrincipal UserPrincipal userPrincipal,
-                             @PathVariable("postId") Long postId) {
-        postService.deletePost(userPrincipal.getUserId(), postId);
-        return "redirect:/posts";
-    }
-
-    @GetMapping("/create-form")
-    public String getPostForm(Model model){
+    // 게시글 작성 폼 조회
+    @GetMapping("/new")
+    public String getNewForm(Model model){
         // 목록 조회는 기존과 동일한 서비스 메소드를 활용
         List<CategoryResponseDto> parentCategories = categoryService.getParentCategories();
         // 자식 카테고리는 선택된 부모에 따라 동적으로 변경할 수 있으므로 초기에는 빈 리스트로 처리
         List<CategoryResponseDto> childCategories = new ArrayList<>();
         List<PlatformResponseDto> platforms = platformService.getPlatforms();
         List<LanguageResponseDto> languages = languageService.getLanguages();
-
         // 게시글 작성을 위한 빈 DTO 추가
         model.addAttribute("requestDto", new PostRequestDto());
         model.addAttribute("parentCategories", parentCategories);
         model.addAttribute("childCategories", childCategories);
         model.addAttribute("platforms", platforms);
         model.addAttribute("languages", languages);
-
-        return "posts/create-form";
+        return "posts/new";
     }
 
-    @GetMapping("/update-form/{postId}")
-    public String getPostUpdateForm(@PathVariable("postId") Long postId, Model model) {
+    // 게시글 수정 폼 조회
+    @GetMapping("/{postId}/edit")
+    public String getEditForm(@PathVariable("postId") Long postId, Model model) {
         // 기존 게시글 조회 (PostResponseDto에는 userId, childCategoryId, parentCategoryId 등 필요)
         PostResponseDto post = postService.getPostById(postId);
 
@@ -128,13 +139,8 @@ public class PostController {
         model.addAttribute("platforms", platforms);
         model.addAttribute("languages", languages);
 
-        return "posts/update-form";
+        return "posts/edit";
     }
 
-    @PostMapping
-    public String createPost(@AuthenticationPrincipal UserPrincipal userPrincipal,
-                             @ModelAttribute PostRequestDto postRequestDto) {
-        Long postId = postService.createPost(userPrincipal.getUserId(), postRequestDto);
-        return "redirect:/posts/" + postId;
-    }
+
 }
