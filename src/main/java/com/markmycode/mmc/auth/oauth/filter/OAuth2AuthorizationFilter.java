@@ -49,8 +49,8 @@ public class OAuth2AuthorizationFilter extends OncePerRequestFilter {
                 // 새 액세스 토큰 발급
                 TokenResponseDto newToken = tokenService.refreshAccessToken(refreshToken);
                 // 쿠키에 새 토큰 저장
-                CookieUtils.addCookie(response, "Access_Token", newToken.getAccessToken());
-                CookieUtils.addCookie(response, "Refresh_Token", newToken.getRefreshToken());
+                CookieUtils.addCookie(response, "Access_Token", newToken.getAccessToken(), 30 * 60); // 30분 유효
+                CookieUtils.addCookie(response, "Refresh_Token", newToken.getRefreshToken(), 7 * 24 * 60 * 60); // 7일 유효
                 accessToken = newToken.getAccessToken();
                 System.out.println("New Access_Token is Generated");
             } catch (UnauthorizedException e) {

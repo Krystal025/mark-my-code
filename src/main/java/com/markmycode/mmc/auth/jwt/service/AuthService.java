@@ -25,11 +25,14 @@ public class AuthService {
     // 일반 로그인 성공시 AccessToken + RefreshToken 발급
     public TokenResponseDto login(LoginRequestDto loginRequestDto, HttpServletResponse response){
         try{
+            System.out.println("로그인 요청: 이메일 = " + loginRequestDto.getEmail() + ", 비밀번호 = " + loginRequestDto.getPassword());
             // 인증 처리
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(loginRequestDto.getEmail(), loginRequestDto.getPassword()));
+            System.out.println("인증 성공: " + authentication.isAuthenticated());
             // 사용자 정보 추출
             CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+            System.out.println("로그인한 사용자: " + customUserDetails.getUsername());
             // 토큰 생성
             String accessToken = jwtTokenProvider.generateAccessJwt(
                     customUserDetails.getUserId(),

@@ -23,6 +23,8 @@ public class CustomUserDetailsService implements UserDetailsService {
         if(user == null){
             throw new NotFoundException(ErrorCode.USER_NOT_FOUND);
         }
+        System.out.println("🔍 Stored Password (DB에서 가져온 값): " + user.getUserPwd()); // 👉 로그 확인
+
         return CustomUserDetails.fromUser(user);
     }
 }

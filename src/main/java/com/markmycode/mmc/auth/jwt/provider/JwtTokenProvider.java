@@ -42,7 +42,7 @@ public class JwtTokenProvider {
                 .claim("socialId", socialId)
                 .claim("authType", (socialId == null ? "basic" : "social"))
                 .issuedAt(new Date(System.currentTimeMillis())) // 토큰 발행시점 설정
-                .expiration(new Date(System.currentTimeMillis() + 1 * 60 * 1000L)) // 유효시간 : 1분
+                .expiration(new Date(System.currentTimeMillis() + 30 * 60 * 1000L)) // 30분 유효
                 .signWith(secretKey) // JWT 서명(signature)시 사용할 암호키 지정
                 .compact(); // JWT의 Header, Payload, Signature를 결합하여 문자열로 반환
     }
@@ -53,7 +53,7 @@ public class JwtTokenProvider {
                 .claim("userId", userId)
                 .claim("authType", (authType == null ? "basic" : "social"))
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + 24 * 60 * 60 * 1000L)) // 유효시간 : 1일
+                .expiration(new Date(System.currentTimeMillis() + 7 * 24 * 60 * 60 * 1000L)) // 7일 유효
                 .signWith(secretKey)
                 .compact();
     }

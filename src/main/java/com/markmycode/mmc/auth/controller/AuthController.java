@@ -7,43 +7,67 @@ import com.markmycode.mmc.auth.oauth.service.TokenService;
 import com.markmycode.mmc.util.CookieUtils;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-@RestController
+@Controller
 @RequestMapping("/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
+
     private final AuthService authService;
     private final TokenService tokenService;
 
-    @PostMapping("/login")
-    public ResponseEntity<TokenResponseDto> login(@RequestBody LoginRequestDto loginRequestDto,
-                                                  HttpServletResponse response){ // JSON 형식으로 전달받은 정보를 dto로 변환
-        TokenResponseDto tokenResponseDto = authService.login(loginRequestDto, response);
-        // 쿠키 유효성 확인 후 유지 여부 결정 로직 필요
-        CookieUtils.addCookie(response, "Refresh_Token", tokenResponseDto.getRefreshToken());
-        return ResponseEntity.ok()
-                .header("Authorization", "Bearer " + tokenResponseDto.getAccessToken())
-                .body(tokenResponseDto);    }
+    @GetMapping("/login")
+    public String getLoginForm(Model model) {
+        model.addAttribute("requestDto", new LoginRequestDto());
+        return "users/login"; // 로그인 폼 페이지로 이동
+    }
 
+    // 로그인 처리
+    @PostMapping("/login")
+    public String login(@ModelAttribute("requestDto") LoginRequestDto requestDto,
+                        HttpServletResponse response,
+                        Model model) {
+        try {
+            // 로그인 서비스 호출하여 토큰 발급
+            TokenResponseDto tokenResponseDto = authService.login(requestDto, response);
+            System.out.println("로그인 성공! Access Token: " + tokenResponseDto.getAccessToken());
+            // Access Token을 쿠키에 추가
+            CookieUtils.addCookie(response, "Access_Token", tokenResponseDto.getAccessToken(), 30 * 60); // 30분 유효
+            // Refresh Token을 쿠키에 추가
+            CookieUtils.addCookie(response, "Refresh_Token", tokenResponseDto.getRefreshToken(), 7 * 24 * 60 * 60); // 7일 유효
+            // 로그인 성공 시, 다른 페이지로 리다이렉션
+            return "redirect:/"; // 예: 로그인 후 홈 페이지로 리다이렉트
+        } catch (Exception e) {
+            System.out.println("로그인 실패! 에러 메시지: " + e.getMessage());
+            model.addAttribute("error", "로그인에 실패했습니다.");
+            return "users/login"; // 로그인 페이지로 다시 리다이렉션
+        }
+    }
+
+    // 리프레시 토큰을 이용한 Access Token 재발급
     @PostMapping("/refresh-token")
-    public ResponseEntity<?> refreshAccessToken(@CookieValue(value = "Refresh_Token", required = false) String refreshToken){
+    public String refreshAccessToken(@CookieValue(value = "Refresh_Token", required = false) String refreshToken,
+                                     HttpServletResponse response, Model model) {
         if (refreshToken == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+            model.addAttribute("error", "리프레시 토큰이 없습니다.");
+            return "users/login"; // 토큰이 없으면 로그인 페이지로
         }
         try {
             // 서비스에서 새로운 Access Token 발급
             TokenResponseDto tokenResponseDto = tokenService.refreshAccessToken(refreshToken);
-            // 컨트롤러에서 헤더 추가 후 응답
-            return ResponseEntity.ok()
-                    .header(HttpHeaders.SET_COOKIE, tokenResponseDto.getAccessToken())
-                    .body(tokenResponseDto);
+            CookieUtils.addCookie(response, "Access_Token", tokenResponseDto.getAccessToken(), 30 * 60); // 30분 유효
+            // Refresh Token을 쿠키에 추가
+            CookieUtils.addCookie(response, "Refresh_Token", tokenResponseDto.getRefreshToken(), 7 * 24 * 60 * 60); // 7일 유효
+
+            // 재발급 후, 다른 페이지로 리다이렉션
+            return "redirect:/"; // 예: 리다이렉션으로 홈 페이지로 이동
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+            model.addAttribute("error", "리프레시 토큰이 유효하지 않습니다.");
+            return "users/login"; // 토큰이 유효하지 않으면 로그인 페이지로
         }
     }
 }

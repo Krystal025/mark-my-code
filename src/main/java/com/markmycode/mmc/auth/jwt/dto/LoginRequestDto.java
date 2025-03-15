@@ -1,10 +1,12 @@
 package com.markmycode.mmc.auth.jwt.dto;
 
-import lombok.Getter;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Getter
+@Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class LoginRequestDto {
     private String email;
     private String password;

@@ -4,30 +4,32 @@
       layout:decorate="~{layouts/default}">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Signup Form</title>
 </head>
 <body>
 <div layout:fragment="content">
-    <form th:action="@{/users}" th:object="${requestDto}" method="post">
+    <form th:action="@{/users}" th:object="${requestDto}" method="post" onsubmit="return validateForm()">
         <div th:if="${#fields != null and #fields.hasErrors('*')}" class="error">  <!--요청 폼에 오류가 있는지 확인-->
             <p>입력값을 확인해주세요.</p>
         </div>
 
         <label for="userName">이름:</label>
         <input type="text" id="userName" th:field="*{userName}">
-        <p th:errors="*{userName}" class="error" th:text="#{error.requestDto.userName}"></p>
+        <p th:errors="*{userName}" class="error" th:text="#{error.requestDto.userName}" required></p>
 
         <label for="userEmail">이메일:</label>
-        <input type="email" id="userEmail" th:field="*{userEmail}">
+        <input type="text" id="userEmail" th:field="*{userEmail}"
+               pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}" required>
         <p th:errors="*{userEmail}" class="error" th:text="#{error.requestDto.userEmail}"></p>
 
         <label for="userPwd">비밀번호:</label>
         <input type="password" id="userPwd" th:field="*{userPwd}">
-        <p th:errors="*{userPwd}" class="error" th:text="#{error.requestDto.userPwd}"></p>
+        <p th:errors="*{userPwd}" class="error" th:text="#{error.requestDto.userPwd}" required></p>
 
         <label for="userPwd">비밀번호:</label>
         <input type="password" id="confirmPwd" th:field="*{confirmPwd}">
-        <p th:errors="*{confirmPwd}" class="error" th:text="#{error.requestDto.confirmPwd}"></p>
+        <p th:errors="*{confirmPwd}" class="error" th:text="#{error.requestDto.confirmPwd}" required></p>
 
         <label for="userNickname">닉네임:</label>
         <input type="text" id="userNickname" th:field="*{userNickname}">
@@ -38,17 +40,16 @@
 </div>
 <script>
     function validateForm() {
-        let password = document.getElementById("userPwd").value;
-        let confirmPwd = document.getElementById("confirmPwd").value;
-        let email = document.getElementById("userEmail").value;
-        let emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-        if (password !== confirmPwd) {
-            alert("비밀번호가 일치하지 않습니다.");
+        let emailInput = document.getElementById("userEmail");
+        if (!emailInput.checkValidity()) {
+            alert("올바른 이메일 형식을 입력해주세요.");
             return false;
         }
-        if (!emailRegex.test(email)) {
-            alert("올바른 이메일 형식을 입력해주세요.");
+
+        let password = document.getElementById("userPwd").value;
+        let confirmPwd = document.getElementById("confirmPwd").value;
+        if (password !== confirmPwd) {
+            alert("비밀번호가 일치하지 않습니다.");
             return false;
         }
         return true;
