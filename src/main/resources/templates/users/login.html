@@ -41,7 +41,10 @@
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ email: userEmail, password: userPwd }) // 수정된 부분
+            body: JSON.stringify({
+                email: document.getElementById('email').value,
+                password: document.getElementById('password').value
+            })
         })
         .then(response => {
             if (response.ok) {

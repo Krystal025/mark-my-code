@@ -44,10 +44,11 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         if (requestURI.startsWith("/")
                 || requestURI.startsWith("/home")
                 || requestURI.startsWith("/login")
-                || requestURI.startsWith("/auth/login")
+                || requestURI.startsWith("/auth/") && request.getMethod().equals("GET")
                 || requestURI.startsWith("/oauth2/authorization")
                 || requestURI.startsWith("/users/signup")
-                || (requestURI.startsWith("/posts/") || requestURI.startsWith("/comments/")) && request.getMethod().equals("GET")) {
+                || (requestURI.startsWith("/posts/")
+                || requestURI.startsWith("/comments/")) && request.getMethod().equals("GET")) {
             filterChain.doFilter(request, response);
             return;
         }

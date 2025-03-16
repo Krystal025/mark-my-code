@@ -9,6 +9,7 @@
 </head>
 <body>
 <div layout:fragment="content">
+    <h1>회원가입</h1>
     <form th:action="@{/users}" th:object="${requestDto}" method="post" onsubmit="return validateForm()">
         <div th:if="${#fields != null and #fields.hasErrors('*')}" class="error">  <!--요청 폼에 오류가 있는지 확인-->
             <p>입력값을 확인해주세요.</p>
