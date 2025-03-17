@@ -41,12 +41,12 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         String accessToken = jwtTokenProvider.generateAccessJwt(userId, userEmail, userRole, socialId);
         String refreshToken = jwtTokenProvider.generateRefreshJwt(customOAuth2User.getUserId(), "social");
 
-        // 액세스 토큰과 리프레시 토큰을 httpOnly 쿠키에 저장
+        // 쿠키에 엑세스 토큰 및 리프레시 토큰 저장
         CookieUtils.addCookie(response, "Access_Token", accessToken, 30 * 60); // 30분 유효
         CookieUtils.addCookie(response, "Refresh_Token", refreshToken, 7 * 24 * 60 * 60); // 7일 유효
 
         // 사용자가 로그인 후 이동할 페이지로 리다이렉트
-        response.sendRedirect("http://localhost:8080/login_success");
+        response.sendRedirect("http://localhost:8080/");
     }
 
 }

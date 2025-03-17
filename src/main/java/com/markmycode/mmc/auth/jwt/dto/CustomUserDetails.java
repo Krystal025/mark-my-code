@@ -21,8 +21,8 @@ public class CustomUserDetails implements UserDetails, UserPrincipal {
 
     private final Long userId;
     private final String userEmail;
-    private final String userNickname;
     private final String userPwd;
+    private final String userNickname;
     private final Role userRole;
 
     @Override
@@ -77,6 +77,7 @@ public class CustomUserDetails implements UserDetails, UserPrincipal {
                 .userId(user.getUserId())
                 .userEmail(user.getUserEmail())
                 .userPwd(user.getUserPwd())
+                .userNickname(user.getUserNickname())
                 .userRole(user.getUserRole())
                 .build();
     }

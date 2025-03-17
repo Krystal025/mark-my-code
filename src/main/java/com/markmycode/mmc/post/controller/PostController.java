@@ -82,10 +82,14 @@ public class PostController {
     // 게시글 상세페이지 조회
     @GetMapping("/{postId}")
     public String getDetail(@AuthenticationPrincipal UserPrincipal userPrincipal,
-                                @PathVariable("postId") Long postId,
-                                Model model){
+                            @PathVariable("postId") Long postId,
+                            Model model){
+
         PostResponseDto post = postService.getPostById(postId);
-        boolean isAuthor = post.getUserId().equals(userPrincipal.getUserId());
+        boolean isAuthor = false;
+        if (userPrincipal != null) {
+            isAuthor = post.getUserId().equals(userPrincipal.getUserId());
+        }
 
         model.addAttribute("post", post);
         model.addAttribute("isAuthor", isAuthor);

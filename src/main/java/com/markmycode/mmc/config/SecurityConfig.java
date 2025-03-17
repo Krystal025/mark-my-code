@@ -1,8 +1,7 @@
 package com.markmycode.mmc.config;
 
-import com.markmycode.mmc.auth.jwt.filter.JwtAuthorizationFilter;
+import com.markmycode.mmc.auth.jwt.filter.AuthorizationFilter;
 import com.markmycode.mmc.auth.jwt.provider.JwtTokenProvider;
-import com.markmycode.mmc.auth.oauth.filter.OAuth2AuthorizationFilter;
 import com.markmycode.mmc.auth.oauth.service.CustomOAuth2UserService;
 import com.markmycode.mmc.auth.oauth.service.TokenService;
 import lombok.RequiredArgsConstructor;
@@ -74,22 +73,29 @@ public class SecurityConfig {
                                 // 사용자 정보를 처리할 서비스 설정
                                 .userService(customOAuth2UserService))
                         // OAuth 인증이 성공적으로 완료된 후 실행될 성공 핸들러 설정
-                        .successHandler(OAuth2SuccessHandler));
+                        .successHandler(OAuth2SuccessHandler)
+                        .defaultSuccessUrl("/", true) // ✅ OAuth 로그인 성공 후 "/"로 이동
+                );
+        http
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.sendRedirect("/auth/login");
+                        })
+                );
         http
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/", "/admin/**", "/auth/**", "/oauth2/callback", "/users/signup", "/login_success", "/home", "/posts/**", "/login", "/refresh-token").permitAll()
+                        .requestMatchers("/", "/home", "/auth/**", "/login", "/oauth2/callback", "/oauth2/authorization", "/users/signup", "/login_success").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/posts/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/comments/**").permitAll()
                         .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
                         .anyRequest().authenticated());
-                System.out.println("✅ SecurityConfig 적용됨: /login 은 인증 없이 접근 가능");
         http
-                // JWT 인증 필터를 UsernamePasswordAuthenticationFilter 이전에 실행하여 모든 요청의 JWT 유효성을 검사함
-                .addFilterBefore(new JwtAuthorizationFilter(jwtTokenProvider, tokenService), UsernamePasswordAuthenticationFilter.class)
-                // OAuth2 로그인 인증 필터를 UsernamePasswordAuthenticationFilter 이전에 실행하여 소셜 로그인 처리를 수행함
-                .addFilterBefore(new OAuth2AuthorizationFilter(jwtTokenProvider, tokenService), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new AuthorizationFilter(jwtTokenProvider, tokenService), UsernamePasswordAuthenticationFilter.class)
                 // 세션을 사용하지 않고 Stateless 방식으로 설정하여 서버가 세션을 생성하거나 저장하지 않도록 함
                 .sessionManagement((session) -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+//                .addFilterBefore(new JwtAuthorizationFilter(jwtTokenProvider, tokenService), OAuth2AuthorizationFilter.class)
+//                .addFilterBefore(new OAuth2AuthorizationFilter(jwtTokenProvider, tokenService), UsernamePasswordAuthenticationFilter.class)
         return http.build();
     }
 }
