@@ -27,4 +27,13 @@ public class CookieUtils {
                 .orElse(null);
     }
 
+    public static void deleteCookie(HttpServletResponse response, String name){
+        // 쿠키 만료 처리
+        Cookie cookie = new Cookie(name, null);
+        cookie.setPath("/");  // 쿠키의 경로 설정
+        cookie.setMaxAge(0);  // 쿠키의 만료 시간을 0으로 설정하여 즉시 삭제
+        cookie.setHttpOnly(true);  // 안전성을 위해 HttpOnly 설정
+        cookie.setAttribute("SameSite", "Strict");  // SameSite 설정
+        response.addCookie(cookie);  // 응답에 쿠키 추가
+    }
 }

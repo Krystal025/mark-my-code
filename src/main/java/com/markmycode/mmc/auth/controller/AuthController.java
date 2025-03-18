@@ -28,23 +28,18 @@ public class AuthController {
             System.out.println("로그인 성공! Access Token: " + tokenResponseDto.getAccessToken());
             return "redirect:/";
         } catch (Exception e) {
-            System.out.println("로그인 실패! 에러 메시지: " + e.getMessage());
             model.addAttribute("error", "Invalid credentials");
             return "users/login";
         }
     }
-//    @PostMapping("/login")
-//    public ResponseEntity<TokenResponseDto> login(@RequestBody LoginRequestDto requestDto,
-//                        HttpServletResponse response) {
-//        try {
-//            TokenResponseDto tokenResponseDto = authService.login(requestDto, response);
-//            System.out.println("로그인 성공! Access Token: " + tokenResponseDto.getAccessToken());
-//            return ResponseEntity.ok(tokenResponseDto);
-//        } catch (Exception e) {
-//            System.out.println("로그인 실패! 에러 메시지: " + e.getMessage());
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
-//        }
-//    }
+
+    // 로그아웃 처리
+    @GetMapping("/logout")
+    public String logout(HttpServletResponse response) {
+        // JWT 쿠키 삭제 (만료된 쿠키로 설정)
+        CookieUtils.deleteCookie(response, "Access_Token");
+        return "redirect:/";  // 로그인 페이지로 리다이렉트
+    }
 
     @GetMapping("/login")
     public String getLoginForm(Model model) {
@@ -72,11 +67,10 @@ public class AuthController {
             CookieUtils.addCookie(response, "Access_Token", tokenResponseDto.getAccessToken(), 30 * 60); // 30분 유효
             // Refresh Token을 쿠키에 추가
             CookieUtils.addCookie(response, "Refresh_Token", tokenResponseDto.getRefreshToken(), 7 * 24 * 60 * 60); // 7일 유효
-
             // 재발급 후, 다른 페이지로 리다이렉션
-            return "redirect:/"; // 예: 리다이렉션으로 홈 페이지로 이동
+            return "redirect:/";
         } catch (RuntimeException e) {
-            model.addAttribute("error", "리프레시 토큰이 유효하지 않습니다.");
+            model.addAttribute("error", "Invalid Refresh Token");
             return "users/login"; // 토큰이 유효하지 않으면 로그인 페이지로
         }
     }
