@@ -26,7 +26,6 @@ public class AuthorizationFilter extends OncePerRequestFilter {
 
     private boolean isPublicPath(String uri, String method) {
         return uri.equals("/") // 메인 페이지 경로를 공용 경로로 허용
-                || uri.startsWith("/home")
                 || uri.startsWith("/login")
                 || uri.startsWith("/auth/")
                 || uri.startsWith("/oauth2/authorization")
@@ -41,9 +40,9 @@ public class AuthorizationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String requestURI = request.getRequestURI();
         String method = request.getMethod();
+        String accessToken = CookieUtils.getCookie(request, "Access_Token");
 
         // 1. Access Token 확인 및 SecurityContext 설정
-        String accessToken = CookieUtils.getCookie(request, "Access_Token");
         if (accessToken != null && !accessToken.isEmpty()) {
             try {
                 jwtTokenProvider.isExpired(accessToken);
@@ -67,6 +66,7 @@ public class AuthorizationFilter extends OncePerRequestFilter {
                 }
             }
         }
+        //filterChain.doFilter(request, response);
 
         // 2. public 경로면 바로 통과
         if (isPublicPath(requestURI, method)) {

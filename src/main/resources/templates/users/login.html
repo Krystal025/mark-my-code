@@ -25,49 +25,13 @@
         <button type="submit">Login</button> <!-- 로그인 버튼 -->
 
         <div class="mt-3">
-            <button onclick="window.location.href='/auth/oauth/google'">Google 로그인</button> <!-- 구글 로그인 버튼 -->
+            <button onclick="window.location.href='/auth/google-login'">Google 로그인</button> <!-- 구글 로그인 버튼 -->
         </div>
     </form>
 
     <div th:if="${error}" class="mt-3" style="color: red;">
         <span th:text="${error}"></span>
     </div>
-<!--<script>-->
-<!--    document.getElementById("loginForm").onsubmit = function(event) {-->
-<!--        event.preventDefault(); // 폼 제출 기본 동작을 막음-->
-<!--        var userEmail = document.getElementById("email").value; // 수정된 부분-->
-<!--        var userPwd = document.getElementById("password").value; // 수정된 부분-->
-
-<!--        // fetch를 사용하여 AJAX 요청을 보냄-->
-<!--        fetch("/auth/login", { // 수정된 부분-->
-<!--            method: "POST",-->
-<!--            headers: {-->
-<!--                "Content-Type": "application/json",-->
-<!--            },-->
-<!--            body: JSON.stringify({-->
-<!--                email: document.getElementById('email').value,-->
-<!--                password: document.getElementById('password').value-->
-<!--            })-->
-<!--        })-->
-<!--        .then(response => {-->
-<!--            if (response.ok) {-->
-<!--                return response.json(); // 토큰을 포함한 JSON 응답을 받음-->
-<!--            } else {-->
-<!--                throw new Error("Invalid credentials");-->
-<!--            }-->
-<!--        })-->
-<!--        .then(data => {-->
-<!--            console.log("Access Token:", data.accessToken);-->
-<!--            console.log("Refresh Token:", data.refreshToken);-->
-<!--            // 로그인 성공 시, 다른 페이지로 리다이렉트하거나, 세션 관리 등을 처리-->
-<!--            window.location.href = data.redirectUrl; // 서버에서 받은 URL로 이동-->
-<!--        })-->
-<!--        .catch(error => {-->
-<!--            // 로그인 실패 시, 오류 메시지 표시-->
-<!--            document.getElementById("errorMessage").style.display = "block";-->
-<!--        });-->
-<!--    };-->
-<!--</script>-->
 </div>
 </body>
 </html>

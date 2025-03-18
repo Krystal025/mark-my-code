@@ -2,6 +2,7 @@ package com.markmycode.mmc.config;
 
 import com.markmycode.mmc.auth.jwt.filter.AuthorizationFilter;
 import com.markmycode.mmc.auth.jwt.provider.JwtTokenProvider;
+import com.markmycode.mmc.auth.oauth.handler.OAuth2SuccessHandler;
 import com.markmycode.mmc.auth.oauth.service.CustomOAuth2UserService;
 import com.markmycode.mmc.auth.oauth.service.TokenService;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +30,7 @@ public class SecurityConfig {
     private final TokenService tokenService;
     private final JwtTokenProvider jwtTokenProvider;
     private final CustomOAuth2UserService customOAuth2UserService;
-    private final com.markmycode.mmc.auth.oauth.handler.OAuth2SuccessHandler OAuth2SuccessHandler;
+    private final OAuth2SuccessHandler oAuth2SuccessHandler;
 
 //    // 사용자 인증(Authentication)을 처리하는 AuthenticationManager 반환
     @Bean
@@ -61,41 +62,34 @@ public class SecurityConfig {
         http
                 // 세션을 stateless로 관리하기 때문에 csrf 공격이 존재하지 않으므로 csrf 보안 비활성화
                 .csrf(AbstractHttpConfigurer::disable)
+                // 세션을 사용하지 않고 Stateless 방식으로 설정하여 서버가 세션을 생성하거나 저장하지 않도록 함
+                .sessionManagement((session) -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 // 폼 로그인 방식 대신 API 기반의 인증방식을 사용하기 때문에 비활성화
                 .formLogin(AbstractHttpConfigurer::disable)
                 // 토큰 기반 인증을 사용하기 때문에 기본 인증을 통해 검증하지 않도록 비활성화
                 .httpBasic(AbstractHttpConfigurer::disable);
         http
-                // OAuth2 기반 로그인 활성화
-                .oauth2Login((oauth2) -> oauth2
-                        // 제공자로부터 Access 토큰을 받은 후 사용자 정보(e.g. 이메일, 이름)를 가져오기 위한 엔드포인트 설정
-                        .userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig
-                                // 사용자 정보를 처리할 서비스 설정
-                                .userService(customOAuth2UserService))
-                        // OAuth 인증이 성공적으로 완료된 후 실행될 성공 핸들러 설정
-                        .successHandler(OAuth2SuccessHandler)
-                        .defaultSuccessUrl("/", true) // ✅ OAuth 로그인 성공 후 "/"로 이동
-                );
-        http
-                .exceptionHandling(exception -> exception
-                        .authenticationEntryPoint((request, response, authException) -> {
-                            response.sendRedirect("/auth/login");
-                        })
-                );
-        http
-                .authorizeHttpRequests((auth) -> auth
+                .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/home", "/auth/**", "/login", "/oauth2/callback", "/oauth2/authorization", "/users/signup", "/login_success").permitAll()
                         .requestMatchers(HttpMethod.GET, "/posts/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/comments/**").permitAll()
                         .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
                         .anyRequest().authenticated());
         http
-                .addFilterBefore(new AuthorizationFilter(jwtTokenProvider, tokenService), UsernamePasswordAuthenticationFilter.class)
-                // 세션을 사용하지 않고 Stateless 방식으로 설정하여 서버가 세션을 생성하거나 저장하지 않도록 함
-                .sessionManagement((session) -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-//                .addFilterBefore(new JwtAuthorizationFilter(jwtTokenProvider, tokenService), OAuth2AuthorizationFilter.class)
-//                .addFilterBefore(new OAuth2AuthorizationFilter(jwtTokenProvider, tokenService), UsernamePasswordAuthenticationFilter.class)
+                .oauth2Login(oauth2 -> oauth2
+                        // 제공자로부터 Access 토큰을 받은 후 사용자 정보(e.g. 이메일, 이름)를 가져오기 위한 엔드포인트 설정
+                        .userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig.userService(customOAuth2UserService))
+                        .successHandler(oAuth2SuccessHandler)
+                        // .defaultSuccessUrl("/", true) // OAuth 로그인 성공 후 "/"로 이동
+                );
+        http
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint((request, response, authException) -> response.sendRedirect("/auth/login"))
+                );
+        http
+                .addFilterBefore(new AuthorizationFilter(jwtTokenProvider, tokenService), UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
 }

@@ -34,7 +34,7 @@ public class AuthController {
     }
 
     // 로그아웃 처리
-    @GetMapping("/logout")
+    @PostMapping("/logout")
     public String logout(HttpServletResponse response) {
         // JWT 쿠키 삭제 (만료된 쿠키로 설정)
         CookieUtils.deleteCookie(response, "Access_Token");
@@ -48,7 +48,7 @@ public class AuthController {
     }
 
     // 구글 로그인 리다이렉트 처리
-    @GetMapping("/oauth/google")
+    @GetMapping("/google-login")
     public String googleLogin() {
         return "redirect:/oauth2/authorization/google"; // OAuth2 로그인 페이지로 리다이렉트
     }
