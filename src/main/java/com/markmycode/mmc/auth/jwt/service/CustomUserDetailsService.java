@@ -23,7 +23,6 @@ public class CustomUserDetailsService implements UserDetailsService {
         if(user == null){
             throw new NotFoundException(ErrorCode.USER_NOT_FOUND);
         }
-        System.out.println("✅ User loaded: Email=" + user.getUserEmail() + ", Nickname=" + user.getUserNickname());
         return CustomUserDetails.fromUser(user);
     }
 }

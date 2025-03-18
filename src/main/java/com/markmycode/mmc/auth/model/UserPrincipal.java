@@ -7,8 +7,6 @@ import java.util.Collection;
 
 public interface UserPrincipal {
     Long getUserId();
-    // String getUserEmail();
-    // String getUserName();
     Collection<? extends GrantedAuthority> getAuthorities();
 
     // 각 구현체에서 자신에 맞는 UserResponseDto를 생성하도록 구현

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Header</title>
@@ -18,7 +18,7 @@
                 </ul>
                 <div class="user-menu">
                     <div th:if="${loginUser}">
-                        <span th:text="${loginUser.userNickname} ?: '사용자'">사용자</span>
+                        <span th:text="${loginUser?.userNickname ?: 'Guest'}"></span>
                         <ul class="dropdown">
                             <li><a th:href="@{/users/{userId}(userId=${loginUser.userId})}">마이페이지</a></li>
 <!--                            <li><a href="/my-posts">내 글 보기</a></li>-->

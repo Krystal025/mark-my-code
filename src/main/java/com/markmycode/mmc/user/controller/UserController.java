@@ -23,10 +23,8 @@ public class UserController {
     // 사용자 등록
     @PostMapping
     public String createUser(@Valid @ModelAttribute("requestDto") UserRequestDto requestDto,
-                             BindingResult bindingResult,
-                             Model model){
+                             BindingResult bindingResult){
         if (bindingResult.hasErrors()){
-//            model.addAttribute("requestDto", requestDto); // requestDto를 다시 추가
             return "users/signup";
         }
         if (!requestDto.getUserPwd().equals(requestDto.getConfirmPwd())){
