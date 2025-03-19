@@ -43,20 +43,20 @@ public class CommentService {
         // 댓글 유효성 검사
         Comment parentComment = validateAndGetParentComment(requestDto.getParentId(), postId);
         // 댓글 엔티티 생성
-        Comment comment = Comment.fromDto(requestDto, user, post, parentComment);
+        Comment comment = Comment.fromDto(requestDto, post, user, parentComment);
         // 댓글 저장
         commentRepository.save(comment);
     }
 
     @Transactional
-    public void updateComment(Long userId, Long commentId, CommentRequestDto requestDto){
+    public void updateComment(Long userId, Long commentId, String commentContent){
         User user = userService.getUser(userId);
         Comment comment = getComment(commentId);
         // 댓글 작성자와 요청한 사용자 간 일치 여부 확인
         validateCommentOwnership(user, comment);
         // 변경된 필드 반영
-        if (requestDto.getCommentContent() != null){
-            comment.updateContent(requestDto.getCommentContent());
+        if (commentContent != null){
+            comment.updateContent(commentContent);
         }
     }
 
@@ -108,7 +108,7 @@ public class CommentService {
     // 게시글 작성자 유효성 검사
     private void validateCommentOwnership(User user, Comment comment){
         // JPA 엔티티는 equals()를 재정의하여 식별자 비교로 소유자 확인시 효율성을 높임
-        if(!comment.getUser().equals(user)){
+        if(!comment.getUser().getUserId().equals(user.getUserId())){
             throw new ForbiddenException(ErrorCode.USER_NOT_MATCH);
         }
     }

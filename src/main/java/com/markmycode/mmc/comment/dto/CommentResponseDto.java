@@ -15,8 +15,10 @@ public class CommentResponseDto {
 
     private Long commentId;
     private Long postId;
+    private Long userId;
     private Long parentId;
     private String commentContent;
+    private String commentStatus;
     private LocalDateTime commentCreatedAt;
     private LocalDateTime commentUpdatedAt;
     private String userNickname;

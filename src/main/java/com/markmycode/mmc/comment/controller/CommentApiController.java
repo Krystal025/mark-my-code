@@ -30,7 +30,7 @@ public class CommentApiController {
     public ResponseEntity<String> updateComment(@AuthenticationPrincipal UserPrincipal userPrincipal,
                                                 @PathVariable("commentId") Long commentId,
                                                 @RequestBody CommentRequestDto requestDto){
-        commentService.updateComment(userPrincipal.getUserId(), commentId, requestDto);
+        commentService.updateComment(userPrincipal.getUserId(), commentId, requestDto.getCommentContent());
         return ResponseEntity.ok("Comment updated");
     }
 

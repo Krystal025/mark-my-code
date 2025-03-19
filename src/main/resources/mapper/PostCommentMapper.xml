@@ -10,6 +10,7 @@
         <result property="postId" column="post_id"/>
         <result property="parentId" column="parent_id"/>
         <result property="commentContent" column="comment_content"/>
+        <result property="commentStatus" column="comment_status"/>
         <result property="commentCreatedAt" column="comment_created_at"/>
         <result property="commentUpdatedAt" column="comment_updated_at"/>
         <result property="userNickname" column="user_nickname"/>
@@ -23,8 +24,10 @@
         c.post_id,
         c.parent_id,
         c.comment_content,
+        c.comment_status,
         c.comment_created_at,
         c.comment_updated_at,
+        u.user_id,
         u.user_nickname
         FROM post_comment c
         JOIN user u ON c.user_id = u.user_id
@@ -39,68 +42,15 @@
         c.post_id,
         c.parent_id,
         c.comment_content,
+        c.comment_status,
         c.comment_created_at,
         c.comment_updated_at,
+        u.user_id,
         u.user_nickname
         FROM post_comment c
         JOIN user u ON c.user_id = u.user_id
         WHERE c.parent_id = #{parentId}
         ORDER BY c.comment_created_at
     </select>
-
-
-<!--    <select id="selectCommentsByPostId" parameterType="Long" resultMap="commentResultMap">-->
-<!--        SELECT-->
-<!--        c.comment_id,-->
-<!--        c.post_id,-->
-<!--        c.parent_id,-->
-<!--        c.comment_content,-->
-<!--        c.comment_created_at,-->
-<!--        c.comment_updated_at,-->
-<!--        u.user_nickname-->
-<!--        FROM post_comment c-->
-<!--        JOIN user u ON c.user_id = u.user_id-->
-<!--        WHERE c.post_id = #{postId}-->
-<!--        AND c.parent_id IS NULL-->
-<!--        ORDER BY c.comment_created_at;-->
-<!--        SELECT-->
-<!--            c1.comment_id,-->
-<!--            c1.post_id,-->
-<!--            c1.comment_content,-->
-<!--            c1.comment_created_at,-->
-<!--            c1.comment_updated_at,-->
-<!--            u1.user_nickname,-->
-<!--            c2.comment_id AS child_comment_id,-->
-<!--            c2.parent_id AS parent_id,-->
-<!--            c2.comment_content AS child_comment_content,-->
-<!--            c2.comment_created_at AS child_comment_created_at,-->
-<!--            c2.comment_updated_at AS child_comment_updated_at,-->
-<!--            u2.user_nickname AS child_user_nickname-->
-<!--        FROM post_comment c1-->
-<!--        JOIN user u1 ON c1.user_id = u1.user_id-->
-<!--        LEFT JOIN post_comment c2 ON c1.comment_id = c2.parent_id-->
-<!--        LEFT JOIN user u2 ON c2.user_id = u2.user_id-->
-<!--        WHERE c1.post_id = #{postId}-->
-<!--        ORDER BY c1.comment_created_at, c2.comment_created_at;-->
-<!--    </select>-->
-
-<!--    <resultMap id="commentResultMap" type="com.markmycode.mmc.comment.dto.CommentResponseDto">-->
-<!--        &lt;!&ndash; 부모 댓글 자동 매핑 &ndash;&gt;-->
-<!--        <id property="commentId" column="comment_id"/>-->
-<!--        <result property="postId" column="post_id"/>-->
-<!--        <result property="commentContent" column="comment_content"/>-->
-<!--        <result property="commentCreatedAt" column="comment_created_at"/>-->
-<!--        <result property="commentUpdatedAt" column="comment_updated_at"/>-->
-<!--        <result property="userNickname" column="user_nickname"/>-->
-<!--        &lt;!&ndash; 대댓글 목록 매핑 &ndash;&gt;-->
-<!--        <collection property="childComments" ofType="com.markmycode.mmc.comment.dto.CommentResponseDto">-->
-<!--            <id property="commentId" column="child_comment_id"/>-->
-<!--            <result property="parentId" column="parent_id"/>-->
-<!--            <result property="commentContent" column="child_comment_content"/>-->
-<!--            <result property="commentCreatedAt" column="child_comment_created_at"/>-->
-<!--            <result property="commentUpdatedAt" column="child_comment_updated_at"/>-->
-<!--            <result property="userNickname" column="child_user_nickname"/>-->
-<!--        </collection>-->
-<!--    </resultMap>-->
 
 </mapper>

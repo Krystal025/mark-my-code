@@ -20,9 +20,12 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/posts")
@@ -38,22 +41,26 @@ public class PostController {
     // 게시글 등록
     @PostMapping
     public String create(@AuthenticationPrincipal UserPrincipal userPrincipal,
-                         @ModelAttribute PostRequestDto postRequestDto) {
+                         @ModelAttribute PostRequestDto postRequestDto,
+                         RedirectAttributes redirectAttributes) {
         Long postId = postService.createPost(userPrincipal.getUserId(), postRequestDto);
-        return "redirect:/posts/" + postId;
+        redirectAttributes.addAttribute("postId", postId);
+        return "redirect:/posts/{postId}";
     }
 
     // 게시글 수정
     @PostMapping("/{postId}/update")
     public String update(@AuthenticationPrincipal UserPrincipal userPrincipal,
                          @PathVariable("postId") Long postId,
-                         @ModelAttribute PostRequestDto requestDto){
+                         @ModelAttribute PostRequestDto requestDto,
+                         RedirectAttributes redirectAttributes){
         postService.updatePost(userPrincipal.getUserId(), postId, requestDto);
-        return "redirect:/posts/" + postId;
+        redirectAttributes.addAttribute("postId", postId);
+        return "redirect:/posts/{postId}";
     }
 
     // 게시글 삭제
-    @DeleteMapping("{postId}")
+    @DeleteMapping("{postId}/delete")
     public String delete(@AuthenticationPrincipal UserPrincipal userPrincipal,
                          @PathVariable("postId") Long postId) {
         postService.deletePost(userPrincipal.getUserId(), postId);
@@ -64,12 +71,36 @@ public class PostController {
     @PostMapping("/{postId}/comments")
     public String createComment(@AuthenticationPrincipal UserPrincipal userPrincipal,
                                 @PathVariable("postId") Long postId,
-                                @ModelAttribute CommentRequestDto requestDto) {
-        if (userPrincipal == null) {
-            return "redirect:/auth/login"; // 비회원 접근 시 로그인 페이지로 리다이렉트
-        }
+                                @ModelAttribute CommentRequestDto requestDto,
+                                RedirectAttributes redirectAttributes) {
         commentService.createComment(userPrincipal.getUserId(), postId, requestDto);
-        return "redirect:/posts/" + postId;
+        redirectAttributes.addAttribute("postId", postId);
+        return "redirect:/posts/{postId}";
+    }
+
+    // 댓글 수정
+    @PostMapping("/{postId}/comments/{commentId}/update")
+    public String updateComment(@AuthenticationPrincipal UserPrincipal userPrincipal,
+                                @PathVariable("postId") Long postId,
+                                @PathVariable("commentId") Long commentId,
+                                @RequestParam("commentContent") String commentContent,
+                                RedirectAttributes redirectAttributes) {
+        // 댓글 수정 서비스 호출
+        commentService.updateComment(userPrincipal.getUserId(), commentId, commentContent);
+        // 리다이렉트 시 postId 전달
+        redirectAttributes.addAttribute("postId", postId);
+        return "redirect:/posts/{postId}";
+    }
+
+    // 댓글 삭제
+    @PostMapping("/{postId}/comments/{commentId}/delete")
+    public String deleteComment(@AuthenticationPrincipal UserPrincipal userPrincipal,
+                                @PathVariable("postId") Long postId,
+                                @PathVariable("commentId") Long commentId,
+                                RedirectAttributes redirectAttributes) {
+        commentService.deactivateComment(userPrincipal.getUserId(), commentId);
+        redirectAttributes.addAttribute("postId", postId);
+        return "redirect:/posts/{postId}";
     }
 
     // 게시글 목록 조회 (필터링 포함)
@@ -102,10 +133,28 @@ public class PostController {
                             Model model){
         PostResponseDto post = postService.getPostById(postId);
         List<CommentResponseDto> comments = commentService.getComments(postId);
-        boolean isAuthor = userPrincipal != null && post.getUserId().equals(userPrincipal.getUserId());
+        Long loginUserId = userPrincipal != null ? userPrincipal.getUserId() : null;
+        // 게시글 작성자 여부
+        boolean isPostAuthor = loginUserId != null && post.getUserId().equals(loginUserId);
+        // 댓글별 작성자 여부 (Map으로 전달)
+        Map<Long, Boolean> isCommentAuthor = new HashMap<>();
+        if (loginUserId != null) {
+            for (CommentResponseDto comment : comments) {
+                isCommentAuthor.put(comment.getCommentId(), comment.getUserId().equals(loginUserId));
+                // 대댓글 및 대대댓글도 처리
+                for (CommentResponseDto child : comment.getChildComments()) {
+                    isCommentAuthor.put(child.getCommentId(), child.getUserId().equals(loginUserId));
+                    for (CommentResponseDto grandchild : child.getChildComments()) {
+                        isCommentAuthor.put(grandchild.getCommentId(), grandchild.getUserId().equals(loginUserId));
+                    }
+                }
+            }
+        }
         model.addAttribute("post", post);
         model.addAttribute("comments", comments);
-        model.addAttribute("isAuthor", isAuthor);
+        model.addAttribute("isPostAuthor", isPostAuthor);
+        model.addAttribute("isCommentAuthor", isCommentAuthor);
+        model.addAttribute("isAuthenticated", userPrincipal != null); // 로그인 여부 추가
         model.addAttribute("requestDto", new CommentRequestDto()); // 빈 DTO 추가
         return "posts/detail";
     }

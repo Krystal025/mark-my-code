@@ -40,7 +40,7 @@ public class Comment {
     private String commentContent;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "comment_status")
+    @Column
     private Status commentStatus;
 
     @Column(updatable = false)
@@ -61,10 +61,10 @@ public class Comment {
         this.commentUpdatedAt = LocalDateTime.now();
     }
 
-    public static Comment fromDto(CommentRequestDto dto, User user, Post post, Comment parentComment) {
+    public static Comment fromDto(CommentRequestDto dto, Post post, User user, Comment parentComment) {
         return Comment.builder()
-                .user(user)
                 .post(post)
+                .user(user)
                 .parentComment(parentComment)
                 .commentContent(dto.getCommentContent())
                 .build();
@@ -76,6 +76,7 @@ public class Comment {
 
     public void deactivate(){
         this.commentStatus = Status.INACTIVE;
+        this.commentUpdatedAt = LocalDateTime.now();
     }
 
 }

@@ -9,6 +9,6 @@ import java.util.List;
 public interface CommentMapper {
 
     List<CommentResponseDto> selectCommentsByPostId(Long postId);
-    List<CommentResponseDto> selectChildCommentsByParentId(Long parentId);
+    List<CommentResponseDto> selectChildCommentsByParentId(Long parentId); // MyBatis 내부적으로 사용중
 
 }
