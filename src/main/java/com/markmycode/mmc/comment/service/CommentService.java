@@ -34,20 +34,16 @@ public class CommentService {
     private final UserService userService;
     private final PostService postService;
 
+    @Transactional
     public void createComment(Long userId, Long postId, CommentRequestDto requestDto){
         // 사용자 확인
         User user = userService.getUser(userId);
         // 게시글 확인
         Post post = postService.getPost(postId);
         // 댓글 유효성 검사
-        Comment parentComment = validateAndGetParentComment(requestDto.getParentCommentId(), postId);
+        Comment parentComment = validateAndGetParentComment(requestDto.getParentId(), postId);
         // 댓글 엔티티 생성
-        Comment comment = Comment.builder()
-                .user(user)
-                .post(post)
-                .parentComment(parentComment)
-                .commentContent(requestDto.getCommentContent())
-                .build();
+        Comment comment = Comment.fromDto(requestDto, user, post, parentComment);
         // 댓글 저장
         commentRepository.save(comment);
     }
@@ -98,6 +94,12 @@ public class CommentService {
                 .orElseThrow(()-> new NotFoundException(ErrorCode.PARENT_COMMENT_NOT_FOUND));
         // 부모 댓글이 해당 게시글에 속하는지 확인
         if(!parentComment.getPost().getPostId().equals(postId)){
+            System.out.println("해당 게시글에 속하지 않는 댓글입니다.");
+            throw new BadRequestException(ErrorCode.INVALID_COMMENT);
+        }
+        // 깊이 체크 : 대대댓글(2단계)까지만 허용
+        if (parentComment.getParentComment() != null && parentComment.getParentComment().getParentComment() != null) {
+            System.out.println("대대댓글까지만 요청 가능합니다.");
             throw new BadRequestException(ErrorCode.INVALID_COMMENT);
         }
         return parentComment;

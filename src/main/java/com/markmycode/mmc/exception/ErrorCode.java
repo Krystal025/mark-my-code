@@ -13,7 +13,7 @@ public enum ErrorCode {
     INVALID_TOKEN(HttpStatus.BAD_REQUEST, "유효하지 않은 토큰입니다."),
     INVALID_CREDENTIALS(HttpStatus.BAD_REQUEST, "유효하지 않은 이메일이나 비밀번호입니다."),
     INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다."),
-    INVALID_COMMENT(HttpStatus.BAD_REQUEST, "해당 게시글에 속한 댓글이 아닙니다."),
+    INVALID_COMMENT(HttpStatus.BAD_REQUEST, "유효하지 않은 댓글 요청입니다."),
     INVALID_PARENT_CATEGORY(HttpStatus.BAD_REQUEST, "유효하지 않은 상위 카테고리입니다."),
     INVALID_CATEGORY(HttpStatus.BAD_REQUEST, "유효하지 않은 카테고리입니다."),
     INVALID_PLATFORM(HttpStatus.BAD_REQUEST, "유효하지 않은 플랫폼입니다."),

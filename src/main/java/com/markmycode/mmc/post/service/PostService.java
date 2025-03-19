@@ -9,7 +9,10 @@ import com.markmycode.mmc.language.entity.Language;
 import com.markmycode.mmc.language.service.LanguageService;
 import com.markmycode.mmc.platform.entity.Platform;
 import com.markmycode.mmc.platform.service.PlatformService;
-import com.markmycode.mmc.post.dto.*;
+import com.markmycode.mmc.post.dto.PostListRequestDto;
+import com.markmycode.mmc.post.dto.PostRequestDto;
+import com.markmycode.mmc.post.dto.PostResponseDto;
+import com.markmycode.mmc.post.dto.PostSummaryDto;
 import com.markmycode.mmc.post.entity.Post;
 import com.markmycode.mmc.post.repository.PostMapper;
 import com.markmycode.mmc.post.repository.PostRepository;
@@ -22,7 +25,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -43,14 +45,7 @@ public class PostService {
         Category category = categoryService.getCategory(requestDto.getChildCategoryId());
         Platform platform = platformService.getPlatform(requestDto.getPlatformId());
         Language language = languageService.getLanguage(requestDto.getLanguageId());
-        Post post = Post.builder()
-                .user(user)
-                .category(category)
-                .platform(platform)
-                .language(language)
-                .postTitle(requestDto.getPostTitle())
-                .postContent(requestDto.getPostContent())
-                .build();
+        Post post = Post.fromDto(requestDto, user, category, platform, language);
         postRepository.save(post);
         return post.getPostId();
     }
@@ -62,13 +57,13 @@ public class PostService {
         validatePostOwnership(user, post);
         // 변경된 필드만 반영
         if (requestDto.getChildCategoryId() != null){
-            post.changeCategory(categoryService.getCategory(requestDto.getChildCategoryId()));
+            post.updateCategory(categoryService.getCategory(requestDto.getChildCategoryId()));
         }
         if (requestDto.getPlatformId() != null){
-            post.changePlatform(platformService.getPlatform(requestDto.getPlatformId()));
+            post.updatePlatform(platformService.getPlatform(requestDto.getPlatformId()));
         }
         if (requestDto.getLanguageId() != null){
-            post.changeLanguage(languageService.getLanguage(requestDto.getLanguageId()));
+            post.updateLanguage(languageService.getLanguage(requestDto.getLanguageId()));
         }
         if(requestDto.getPostTitle() != null){
             post.updateTitle(requestDto.getPostTitle());
@@ -86,19 +81,6 @@ public class PostService {
         // 게시글 소유자가 요청한 사용자와 일치하는지 확인
         validatePostOwnership(user, post);
         postRepository.delete(post);
-    }
-
-    public List<PostSummaryDto> getAllPosts() {
-        List<Post> posts = postRepository.findAll();
-        return posts.stream()
-                .map(post -> PostSummaryDto.builder()
-                        .postId(post.getPostId())
-                        .postTitle(post.getPostTitle())
-                        .postCreatedAt(post.getPostCreatedAt())
-                        .postLikeCount(post.getPostLikeCount())
-                        .userNickname(post.getUser().getUserNickname())
-                        .build())
-                .collect(Collectors.toList());
     }
 
     public PostResponseDto getPostById(Long postId){

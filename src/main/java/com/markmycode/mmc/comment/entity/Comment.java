@@ -1,5 +1,6 @@
 package com.markmycode.mmc.comment.entity;
 
+import com.markmycode.mmc.comment.dto.CommentRequestDto;
 import com.markmycode.mmc.comment.enums.Status;
 import com.markmycode.mmc.post.entity.Post;
 import com.markmycode.mmc.user.entity.User;
@@ -58,6 +59,15 @@ public class Comment {
     @PreUpdate
     private void onUpdate(){
         this.commentUpdatedAt = LocalDateTime.now();
+    }
+
+    public static Comment fromDto(CommentRequestDto dto, User user, Post post, Comment parentComment) {
+        return Comment.builder()
+                .user(user)
+                .post(post)
+                .parentComment(parentComment)
+                .commentContent(dto.getCommentContent())
+                .build();
     }
 
     public void updateContent(String content){

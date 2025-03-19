@@ -24,6 +24,7 @@ public class UserService {
     private final BCryptPasswordEncoder passwordEncoder;
 
     // 사용자 회원가입
+    @Transactional
     public void createUser(UserRequestDto requestDto){
         String userEmail = EmailUtils.normalizeEmail(requestDto.getUserEmail());
         if(userRepository.existsByUserEmail(userEmail)){
@@ -32,12 +33,8 @@ public class UserService {
         if(userRepository.existsByUserNickname(requestDto.getUserNickname())){
             throw new DuplicateException(ErrorCode.NICKNAME_ALREADY_EXIST);
         }
-        User user = User.builder()
-                    .userName(requestDto.getUserName())
-                    .userEmail(userEmail)
-                    .userPwd(passwordEncoder.encode(requestDto.getUserPwd()))
-                    .userNickname(requestDto.getUserNickname())
-                    .build();
+        String encodedPassword = passwordEncoder.encode(requestDto.getUserPwd());
+        User user = User.fromDto(requestDto, encodedPassword);
         userRepository.save(user);
 
     }
@@ -84,14 +81,7 @@ public class UserService {
     // 사용자 정보 조회
     public UserResponseDto getUserById(Long userId){
         User user = getUser(userId);
-        return UserResponseDto.builder()
-                .userId(user.getUserId())
-                .userName(user.getUserName())
-                .userEmail(user.getUserEmail())
-                .userNickname(user.getUserNickname())
-                .userStatus(user.getUserStatus())
-                .userCreatedAt(user.getUserCreatedAt())
-                .build();
+        return user.toResponseDto();
     }
 
     // 해당 ID에 대한 엔티티 객체 반환

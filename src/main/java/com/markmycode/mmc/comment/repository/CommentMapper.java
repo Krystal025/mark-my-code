@@ -9,5 +9,6 @@ import java.util.List;
 public interface CommentMapper {
 
     List<CommentResponseDto> selectCommentsByPostId(Long postId);
+    List<CommentResponseDto> selectChildCommentsByParentId(Long parentId);
 
 }

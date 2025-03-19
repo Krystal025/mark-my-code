@@ -3,6 +3,8 @@ package com.markmycode.mmc.post.entity;
 import com.markmycode.mmc.category.entity.Category;
 import com.markmycode.mmc.language.entity.Language;
 import com.markmycode.mmc.platform.entity.Platform;
+import com.markmycode.mmc.post.dto.PostRequestDto;
+import com.markmycode.mmc.post.dto.PostSummaryDto;
 import com.markmycode.mmc.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -68,16 +70,37 @@ public class Post {
         this.postUpdatedAt = LocalDateTime.now();
     }
 
+    public static Post fromDto(PostRequestDto dto, User user, Category category, Platform platform, Language language) {
+        return Post.builder()
+                .user(user)
+                .category(category)
+                .platform(platform)
+                .language(language)
+                .postTitle(dto.getPostTitle())
+                .postContent(dto.getPostContent())
+                .build();
+    }
+
+    public PostSummaryDto toSummaryDto() {
+        return PostSummaryDto.builder()
+                .postId(postId)
+                .postTitle(postTitle)
+                .postCreatedAt(postCreatedAt)
+                .postLikeCount(postLikeCount)
+                .userNickname(user.getUserNickname())
+                .build();
+    }
+
     // 게시글 정보 변경을 위한 도메인 메서드 (Setter 직접 노출 방지)
-    public void changeCategory(Category category) {
+    public void updateCategory(Category category) {
         this.category = category;
     }
 
-    public void changePlatform(Platform platform) {
+    public void updatePlatform(Platform platform) {
         this.platform = platform;
     }
 
-    public void changeLanguage(Language language) {
+    public void updateLanguage(Language language) {
         this.language = language;
     }
 

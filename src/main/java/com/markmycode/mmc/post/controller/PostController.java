@@ -3,6 +3,9 @@ package com.markmycode.mmc.post.controller;
 import com.markmycode.mmc.auth.model.UserPrincipal;
 import com.markmycode.mmc.category.dto.CategoryResponseDto;
 import com.markmycode.mmc.category.service.CategoryService;
+import com.markmycode.mmc.comment.dto.CommentRequestDto;
+import com.markmycode.mmc.comment.dto.CommentResponseDto;
+import com.markmycode.mmc.comment.service.CommentService;
 import com.markmycode.mmc.language.dto.LanguageResponseDto;
 import com.markmycode.mmc.language.service.LanguageService;
 import com.markmycode.mmc.platform.dto.PlatformResponseDto;
@@ -27,6 +30,7 @@ import java.util.List;
 public class PostController {
 
     private final PostService postService;
+    private final CommentService commentService;
     private final CategoryService categoryService;
     private final PlatformService platformService;
     private final LanguageService languageService;
@@ -34,7 +38,7 @@ public class PostController {
     // 게시글 등록
     @PostMapping
     public String create(@AuthenticationPrincipal UserPrincipal userPrincipal,
-                             @ModelAttribute PostRequestDto postRequestDto) {
+                         @ModelAttribute PostRequestDto postRequestDto) {
         Long postId = postService.createPost(userPrincipal.getUserId(), postRequestDto);
         return "redirect:/posts/" + postId;
     }
@@ -54,6 +58,18 @@ public class PostController {
                          @PathVariable("postId") Long postId) {
         postService.deletePost(userPrincipal.getUserId(), postId);
         return "redirect:/posts";
+    }
+
+    // 댓글 등록
+    @PostMapping("/{postId}/comments")
+    public String createComment(@AuthenticationPrincipal UserPrincipal userPrincipal,
+                                @PathVariable("postId") Long postId,
+                                @ModelAttribute CommentRequestDto requestDto) {
+        if (userPrincipal == null) {
+            return "redirect:/auth/login"; // 비회원 접근 시 로그인 페이지로 리다이렉트
+        }
+        commentService.createComment(userPrincipal.getUserId(), postId, requestDto);
+        return "redirect:/posts/" + postId;
     }
 
     // 게시글 목록 조회 (필터링 포함)
@@ -84,16 +100,13 @@ public class PostController {
     public String getDetail(@AuthenticationPrincipal UserPrincipal userPrincipal,
                             @PathVariable("postId") Long postId,
                             Model model){
-
         PostResponseDto post = postService.getPostById(postId);
-        boolean isAuthor = false;
-        if (userPrincipal != null) {
-            isAuthor = post.getUserId().equals(userPrincipal.getUserId());
-        }
-
+        List<CommentResponseDto> comments = commentService.getComments(postId);
+        boolean isAuthor = userPrincipal != null && post.getUserId().equals(userPrincipal.getUserId());
         model.addAttribute("post", post);
+        model.addAttribute("comments", comments);
         model.addAttribute("isAuthor", isAuthor);
-
+        model.addAttribute("requestDto", new CommentRequestDto()); // 빈 DTO 추가
         return "posts/detail";
     }
 

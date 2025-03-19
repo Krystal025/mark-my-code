@@ -9,6 +9,12 @@
 
     <!-- highlight.js 스타일 추가 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/styles/default.min.css">
+    <style>
+        .comment-section { margin-top: 20px; }
+        .comment-list { margin-left: 20px; }
+        .reply-form { display: none; margin-left: 40px; }
+        .comment { border-bottom: 1px solid #ddd; padding: 10px; }
+    </style>
 
 </head>
 <body>
@@ -38,6 +44,68 @@
         <a th:href="@{/posts/{postId}/edit(postId=${post.postId})}">수정하기</a>
     </div>
 
+    <!-- 댓글 섹션 -->
+    <div class="comment-section">
+        <h3>댓글</h3>
+        <!-- 댓글 작성 폼 -->
+        <div th:if="${#authentication.authenticated}">
+            <form th:action="@{/posts/{postId}/comments(postId=${post.postId})}" method="post" th:object="${requestDto}">
+                <label>
+                    <textarea name="commentContent" th:field="*{commentContent}" rows="3" placeholder="댓글을 입력하세요" required></textarea>
+                </label>
+                <input type="hidden" name="parentId" value="">
+                <button type="submit">댓글 작성</button>
+            </form>
+        </div>
+        <div th:unless="${#authentication.authenticated}">
+            <p>댓글을 작성하려면 <a th:href="@{/auth/login}">로그인</a>하세요.</p>
+        </div>
+        <!-- 댓글 목록 -->
+        <div class="comment-list" th:each="comment : ${comments}">
+            <div class="comment">
+                <p th:text="${comment.userNickname} + ' (' + ${comment.commentCreatedAt} + ')'"></p>
+                <p th:text="${comment.commentContent}"></p>
+                <button class="reply-btn" th:data-comment-id="${comment.commentId}">답글</button>
+
+                <!-- 대댓글 작성 폼 (숨김) -->
+                <form th:action="@{/posts/{postId}/comments(postId=${post.postId})}" method="post" th:object="${requestDto}" class="reply-form" th:id="'reply-form-' + ${comment.commentId}">
+                    <label>
+                        <textarea name="commentContent" th:field="*{commentContent}" rows="2" placeholder="답글을 입력하세요" required></textarea>
+                    </label>
+                    <input type="hidden" name="parentId" th:value="${comment.commentId}">
+                    <button type="submit">답글 작성</button>
+                </form>
+
+                <!-- 대댓글 렌더링 -->
+                <div class="comment-list" th:each="child : ${comment.childComments}">
+                    <div class="comment">
+                        <p th:text="${child.userNickname} + ' (' + ${child.commentCreatedAt} + ')'"></p>
+                        <p th:text="${child.commentContent}"></p>
+                        <!-- 대댓글(1단계)에만 답글 버튼 표시 -->
+                        <button class="reply-btn" th:data-comment-id="${child.commentId}">답글</button>
+
+                        <!-- 대대댓글 작성 폼 -->
+                        <form th:action="@{/posts/{postId}/comments(postId=${post.postId})}" method="post" th:object="${requestDto}" class="reply-form" th:id="'reply-form-' + ${child.commentId}">
+                            <label>
+                                <textarea name="commentContent" th:field="*{commentContent}" rows="2" placeholder="답글을 입력하세요" required></textarea>
+                            </label>
+                            <input type="hidden" name="parentId" th:value="${child.commentId}">
+                            <button type="submit">답글 작성</button>
+                        </form>
+
+                        <!-- 대대댓글 렌더링 -->
+                        <div class="comment-list" th:each="grandchild : ${child.childComments}">
+                            <div class="comment">
+                                <p th:text="${grandchild.userNickname} + ' (' + ${grandchild.commentCreatedAt} + ')'"></p>
+                                <p th:text="${grandchild.commentContent}"></p>
+                                <!-- 대대댓글(2단계)에는 답글 버튼 없음 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     <!-- highlight.js 스크립트 추가 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/highlight.min.js"></script>
 
@@ -45,6 +113,16 @@
         // 페이지가 완전히 로드된 후 코드 하이라이팅 초기화
         document.addEventListener("DOMContentLoaded", function() {
             hljs.highlightAll();  // highlight.js로 코드 하이라이팅 실행
+
+            // 답글 버튼 클릭 시 폼 토글
+            document.querySelectorAll('.reply-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const commentId = this.getAttribute('data-comment-id');
+                    const replyForm = document.getElementById(`reply-form-${commentId}`);
+                    replyForm.style.display = replyForm.style.display === 'block' ? 'none' : 'block';
+                });
+            });
+
         });
     </script>
 </div>
