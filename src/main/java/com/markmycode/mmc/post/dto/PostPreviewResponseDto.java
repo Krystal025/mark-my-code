@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PostSummaryDto {
+public class PostPreviewResponseDto {
 
     private Long postId;
     private String postTitle;

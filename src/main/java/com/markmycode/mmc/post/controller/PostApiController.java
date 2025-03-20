@@ -1,18 +1,16 @@
 package com.markmycode.mmc.post.controller;
 
 import com.markmycode.mmc.auth.model.UserPrincipal;
+import com.markmycode.mmc.post.dto.PagedPostResponseDto;
 import com.markmycode.mmc.post.dto.PostListRequestDto;
 import com.markmycode.mmc.post.dto.PostRequestDto;
 import com.markmycode.mmc.post.dto.PostResponseDto;
-import com.markmycode.mmc.post.dto.PostSummaryDto;
 import com.markmycode.mmc.post.service.PostService;
 import com.markmycode.mmc.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/posts")
@@ -50,7 +48,7 @@ public class PostApiController {
     }
 
     @GetMapping
-    public List<PostSummaryDto> getFilteredPosts(@RequestBody PostListRequestDto requestDto){
+    public PagedPostResponseDto getFilteredPosts(@RequestBody PostListRequestDto requestDto){
         return postService.getFilteredPosts(requestDto);
     }
 

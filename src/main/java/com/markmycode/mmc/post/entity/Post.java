@@ -4,7 +4,7 @@ import com.markmycode.mmc.category.entity.Category;
 import com.markmycode.mmc.language.entity.Language;
 import com.markmycode.mmc.platform.entity.Platform;
 import com.markmycode.mmc.post.dto.PostRequestDto;
-import com.markmycode.mmc.post.dto.PostSummaryDto;
+import com.markmycode.mmc.post.dto.PostPreviewResponseDto;
 import com.markmycode.mmc.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -81,8 +81,8 @@ public class Post {
                 .build();
     }
 
-    public PostSummaryDto toSummaryDto() {
-        return PostSummaryDto.builder()
+    public PostPreviewResponseDto toSummaryDto() {
+        return PostPreviewResponseDto.builder()
                 .postId(postId)
                 .postTitle(postTitle)
                 .postCreatedAt(postCreatedAt)

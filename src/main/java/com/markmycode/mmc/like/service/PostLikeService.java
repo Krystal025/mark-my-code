@@ -3,7 +3,7 @@ package com.markmycode.mmc.like.service;
 import com.markmycode.mmc.like.entity.PostLike;
 import com.markmycode.mmc.like.repository.PostLikeMapper;
 import com.markmycode.mmc.like.repository.PostLikeRepository;
-import com.markmycode.mmc.post.dto.PostSummaryDto;
+import com.markmycode.mmc.post.dto.PostPreviewResponseDto;
 import com.markmycode.mmc.post.entity.Post;
 import com.markmycode.mmc.post.service.PostService;
 import com.markmycode.mmc.user.dto.UserSummaryDto;
@@ -47,7 +47,7 @@ public class PostLikeService {
     }
 
     // 사용자가 좋아요를 누른 게시글 목록 조회 (-> PostService에서 처리)
-    public List<PostSummaryDto> getLikedPosts(Long userId){
+    public List<PostPreviewResponseDto> getLikedPosts(Long userId){
         return postLikeMapper.selectLikedPostsByUser(userId);
     }
 

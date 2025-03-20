@@ -10,10 +10,7 @@ import com.markmycode.mmc.language.dto.LanguageResponseDto;
 import com.markmycode.mmc.language.service.LanguageService;
 import com.markmycode.mmc.platform.dto.PlatformResponseDto;
 import com.markmycode.mmc.platform.service.PlatformService;
-import com.markmycode.mmc.post.dto.PostListRequestDto;
-import com.markmycode.mmc.post.dto.PostRequestDto;
-import com.markmycode.mmc.post.dto.PostResponseDto;
-import com.markmycode.mmc.post.dto.PostSummaryDto;
+import com.markmycode.mmc.post.dto.*;
 import com.markmycode.mmc.post.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -114,9 +111,9 @@ public class PostController {
         }
         List<PlatformResponseDto> platforms = platformService.getPlatforms();
         List<LanguageResponseDto> languages = languageService.getLanguages();
-        List<PostSummaryDto> posts = postService.getFilteredPosts(requestDto);
+        PagedPostResponseDto pagedPosts = postService.getFilteredPosts(requestDto);
         // 조회된 목록을 모델에 추가하여 뷰에서 사용할 수 있도록 전달
-        model.addAttribute("posts", posts);
+        model.addAttribute("pagedPosts", pagedPosts);
         model.addAttribute("requestDto" , requestDto);
         model.addAttribute("parentCategories", parentCategories);
         model.addAttribute("childCategories", childCategories);

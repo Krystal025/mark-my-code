@@ -2,7 +2,7 @@ package com.markmycode.mmc.like.controller;
 
 import com.markmycode.mmc.auth.model.UserPrincipal;
 import com.markmycode.mmc.like.service.PostLikeService;
-import com.markmycode.mmc.post.dto.PostSummaryDto;
+import com.markmycode.mmc.post.dto.PostPreviewResponseDto;
 import com.markmycode.mmc.user.dto.UserSummaryDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +26,7 @@ public class PostLikeController {
     }
 
     @GetMapping
-    public List<PostSummaryDto> getLikedPosts(@AuthenticationPrincipal UserPrincipal userPrincipal){
+    public List<PostPreviewResponseDto> getLikedPosts(@AuthenticationPrincipal UserPrincipal userPrincipal){
         return postLikeService.getLikedPosts(userPrincipal.getUserId());
     }
 

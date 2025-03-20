@@ -1,6 +1,6 @@
 package com.markmycode.mmc;
 
-import com.markmycode.mmc.post.dto.PostSummaryDto;
+import com.markmycode.mmc.post.dto.PostPreviewResponseDto;
 import com.markmycode.mmc.post.service.PostService;
 import com.markmycode.mmc.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,8 +21,8 @@ public class MainController {
 
     @GetMapping
     public String index(Model model){
-        List<PostSummaryDto> recentPosts = postService.getRecentPosts();
-        List<PostSummaryDto> poplarPosts = postService.getPopularPosts();
+        List<PostPreviewResponseDto> recentPosts = postService.getRecentPosts();
+        List<PostPreviewResponseDto> poplarPosts = postService.getPopularPosts();
         model.addAttribute("recentPosts", recentPosts);
         model.addAttribute("popularPosts", poplarPosts);
         return "index";

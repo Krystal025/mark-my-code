@@ -9,10 +9,7 @@ import com.markmycode.mmc.language.entity.Language;
 import com.markmycode.mmc.language.service.LanguageService;
 import com.markmycode.mmc.platform.entity.Platform;
 import com.markmycode.mmc.platform.service.PlatformService;
-import com.markmycode.mmc.post.dto.PostListRequestDto;
-import com.markmycode.mmc.post.dto.PostRequestDto;
-import com.markmycode.mmc.post.dto.PostResponseDto;
-import com.markmycode.mmc.post.dto.PostSummaryDto;
+import com.markmycode.mmc.post.dto.*;
 import com.markmycode.mmc.post.entity.Post;
 import com.markmycode.mmc.post.repository.PostMapper;
 import com.markmycode.mmc.post.repository.PostRepository;
@@ -91,20 +88,38 @@ public class PostService {
         return responseDto;
     }
 
-    public List<PostSummaryDto> getFilteredPosts(PostListRequestDto requestDto){
+//    public List<PostPreviewResponseDto> getFilteredPosts(PostListRequestDto requestDto){
+//        validateFilterCondition(requestDto);
+//        List<PostPreviewResponseDto> posts = postMapper.selectPostsByFilters(requestDto);
+//        // 조회 API에서 빈 리스트는 예외가 아닌 빈 배열 반환이 더 적합함
+//        return posts.isEmpty() ? Collections.emptyList() : posts;
+//    }
+
+    public PagedPostResponseDto getFilteredPosts(PostListRequestDto requestDto){
         validateFilterCondition(requestDto);
-        List<PostSummaryDto> posts = postMapper.selectPostsByFilters(requestDto);
-        // 조회 API에서 빈 리스트는 예외가 아닌 빈 배열 반환이 더 적합함
+        // 전체 게시글 개수 조회
+        long totalPosts = postMapper.countPostsByFilters(requestDto);
+        // 페이징된 게시글 목록 조회
+        List<PostPreviewResponseDto> posts = postMapper.selectPostsByFilters(requestDto);
+        // 전체 페이지 수 계산
+        int totalPages = (int) Math.ceil((double) totalPosts / requestDto.getSize());
+        // PagedPostResponseDto 반환
+        return PagedPostResponseDto.builder()
+                .posts(posts.isEmpty() ? Collections.emptyList() : posts)
+                .currentPage(requestDto.getPage())
+                .pageSize(requestDto.getSize())
+                .totalPosts(totalPosts)
+                .totalPages(totalPages)
+                .build();
+    }
+
+    public List<PostPreviewResponseDto> getRecentPosts(){
+        List<PostPreviewResponseDto> posts = postMapper.selectRecentPosts();
         return posts.isEmpty() ? Collections.emptyList() : posts;
     }
 
-    public List<PostSummaryDto> getRecentPosts(){
-        List<PostSummaryDto> posts = postMapper.selectRecentPosts();
-        return posts.isEmpty() ? Collections.emptyList() : posts;
-    }
-
-    public List<PostSummaryDto> getPopularPosts(){
-        List<PostSummaryDto> posts = postMapper.selectPopularPosts();
+    public List<PostPreviewResponseDto> getPopularPosts(){
+        List<PostPreviewResponseDto> posts = postMapper.selectPopularPosts();
         return posts.isEmpty() ? Collections.emptyList() : posts;
     }
 
