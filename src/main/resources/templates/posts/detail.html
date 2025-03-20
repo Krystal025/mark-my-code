@@ -9,11 +9,34 @@
 
     <!-- highlight.js 스타일 추가 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/styles/default.min.css">
+    <!-- Font Awesome 추가 (하트 아이콘용) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         .comment-section { margin-top: 20px; }
         .comment-list { margin-left: 20px; }
         .reply-form, .edit-form { display: none; margin-left: 40px; }
         .comment { border-bottom: 1px solid #ddd; padding: 10px; }
+
+        /* 좋아요 하트 스타일 */
+        .like-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 20px;
+            padding: 0;
+            margin-left: 10px;
+            outline: none;
+        }
+        .like-btn.liked i {
+            color: red; /* 좋아요 눌렀을 때 빨간색 */
+        }
+        .like-btn:not(.liked) i {
+            color: gray; /* 좋아요 안 눌렀을 때 회색 */
+        }
+        .like-count {
+            margin-right: 5px;
+            vertical-align: middle;
+        }
     </style>
 
 </head>
@@ -35,12 +58,16 @@
     <div th:utext="${post.postContent}"></div>
     <!-- 좋아요 수와 버튼 -->
     <p>
-        좋아요 수: <span th:text="${post.postLikeCount}"></span>
-        <!-- 로그인했고, 작성자가 아닌 경우에만 좋아요 버튼 표시 -->
+        좋아요 수: <span class="like-count" th:text="${post.postLikeCount}"></span>
         <span th:if="${isAuthenticated and !isPostAuthor}">
             <form th:action="@{/posts/{postId}/like(postId=${post.postId})}" method="post" style="display: inline;">
-                <button type="submit" th:text="${isLiked} ? '좋아요 취소' : '좋아요'"></button>
+                <button type="submit" class="like-btn" th:classappend="${isLiked} ? 'liked' : ''">
+                    <i class="fas fa-heart"></i>
+                </button>
             </form>
+        </span>
+        <span th:unless="${isAuthenticated}">
+            <small>(<a th:href="@{/auth/login}">로그인</a> 후 좋아요를 누를 수 있습니다)</small>
         </span>
     </p>
     <!-- 작성일 -->
@@ -50,6 +77,10 @@
 
     <div th:if="${isPostAuthor}">
         <a th:href="@{/posts/{postId}/edit(postId=${post.postId})}">수정하기</a>
+        <form th:action="@{/posts/{postId}/delete(postId=${post.postId})}" method="post" style="display: inline;"
+              onsubmit="return confirm('정말로 이 게시글을 삭제하시겠습니까?');">
+            <button type="submit">삭제하기</button>
+        </form>
     </div>
 
     <!-- 댓글 섹션 -->

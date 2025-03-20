@@ -66,7 +66,7 @@ public class PostController {
     }
 
     // 게시글 삭제
-    @DeleteMapping("{postId}/delete")
+    @PostMapping("{postId}/delete")
     public String delete(@AuthenticationPrincipal UserPrincipal userPrincipal,
                          @PathVariable("postId") Long postId) {
         postService.deletePost(userPrincipal.getUserId(), postId);
@@ -170,12 +170,10 @@ public class PostController {
                 .postTitle(post.getPostTitle())
                 .postContent(post.getPostContent())
                 .build();
-
         List<CategoryResponseDto> parentCategories = categoryService.getParentCategories();
         List<CategoryResponseDto> childCategories = categoryService.getChildCategories(post.getParentCategoryId());
         List<PlatformResponseDto> platforms = platformService.getPlatforms();
         List<LanguageResponseDto> languages = languageService.getLanguages();
-
         model.addAttribute("post", post);
         model.addAttribute("requestDto", requestDto);
         model.addAttribute("postId", postId);
@@ -183,7 +181,6 @@ public class PostController {
         model.addAttribute("childCategories", childCategories);
         model.addAttribute("platforms", platforms);
         model.addAttribute("languages", languages);
-
         return "posts/edit";
     }
 
