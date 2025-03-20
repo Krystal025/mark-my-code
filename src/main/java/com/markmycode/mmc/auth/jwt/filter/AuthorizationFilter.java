@@ -66,14 +66,11 @@ public class AuthorizationFilter extends OncePerRequestFilter {
                 }
             }
         }
-        //filterChain.doFilter(request, response);
-
         // 2. public 경로면 바로 통과
         if (isPublicPath(requestURI, method)) {
             filterChain.doFilter(request, response);
             return;
         }
-
         // 3. 비공개 경로면 토큰 필수
         if (accessToken == null || accessToken.isEmpty()) {
             response.sendRedirect("/auth/login");

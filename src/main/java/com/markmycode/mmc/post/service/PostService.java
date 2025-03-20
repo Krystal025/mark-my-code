@@ -132,7 +132,7 @@ public class PostService {
     }
 
     // 게시글 작성자 유효성 검사
-    private void validatePostOwnership(User user, Post post){
+    public void validatePostOwnership(User user, Post post){
         // JPA 엔티티는 equals()를 재정의하여 식별자 비교로 소유자 확인시 효율성을 높임
         if(!Objects.equals(user.getUserId(), post.getUser().getUserId())){
             throw new ForbiddenException(ErrorCode.USER_NOT_MATCH);

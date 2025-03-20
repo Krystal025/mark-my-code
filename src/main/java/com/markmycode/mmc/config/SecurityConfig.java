@@ -20,6 +20,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 
 @Configuration // Spring 설정 클래스로 지정
@@ -85,7 +87,12 @@ public class SecurityConfig {
                 );
         http
                 .exceptionHandling(exception -> exception
-                        .authenticationEntryPoint((request, response, authException) -> response.sendRedirect("/auth/login"))
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            String queryString = request.getQueryString();
+                            String originalUrl = request.getRequestURI() + (queryString != null ? "?" + queryString : "");
+                            String redirectUrl = "/auth/login?redirect=" + URLEncoder.encode(originalUrl, StandardCharsets.UTF_8);
+                            response.sendRedirect(redirectUrl);
+                        })
                 );
         http
                 .addFilterBefore(new AuthorizationFilter(jwtTokenProvider, tokenService), UsernamePasswordAuthenticationFilter.class);

@@ -105,7 +105,7 @@ public class CommentService {
         return parentComment;
     }
 
-    // 게시글 작성자 유효성 검사
+    // 댓글 작성자 유효성 검사
     private void validateCommentOwnership(User user, Comment comment){
         // JPA 엔티티는 equals()를 재정의하여 식별자 비교로 소유자 확인시 효율성을 높임
         if(!comment.getUser().getUserId().equals(user.getUserId())){

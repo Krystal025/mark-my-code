@@ -33,8 +33,16 @@
     <p>언어: <span th:text="${post.languageName}"></span></p>
     <!-- 게시글 내용 -->
     <div th:utext="${post.postContent}"></div>
-    <!-- 좋아요 수 -->
-    <p>좋아요 수: <span th:text="${post.postLikeCount}"></span></p>
+    <!-- 좋아요 수와 버튼 -->
+    <p>
+        좋아요 수: <span th:text="${post.postLikeCount}"></span>
+        <!-- 로그인했고, 작성자가 아닌 경우에만 좋아요 버튼 표시 -->
+        <span th:if="${isAuthenticated and !isPostAuthor}">
+            <form th:action="@{/posts/{postId}/like(postId=${post.postId})}" method="post" style="display: inline;">
+                <button type="submit" th:text="${isLiked} ? '좋아요 취소' : '좋아요'"></button>
+            </form>
+        </span>
+    </p>
     <!-- 작성일 -->
     <p>작성일: <span th:text="${post.postCreatedAt}"></span></p>
     <!-- 수정일 -->
@@ -43,6 +51,7 @@
     <div th:if="${isPostAuthor}">
         <a th:href="@{/posts/{postId}/edit(postId=${post.postId})}">수정하기</a>
     </div>
+
     <!-- 댓글 섹션 -->
     <div class="comment-section">
         <h3>댓글</h3>

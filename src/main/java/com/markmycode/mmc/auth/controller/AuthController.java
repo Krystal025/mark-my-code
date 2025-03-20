@@ -22,11 +22,15 @@ public class AuthController {
 
     // 로그인 처리
     @PostMapping("/login")
-    public String login(@ModelAttribute LoginRequestDto requestDto, HttpServletResponse response, Model model) {
+    public String login(@ModelAttribute LoginRequestDto requestDto,
+                        @RequestParam(value = "redirect", required = false) String redirectUrl,
+                        HttpServletResponse response,
+                        Model model) {
         try {
             TokenResponseDto tokenResponseDto = authService.login(requestDto, response);
-            System.out.println("로그인 성공! Access Token: " + tokenResponseDto.getAccessToken());
-            return "redirect:/";
+            System.out.println("로그인 성공! Redirect URL: " + redirectUrl);
+            // 리디렉트 URL이 있을 경우 해당 경로로 이동
+            return (redirectUrl != null && !redirectUrl.isEmpty()) ? "redirect:" + redirectUrl : "redirect:/";
         } catch (Exception e) {
             model.addAttribute("error", "Invalid credentials");
             return "users/login";
