@@ -22,22 +22,13 @@
                             <li class="nav-item"><a class="nav-link" href="/posts/new">게시글 작성하기</a></li>
                         </ul>
                         <!-- 유저 메뉴 -->
-                        <div class="d-flex">
+                        <div class="d-flex align-items-center">
                             <div th:if="${loginUser}" class="d-flex align-items-center">
                                 <span class="navbar-text me-2" th:text="${loginUser?.userNickname ?: 'Guest'}"></span>
-                                <div class="dropdown">
-                                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                        메뉴
-                                    </button>
-                                    <ul class="dropdown-menu">
-                                        <li><a class="dropdown-item" th:href="@{/users/{userId}(userId=${loginUser.userId})}">마이페이지</a></li>
-                                        <li>
-                                            <form method="post" th:action="@{/auth/logout}">
-                                                <button type="submit" class="dropdown-item">로그아웃</button>
-                                            </form>
-                                        </li>
-                                    </ul>
-                                </div>
+                                <a class="btn btn-outline-secondary me-2" th:href="@{/users/{userId}(userId=${loginUser.userId})}">마이페이지</a>
+                                <form method="post" th:action="@{/auth/logout}" class="d-inline">
+                                    <button type="submit" class="btn btn-outline-secondary">로그아웃</button>
+                                </form>
                             </div>
                             <div th:unless="${loginUser}">
                                 <a href="/auth/login" class="btn btn-outline-primary me-2">로그인</a>
