@@ -7,31 +7,43 @@
 <body>
     <div th:fragment="header">
         <header>
-            <nav>
-                <div class="logo">
-                    <a href="/">MMC</a>
-                </div>
-                <ul class="main-menu">
-                <li><a href="/posts">게시판</a></li><li><a href="/posts/new">게시글 작성하기</a></li>
-<!--                <li><a href="/notice">공지사항</a></li>-->
-<!--                <li><a href="/qna">Q&A</a></li>-->
-                </ul>
-                <div class="user-menu">
-                    <div th:if="${loginUser}">
-                        <span th:text="${loginUser?.userNickname ?: 'Guest'}"></span>
-                        <ul class="dropdown">
-                            <li><a th:href="@{/users/{userId}(userId=${loginUser.userId})}">마이페이지</a></li>
-<!--                            <li><a href="/my-posts">내 글 보기</a></li>-->
-                            <li>
-                                <form method="post" th:action="@{/auth/logout}">
-                                    <button type="submit">로그아웃</button>
-                                </form>
-                            </li>
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <div class="container-fluid">
+                    <!-- 로고 -->
+                    <a class="navbar-brand" href="/">MMC</a>
+                    <!-- 모바일 토글 버튼 -->
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <!-- 네비게이션 메뉴 -->
+                    <div class="collapse navbar-collapse" id="navbarNav">
+                        <ul class="navbar-nav me-auto">
+                            <li class="nav-item"><a class="nav-link" href="/posts">게시판</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/posts/new">게시글 작성하기</a></li>
                         </ul>
-                    </div>
-                    <div th:unless="${loginUser}">
-                        <a href="/auth/login">로그인</a>
-                        <a href="/users/signup">회원가입</a>
+                        <!-- 유저 메뉴 -->
+                        <div class="d-flex">
+                            <div th:if="${loginUser}" class="d-flex align-items-center">
+                                <span class="navbar-text me-2" th:text="${loginUser?.userNickname ?: 'Guest'}"></span>
+                                <div class="dropdown">
+                                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        메뉴
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item" th:href="@{/users/{userId}(userId=${loginUser.userId})}">마이페이지</a></li>
+                                        <li>
+                                            <form method="post" th:action="@{/auth/logout}">
+                                                <button type="submit" class="dropdown-item">로그아웃</button>
+                                            </form>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div th:unless="${loginUser}">
+                                <a href="/auth/login" class="btn btn-outline-primary me-2">로그인</a>
+                                <a href="/users/signup" class="btn btn-primary">회원가입</a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </nav>
