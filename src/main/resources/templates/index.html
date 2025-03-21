@@ -4,38 +4,56 @@
       layout:decorate="~{layouts/default}">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Index</title>
 </head>
 <body>
 <section layout:fragment="content">
     <h1>Mark My Code</h1>
-    <p>이곳은 게시글 목록과 작성 페이지로 이동할 수 있는 메인 페이지입니다.</p>
+    <h3>당신의 코드를 공유하세요</h3>
     <p>게시글을 작성하고 목록을 확인해보세요.</p>
 
-    <div>
+    <!-- CTA(Call to Action) 버튼 -->
+    <div class="text-center mb-4">
+        <a href="/posts/new" class="btn btn-primary btn-lg">지금 게시글 작성하기</a>
+    </div>
+
+    <!-- 최신 게시글 -->
+    <div class="mb-4">
         <h2>최신 게시글</h2>
-        <ul>
-            <li th:each="post : ${recentPosts}">
-                <a th:href="@{/posts/{postId}(postId=${post.postId})}" th:text="${post.postTitle}"></a>
-                <p th:text="'작성자: ' + ${post.userNickname}"></p>
-                <p th:text="'좋아요 수: ' + ${post.postLikeCount}"></p>
-                <p th:text="'작성일: ' + ${post.postCreatedAt}"></p>
-            </li>
-        </ul>
+        <div class="row g-3">
+            <div class="col-md-4" th:each="post : ${recentPosts}">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <a th:href="@{/posts/{postId}(postId=${post.postId})}" th:text="${post.postTitle}"></a>
+                        </h5>
+                        <p class="card-text" th:text="'작성자: ' + ${post.userNickname}"></p>
+                        <p class="card-text" th:text="'좋아요 수: ' + ${post.postLikeCount}"></p>
+                        <p class="card-text" th:text="'작성일: ' + ${post.postCreatedAt}"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div>
+    <!-- 인기 게시글 -->
+    <div class="mt-5">
         <h2>인기 게시글</h2>
-        <ul>
-            <li th:each="post : ${popularPosts}">
-                <a th:href="@{/posts/{postId}(postId=${post.postId})}" th:text="${post.postTitle}"></a>
-                <p th:text="'작성자: ' + ${post.userNickname}"></p>
-                <p th:text="'좋아요 수: ' + ${post.postLikeCount}"></p>
-                <p th:text="'작성일: ' + ${post.postCreatedAt}"></p>
-            </li>
-        </ul>
+        <div class="row g-3">
+            <div class="col-md-4" th:each="post : ${popularPosts}">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <a th:href="@{/posts/{postId}(postId=${post.postId})}" th:text="${post.postTitle}"></a>
+                        </h5>
+                        <p class="card-text" th:text="'작성자: ' + ${post.userNickname}"></p>
+                        <p class="card-text" th:text="'좋아요 수: ' + ${post.postLikeCount}"></p>
+                        <p class="card-text" th:text="'작성일: ' + ${post.postCreatedAt}"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-
 </section>
 </body>
 </html>
