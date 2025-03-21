@@ -26,6 +26,7 @@ public class AuthorizationFilter extends OncePerRequestFilter {
 
     private boolean isPublicPath(String uri, String method) {
         return uri.equals("/") // 메인 페이지 경로를 공용 경로로 허용
+                || uri.startsWith("/css/")
                 || uri.startsWith("/login")
                 || uri.startsWith("/auth/")
                 || uri.startsWith("/oauth2/authorization")
