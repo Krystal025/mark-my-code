@@ -9,6 +9,10 @@
 </head>
 <body>
 <section layout:fragment="content">
+    <!-- 회원가입 성공시.표시할 알림창 -->
+    <div th:if="${successMessage}" class="alert alert-success mb-3" role="alert">
+        <span th:text="${successMessage}"></span>
+    </div>
     <div class="card p-4 mx-auto mt-5" style="max-width: 400px; width: 100%;">
         <h2 class="text-center mb-4">Login</h2>
 

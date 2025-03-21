@@ -1,7 +1,7 @@
 package com.markmycode.mmc.user.controller;
 
 import com.markmycode.mmc.auth.model.UserPrincipal;
-import com.markmycode.mmc.exception.ErrorCode;
+import com.markmycode.mmc.exception.custom.DuplicateException;
 import com.markmycode.mmc.user.dto.UserRequestDto;
 import com.markmycode.mmc.user.dto.UserResponseDto;
 import com.markmycode.mmc.user.service.UserService;
@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/users")
@@ -23,16 +24,23 @@ public class UserController {
     // 사용자 등록
     @PostMapping
     public String createUser(@Valid @ModelAttribute("requestDto") UserRequestDto requestDto,
-                             BindingResult bindingResult){
+                             BindingResult bindingResult,
+                             RedirectAttributes redirectAttributes){
         if (bindingResult.hasErrors()){
             return "users/signup";
         }
         if (!requestDto.getUserPwd().equals(requestDto.getConfirmPwd())){
-            bindingResult.rejectValue("confirmPwd", ErrorCode.INVALID_PASSWORD.name(), ErrorCode.INVALID_PASSWORD.getMessage());
+            bindingResult.reject("password.mismatch", "비밀번호가 일치하지 않습니다.");
             return "users/signup";
         }
-        userService.createUser(requestDto);
-        return "redirect:/";
+        try {
+            userService.createUser(requestDto);
+            redirectAttributes.addFlashAttribute("successMessage", "회원가입이 성공적으로 완료되었습니다!");
+            return "redirect:/auth/login";
+        } catch (DuplicateException e) {
+            bindingResult.reject(e.getErrorCode().name(), e.getMessage());
+            return "users/signup";
+        }
     }
 
     // 사용자 정보 수정

@@ -73,7 +73,7 @@ public class SecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable);
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/home", "/auth/**", "/login", "/oauth2/callback", "/oauth2/authorization", "/users/signup", "/login_success").permitAll()
+                        .requestMatchers("/", "/home", "/auth/**", "/login", "/oauth2/callback", "/oauth2/authorization", "/users", "/users/signup", "/users/check-email", "/users/check-nickname", "/login_success").permitAll()
                         .requestMatchers(HttpMethod.GET, "/posts/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/comments/**").permitAll()
                         .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")

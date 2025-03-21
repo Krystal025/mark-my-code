@@ -5,55 +5,89 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Signup Form</title>
+    <title>Signup Form</title>
 </head>
 <body>
-<div layout:fragment="content">
-    <h1>회원가입</h1>
-    <form th:action="@{/users}" th:object="${requestDto}" method="post" onsubmit="return validateForm()">
-        <div th:if="${#fields != null and #fields.hasErrors('*')}" class="error">  <!--요청 폼에 오류가 있는지 확인-->
-            <p>입력값을 확인해주세요.</p>
-        </div>
+<section layout:fragment="content">
+    <div class="card p-4 mx-auto mt-5 pt-3" style="max-width: 400px; width: 100%;">
+        <h1 class="text-center mb-4">회원가입</h1>
 
-        <label for="userName">이름:</label>
-        <input type="text" id="userName" th:field="*{userName}">
-        <p th:errors="*{userName}" class="error" th:text="#{error.requestDto.userName}" required></p>
+        <form th:action="@{/users}" th:object="${requestDto}" method="post" onsubmit="return validateForm()">
+            <!-- 전체 오류 메시지 -->
+            <div th:if="${#fields != null and #fields.hasGlobalErrors()}" class="alert alert-danger mb-3" role="alert">
+                <span th:each="err : ${#fields.globalErrors()}" th:text="${err}"></span>
+            </div>
 
-        <label for="userEmail">이메일:</label>
-        <input type="text" id="userEmail" th:field="*{userEmail}"
-               pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}" required>
-        <p th:errors="*{userEmail}" class="error" th:text="#{error.requestDto.userEmail}"></p>
+            <!-- 이름 -->
+            <div class="mb-3">
+                <label for="userName" class="form-label">이름</label>
+                <input type="text" id="userName" th:field="*{userName}" class="form-control" required>
+                <div th:errors="*{userName}" class="invalid-feedback" th:text="#{error.requestDto.userName}"></div>
+            </div>
 
-        <label for="userPwd">비밀번호:</label>
-        <input type="password" id="userPwd" th:field="*{userPwd}">
-        <p th:errors="*{userPwd}" class="error" th:text="#{error.requestDto.userPwd}" required></p>
+            <!-- 이메일 -->
+            <div class="mb-3">
+                <label for="userEmail" class="form-label">이메일</label>
+                <input type="email" id="userEmail" th:field="*{userEmail}" class="form-control"
+                       pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}" required
+                       onblur="checkEmail(this.value)">
+                <div th:errors="*{userEmail}" class="invalid-feedback" th:text="#{error.requestDto.userEmail}"></div>
+                <div id="emailFeedback" class="form-text"></div>
+            </div>
 
-        <label for="userPwd">비밀번호:</label>
-        <input type="password" id="confirmPwd" th:field="*{confirmPwd}">
-        <p th:errors="*{confirmPwd}" class="error" th:text="#{error.requestDto.confirmPwd}" required></p>
+            <!-- 비밀번호 -->
+            <div class="mb-3">
+                <label for="userPwd" class="form-label">비밀번호</label>
+                <input type="password" id="userPwd" th:field="*{userPwd}" class="form-control" required>
+                <div th:errors="*{userPwd}" class="invalid-feedback" th:text="#{error.requestDto.userPwd}"></div>
+            </div>
 
-        <label for="userNickname">닉네임:</label>
-        <input type="text" id="userNickname" th:field="*{userNickname}">
-        <p th:errors="*{userNickname}" class="error" th:text="#{error.requestDto.userNickname}"></p>
+            <div class="mb-3">
+                <label for="confirmPwd" class="form-label">비밀번호 확인</label>
+                <input type="password" id="confirmPwd" th:field="*{confirmPwd}" class="form-control" required>
+                <div th:errors="*{confirmPwd}" class="invalid-feedback" th:text="#{error.requestDto.confirmPwd}"></div>
+                <div class="invalid-feedback invalid-feedback-confirm"></div>
+            </div>
 
-        <button type="submit">가입하기</button>
-    </form>
-</div>
+            <!-- 닉네임 -->
+            <div class="mb-3">
+                <label for="userNickname" class="form-label">닉네임</label>
+                <input type="text" id="userNickname" th:field="*{userNickname}" class="form-control"
+                       onblur="checkNickname(this.value)">
+                <div th:errors="*{userNickname}" class="invalid-feedback" th:text="#{error.requestDto.userNickname}"></div>
+                <div id="nicknameFeedback" class="form-text"></div>
+            </div>
+
+            <!-- 제출 버튼 -->
+            <button type="submit" class="btn btn-primary w-100">가입하기</button>
+        </form>
+    </div>
+</section>
+
 <script>
     function validateForm() {
-        let emailInput = document.getElementById("userEmail");
-        if (!emailInput.checkValidity()) {
-            alert("올바른 이메일 형식을 입력해주세요.");
-            return false;
+        let email = document.getElementById("userEmail");
+        let pwd = document.getElementById("userPwd");
+        let confirmPwd = document.getElementById("confirmPwd");
+        let isValid = true;
+
+        if (!email.checkValidity()) {
+            email.classList.add("is-invalid");
+            isValid = false;
+        } else {
+            email.classList.remove("is-invalid");
         }
 
-        let password = document.getElementById("userPwd").value;
-        let confirmPwd = document.getElementById("confirmPwd").value;
-        if (password !== confirmPwd) {
-            alert("비밀번호가 일치하지 않습니다.");
-            return false;
+        if (pwd.value !== confirmPwd.value) {
+            confirmPwd.classList.add("is-invalid");
+            document.querySelector(".invalid-feedback-confirm").textContent = "비밀번호가 일치하지 않습니다.";
+            isValid = false;
+        } else {
+            confirmPwd.classList.remove("is-invalid");
+            document.querySelector(".invalid-feedback-confirm").textContent = "";
         }
-        return true;
+
+        return isValid;
     }
 </script>
 </body>

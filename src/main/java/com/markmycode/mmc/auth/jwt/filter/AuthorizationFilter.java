@@ -30,7 +30,10 @@ public class AuthorizationFilter extends OncePerRequestFilter {
                 || uri.startsWith("/auth/")
                 || uri.startsWith("/oauth2/authorization")
                 || uri.startsWith("/oauth2/callback")
+                || uri.startsWith("/users")
                 || uri.startsWith("/users/signup")
+                || uri.startsWith("/users/check-email")
+                || uri.startsWith("/users/check-nickname")
                 || (uri.startsWith("/posts") && "GET".equals(method))
                 || (uri.startsWith("/posts/") && "GET".equals(method))
                 || (uri.startsWith("/comments/") && "GET".equals(method));
