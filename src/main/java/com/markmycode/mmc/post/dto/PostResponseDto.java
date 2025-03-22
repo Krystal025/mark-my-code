@@ -19,6 +19,7 @@ public class PostResponseDto {
     private Integer languageId;
     private String postTitle;
     private String postContent;
+    private String problemLink;
     private LocalDateTime postCreatedAt;
     private LocalDateTime postUpdatedAt;
     private long postLikeCount;

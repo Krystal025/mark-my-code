@@ -1,0 +1,150 @@
+/* Bootstrap 5 변수 재정의 */
+:root {
+    --bs-primary: #355E3B; /* 메인 컬러: 딥그린 */
+    --bs-secondary: #6B7280;
+    --bs-body-bg: #F9FAFB;
+    --bs-success: #27AE60;
+    --bs-danger: #FDEDEC;
+    --bs-danger-border: #C0392B;
+    --bs-link-color: #355E3B;
+    --bs-link-hover-color: #6E7F5A; /* 모든 링크 호버를 어두운 올리브로 */
+    --bs-navbar-bg: #DDE6D5;
+    --bs-hover-accent: #6E7F5A; /* 일반 호버 색상 */
+    --bs-pagination-hover-bg: rgba(53, 94, 59, 0.5); /* 페이지네이션 호버 반투명 배경 */
+}
+
+/* 기본 스타일 */
+body {
+    background-color: var(--bs-body-bg);
+    color: var(--bs-secondary);
+}
+
+/* 네비바 스타일 */
+.navbar {
+    background-color: var(--bs-navbar-bg);
+    color: var(--bs-secondary);
+}
+
+/* 로그인 버튼 */
+.navbar .btn-login {
+    background-color: transparent;
+    border: 1px solid var(--bs-primary);
+    color: var(--bs-primary);
+}
+
+.navbar .btn-login:hover,
+.navbar .btn-login:focus {
+    background-color: var(--bs-hover-accent);
+    border-color: var(--bs-hover-accent);
+    color: white;
+}
+
+/* 회원가입 버튼 */
+.navbar .btn-signup {
+    background-color: var(--bs-primary);
+    border-color: var(--bs-primary);
+    color: white;
+}
+
+.navbar .btn-signup:hover,
+.navbar .btn-signup:focus {
+    background-color: var(--bs-hover-accent);
+    border-color: var(--bs-hover-accent);
+    color: white;
+}
+
+/* 버튼 공통 스타일 */
+.btn-primary {
+    background-color: var(--bs-primary);
+    border-color: var(--bs-primary);
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+    background-color: var(--bs-hover-accent);
+    border-color: var(--bs-hover-accent);
+}
+
+/* 카드 스타일 */
+.card {
+    background-color: white;
+    border: 1px solid rgba(107, 114, 128, 0.1);
+}
+
+.card-title a {
+    color: var(--bs-primary);
+    text-decoration: none;
+}
+
+.card-title a:hover {
+    color: var(--bs-hover-accent); /* 게시글 링크 호버 유지 */
+}
+
+/* 헤딩 색상 */
+h1, h2, h3 {
+    color: var(--bs-primary);
+}
+
+/* 링크 스타일 */
+a {
+    color: var(--bs-link-color);
+}
+
+a:hover {
+    color: var(--bs-link-hover-color); /* 일반 링크 호버 유지 */
+}
+
+/* 알림 스타일 */
+.alert-success {
+    background-color: var(--bs-success);
+    color: white;
+}
+
+.alert-danger {
+    background-color: var(--bs-danger);
+    border: 1px solid var(--bs-danger-border);
+    color: #C0392B;
+}
+
+/* 회원가입 창에서 레드 스타일 조정 */
+.signup-form .alert-danger {
+    background-color: var(--bs-danger);
+    border: 1px solid var(--bs-danger-border);
+    color: #C0392B;
+}
+
+/* 페이지네이션 스타일 */
+.pagination .page-item.active .page-link {
+    background-color: var(--bs-primary);
+    border-color: var(--bs-primary);
+    color: white;
+}
+
+.pagination .page-link {
+    color: var(--bs-primary);
+}
+
+.pagination .page-link:hover {
+    background-color: var(--bs-pagination-hover-bg); /* 반투명 배경 */
+    border-color: var(--bs-primary); /* 진한 테두리 */
+    color: var(--bs-primary); /* 텍스트 색상 유지 */
+}
+
+.pagination .page-item.disabled .page-link {
+    color: #6c757d;
+    background-color: transparent;
+    border-color: #dee2e6;
+}
+
+/* Placeholder 스타일 */
+.form-control::placeholder,
+.form-select::placeholder,
+textarea.form-control::placeholder {
+    color: #adb5bd; /* 연한 회색 (Bootstrap의 muted gray) */
+    font-style: italic;
+    opacity: 1; /* 브라우저 기본 투명도 무시 */
+}
+
+textarea.form-control {
+    min-height: 300px; /* 최소 높이 설정 */
+}

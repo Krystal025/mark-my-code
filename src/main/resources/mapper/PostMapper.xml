@@ -22,6 +22,7 @@
         p.language_id,
         p.post_title,
         p.post_content,
+        p.problem_link,
         p.post_created_at,
         p.post_updated_at,
         p.post_like_count,

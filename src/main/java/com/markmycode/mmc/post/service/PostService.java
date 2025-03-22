@@ -68,6 +68,9 @@ public class PostService {
         if(requestDto.getPostContent() != null){
             post.updateContent(requestDto.getPostContent());
         }
+        if(requestDto.getProblemLink() != null){
+            post.updateLink(requestDto.getProblemLink());
+        }
         // JPA dirty checking으로 DB에 자동 반영
     }
 

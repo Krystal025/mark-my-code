@@ -49,6 +49,9 @@ public class Post {
     @Column(nullable = false, columnDefinition = "MEDIUMTEXT")
     private String postContent;
 
+    @Column
+    private String problemLink;
+
     @Column(updatable = false)
     private LocalDateTime postCreatedAt;
 
@@ -78,10 +81,11 @@ public class Post {
                 .language(language)
                 .postTitle(dto.getPostTitle())
                 .postContent(dto.getPostContent())
+                .problemLink(dto.getProblemLink())
                 .build();
     }
 
-    public PostPreviewResponseDto toSummaryDto() {
+    public PostPreviewResponseDto toPreviewDto() {
         return PostPreviewResponseDto.builder()
                 .postId(postId)
                 .postTitle(postTitle)
@@ -111,6 +115,8 @@ public class Post {
     public void updateContent(String content) {
         this.postContent = content;
     }
+
+    public void updateLink(String link) {this.problemLink = link; }
 
     public void incrementLikeCount(){
         this.postLikeCount += 1;

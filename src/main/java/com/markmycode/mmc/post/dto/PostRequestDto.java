@@ -17,5 +17,6 @@ public class PostRequestDto {
     private Integer languageId;
     private String postTitle;
     private String postContent;
+    private String problemLink;
 
 }
