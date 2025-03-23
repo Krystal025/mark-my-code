@@ -15,7 +15,7 @@
     <form th:action="@{/posts}" method="get" th:object="${requestDto}" class="mb-4">
         <div class="row g-3">
             <div class="col-md-3">
-                <label for="parentCategoryId" class="form-label">부모 카테고리:</label>
+                <label for="parentCategoryId" class="form-label">카테고리:</label>
                 <select id="parentCategoryId" th:field="*{parentCategoryId}" class="form-select" onchange="updateChildCategories()">
                     <option value="">-- 선택 --</option>
                     <option th:each="category : ${parentCategories}"
@@ -25,7 +25,7 @@
                 </select>
             </div>
             <div class="col-md-3">
-                <label for="childCategoryId" class="form-label">하위 카테고리:</label>
+                <label for="childCategoryId" class="form-label">세부 카테고리:</label>
                 <select id="childCategoryId" th:field="*{childCategoryId}" class="form-select">
                     <option value="">-- 선택 --</option>
                     <option th:each="category : ${childCategories}"
@@ -35,7 +35,7 @@
                 </select>
             </div>
             <div class="col-md-3">
-                <label for="platformId" class="form-label">플랫폼:</label>
+                <label for="platformId" class="form-label">문제 플랫폼:</label>
                 <select id="platformId" th:field="*{platformId}" class="form-select">
                     <option value="">-- 선택 --</option>
                     <option th:each="platform : ${platforms}"
@@ -45,7 +45,7 @@
                 </select>
             </div>
             <div class="col-md-3">
-                <label for="languageId" class="form-label">언어:</label>
+                <label for="languageId" class="form-label">프로그래밍 언어:</label>
                 <select id="languageId" th:field="*{languageId}" class="form-select">
                     <option value="">-- 선택 --</option>
                     <option th:each="language : ${languages}"

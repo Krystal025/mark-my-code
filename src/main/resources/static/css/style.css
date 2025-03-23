@@ -80,6 +80,10 @@ body {
     color: var(--bs-hover-accent); /* 게시글 링크 호버 유지 */
 }
 
+.card-body-tight {
+    padding-bottom: 0.5rem; /* 하단 패딩 줄이기 */
+}
+
 /* 헤딩 색상 */
 h1, h2, h3 {
     color: var(--bs-primary);

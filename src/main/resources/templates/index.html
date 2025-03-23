@@ -5,6 +5,13 @@
 <head>
     <meta charset="UTF-8">
     <title>Index</title>
+    <!-- Bootstrap Icons CDN 추가 (하트 아이콘 사용) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .card-body-tight {
+            padding-bottom: 0.5rem; /* 하단 패딩 줄이기 */
+        }
+    </style>
 </head>
 <body>
 <section layout:fragment="content">
@@ -23,13 +30,22 @@
         <div class="row g-3">
             <div class="col-md-4" th:each="post : ${recentPosts}">
                 <div class="card h-100">
-                    <div class="card-body">
+                    <div class="card-body card-body-tight d-flex flex-column">
                         <h5 class="card-title">
                             <a th:href="@{/posts/{postId}(postId=${post.postId})}" th:text="${post.postTitle}"></a>
                         </h5>
-                        <p class="card-text" th:text="'작성자: ' + ${post.userNickname}"></p>
-                        <p class="card-text" th:text="'좋아요 수: ' + ${post.postLikeCount}"></p>
-                        <p class="card-text" th:text="'작성일: ' + ${post.postCreatedAt}"></p>
+                        <div class="mt-5 pt-3 mb-2">
+                            <small class="text-muted" th:text="${#temporals.format(post.postCreatedAt, 'yyyy년 M월 d일')}"></small>
+                            <small class="text-muted ms-2">[댓글 수 추후 추가]</small>
+                        </div>
+                        <hr class="my-2 text-muted">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <small><span class="text-muted">by.</span> <strong th:text="${post.userNickname}"></strong></small>
+                            <div>
+                                <i class="bi bi-heart-fill text-muted me-1"></i>
+                                <span th:text="${post.postLikeCount}"></span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -42,13 +58,22 @@
         <div class="row g-3">
             <div class="col-md-4" th:each="post : ${popularPosts}">
                 <div class="card h-100">
-                    <div class="card-body">
+                    <div class="card-body card-body-tight d-flex flex-column">
                         <h5 class="card-title">
                             <a th:href="@{/posts/{postId}(postId=${post.postId})}" th:text="${post.postTitle}"></a>
                         </h5>
-                        <p class="card-text" th:text="'작성자: ' + ${post.userNickname}"></p>
-                        <p class="card-text" th:text="'좋아요 수: ' + ${post.postLikeCount}"></p>
-                        <p class="card-text" th:text="'작성일: ' + ${post.postCreatedAt}"></p>
+                        <div class="mt-5 pt-3 mb-2">
+                            <small class="text-muted" th:text="${#temporals.format(post.postCreatedAt, 'yyyy년 M월 d일')}"></small>
+                            <small class="text-muted ms-2">[댓글 수 추후 추가]</small>
+                        </div>
+                        <hr class="my-2 text-muted">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <small><span class="text-muted">by.</span> <strong th:text="${post.userNickname}"></strong></small>
+                            <div>
+                                <i class="bi bi-heart-fill text-muted me-1"></i>
+                                <span th:text="${post.postLikeCount}"></span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
