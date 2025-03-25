@@ -20,9 +20,9 @@
         .like-btn:not(.liked) i { color: #6c757d; }
         .like-btn:disabled i { color: #6c757d; cursor: not-allowed; }
         .like-count { margin-right: 0.25rem; vertical-align: middle; }
-        .meta-info { margin-bottom: 1.5rem; }
+        .meta-info { margin-bottom: 1rem; }
         .meta-info span { margin-right: 1rem; color: #6c757d; }
-        .content-box { background-color: #ffffff; padding: 2rem; border: 1px solid #dee2e6; border-radius: 0.25rem; margin: 3rem 0; }
+        .content-box { background-color: #ffffff; padding: 2rem; border: 1px solid #dee2e6; border-radius: 0.25rem; margin: 1.5rem 0; }
         .date-info { color: #adb5bd; font-size: 0.9rem; }
         .comment-form textarea, .reply-form textarea, .edit-form textarea { resize: vertical; }
         .toggle-replies { margin-left: 0.5rem; } /* 삭제 버튼과 간격 확보 */
@@ -30,7 +30,6 @@
 </head>
 <body>
 <section layout:fragment="content">
-    <h1 class="mb-4">게시글 상세</h1>
     <div class="card mb-4">
         <div class="card-body">
             <div class="d-flex justify-content-between align-items-start mb-3">
@@ -44,8 +43,8 @@
             </div>
             <h2 class="card-title my-5" th:text="${post.postTitle}"></h2>
             <div class="meta-info">
-                <span th:text="${post.parentCategoryName} + ' > ' + ${post.childCategoryName}"></span>
-                <span th:text="${post.platformName}"></span>
+                <span th:text="${post.parentCategoryName} + ' > ' + ${post.childCategoryName} + ' | '"></span>
+                <span th:text="${post.platformName} + ' | '"></span>
                 <span th:text="${post.languageName}"></span>
             </div>
             <div class="content-box">

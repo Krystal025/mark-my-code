@@ -8,78 +8,85 @@
     <title>Post Update</title>
 </head>
 <body>
-<h1>게시글 수정</h1>
-
-<div layout:fragment="content">
+<section layout:fragment="content">
     <h1>게시글 수정</h1>
+
+    <!-- 게시글 수정 폼 -->
     <form id="postEditForm" th:action="@{/posts/{postId}/update(postId=${postId})}" method="post"
           th:object="${requestDto}">
-        <!-- 부모 카테고리 선택 -->
-        <div>
-            <label for="parentCategoryId">부모 카테고리:</label>
-            <select id="parentCategoryId" th:field="*{parentCategoryId}" onchange="updateChildCategories()" required>
-                <option value="">-- 선택 --</option>
-                <option th:each="category : ${parentCategories}"
-                        th:value="${category.categoryId}"
-                        th:text="${category.categoryName}"
-                        th:selected="${category.categoryId == requestDto.parentCategoryId}"></option>
-            </select>
-        </div>
+        <div class="row g-3">
+            <!-- 부모 카테고리 선택 -->
+            <div class="col-md-6">
+                <label for="parentCategoryId" class="form-label">카테고리</label>
+                <select id="parentCategoryId" th:field="*{parentCategoryId}" class="form-select" onchange="updateChildCategories()" required>
+                    <option value="">-- 선택 --</option>
+                    <option th:each="category : ${parentCategories}"
+                            th:value="${category.categoryId}"
+                            th:text="${category.categoryName}"
+                            th:selected="${category.categoryId == requestDto.parentCategoryId}"></option>
+                </select>
+            </div>
 
-        <!-- 자식 카테고리 선택 -->
-        <div>
-            <label for="childCategoryId">하위 카테고리:</label>
-            <select id="childCategoryId" th:field="*{childCategoryId}" required>
-                <option value="">-- 선택 --</option>
-                <option th:each="category : ${childCategories}"
-                        th:value="${category.categoryId}"
-                        th:text="${category.categoryName}"
-                        th:selected="${category.categoryId == requestDto.childCategoryId}"></option>
-            </select>
-        </div>
+            <!-- 자식 카테고리 선택 -->
+            <div class="col-md-6">
+                <label for="childCategoryId" class="form-label">세부 카테고리</label>
+                <select id="childCategoryId" th:field="*{childCategoryId}" class="form-select" required>
+                    <option value="">-- 선택 --</option>
+                    <option th:each="category : ${childCategories}"
+                            th:value="${category.categoryId}"
+                            th:text="${category.categoryName}"
+                            th:selected="${category.categoryId == requestDto.childCategoryId}"></option>
+                </select>
+            </div>
 
-        <!-- 플랫폼 선택 -->
-        <div>
-            <label for="platformId">플랫폼:</label>
-            <select id="platformId" th:field="*{platformId}" required>
-                <option value="">-- 선택 --</option>
-                <option th:each="platform : ${platforms}"
-                        th:value="${platform.platformId}"
-                        th:text="${platform.platformName}"
-                        th:selected="${platform.platformId == requestDto.platformId}"></option>
-            </select>
-        </div>
+            <!-- 플랫폼 선택 -->
+            <div class="col-md-6">
+                <label for="platformId" class="form-label">문제 플랫폼</label>
+                <select id="platformId" th:field="*{platformId}" class="form-select" required>
+                    <option value="">-- 선택 --</option>
+                    <option th:each="platform : ${platforms}"
+                            th:value="${platform.platformId}"
+                            th:text="${platform.platformName}"
+                            th:selected="${platform.platformId == requestDto.platformId}"></option>
+                </select>
+            </div>
 
-        <!-- 언어 선택 -->
-        <div>
-            <label for="languageId">언어:</label>
-            <select id="languageId" th:field="*{languageId}" required>
-                <option value="">-- 선택 --</option>
-                <option th:each="language : ${languages}"
-                        th:value="${language.languageId}"
-                        th:text="${language.languageName}"
-                        th:selected="${language.languageId == requestDto.languageId}"></option>
-            </select>
-        </div>
+            <!-- 언어 선택 -->
+            <div class="col-md-6">
+                <label for="languageId" class="form-label">프로그래밍 언어</label>
+                <select id="languageId" th:field="*{languageId}" class="form-select" required>
+                    <option value="">-- 선택 --</option>
+                    <option th:each="language : ${languages}"
+                            th:value="${language.languageId}"
+                            th:text="${language.languageName}"
+                            th:selected="${language.languageId == requestDto.languageId}"></option>
+                </select>
+            </div>
 
-        <!-- 제목 입력 -->
-        <div>
-            <label for="postTitle">제목:</label>
-            <input type="text" id="postTitle" th:field="*{postTitle}" required/>
-        </div>
+            <!-- 제목 입력 -->
+            <div class="col-12">
+                <label for="postTitle" class="form-label">제목</label>
+                <input type="text" id="postTitle" th:field="*{postTitle}" class="form-control" placeholder="문제의 제목 또는 번호를 적어주세요 (ex. BOJ 1920 - 수 찾기)" required/>
+            </div>
 
-        <!-- 내용 입력 -->
-        <div>
-            <label for="postContent">내용:</label>
-            <textarea id="postContent" th:field="*{postContent}" rows="10" cols="50" required></textarea>
-        </div>
+            <!-- 내용 입력 -->
+            <div class="col-12">
+                <label for="postContent" class="form-label">내용</label>
+                <div class="mb-2 text-muted small">
+                    코드를 작성하려면 아래 형식을 사용하세요:
+                    <p id="codeFormat">&lt;pre&gt;&lt;code&gt; 코드를 여기에 &lt;/code&gt;&lt;/pre&gt;</p>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="copyCodeFormat()">복사</button>
+                </div>
+                <textarea id="postContent" th:field="*{postContent}" class="form-control" rows="15" placeholder="문제 풀이 회고를 작성하세요" required></textarea>
+            </div>
 
-        <div>
-            <button type="submit">수정하기</button>
+            <!-- 버튼 -->
+            <div class="col-12 text-end">
+                <button type="submit" class="btn btn-primary">수정하기</button>
+                <a th:href="@{/posts/{postId}(postId=${postId})}" class="ms-2">취소</a>
+            </div>
         </div>
     </form>
-
-    <a th:href="@{/posts/{postId}(postId=${postId})}">취소</a>
 
     <script>
         // 상위 카테고리 선택 시 하위 카테고리 동적 로딩 함수
@@ -100,7 +107,14 @@
                 document.getElementById("childCategoryId").innerHTML = '<option value="">-- 선택 --</option>';
             }
         }
+
+        function copyCodeFormat() {
+            var codeFormat = document.getElementById("codeFormat").innerText;
+            navigator.clipboard.writeText(codeFormat).then(() => {
+                alert("코드 형식이 복사되었습니다!");
+            });
+        }
     </script>
-</div>
+</section>
 </body>
 </html>

@@ -9,7 +9,6 @@
 </head>
 <body>
 <section layout:fragment="content">
-    <h1 class="mb-4">게시글 작성</h1>
     <!-- 게시글 작성 폼 -->
     <form id="newForm" th:action="@{/posts}" method="post" th:object="${requestDto}">
         <div class="row g-3">

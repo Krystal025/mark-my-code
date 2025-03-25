@@ -6,6 +6,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Post List</title>
+    <!-- Bootstrap Icons CDN 추가 (하트 아이콘 사용) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 </head>
 <body>
 <section layout:fragment="content">
@@ -62,16 +64,25 @@
 
     <!-- 게시글 목록 -->
     <div id="postList">
-        <div class="row">
-            <div th:each="post : ${pagedPosts.posts}" class="col-md-6 mb-3">
+        <div class="row g-3">
+            <div th:each="post : ${pagedPosts.posts}" class="col-md-4 mb-3">
                 <div class="card h-100">
-                    <div class="card-body">
+                    <div class="card-body card-body-tight d-flex flex-column">
                         <h5 class="card-title">
                             <a th:href="@{/posts/{postId}(postId=${post.postId})}" th:text="${post.postTitle}"></a>
                         </h5>
-                        <p class="card-text">작성자: <span th:text="${post.userNickname}"></span></p>
-                        <p class="card-text">좋아요 수: <span th:text="${post.postLikeCount}"></span></p>
-                        <p class="card-text">작성일: <span th:text="${post.postCreatedAt}"></span></p>
+                        <div class="mt-5 pt-3 mb-2">
+                            <small class="text-muted" th:text="${#temporals.format(post.postCreatedAt, 'yyyy년 M월 d일')}"></small>
+                            <small class="text-muted ms-2">[댓글 수 추후 추가]</small>
+                        </div>
+                        <hr class="my-2 text-muted">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <small><span class="text-muted">by.</span> <strong th:text="${post.userNickname}"></strong></small>
+                            <div>
+                                <i class="bi bi-heart-fill text-muted me-1"></i>
+                                <span th:text="${post.postLikeCount}"></span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
