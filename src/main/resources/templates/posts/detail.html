@@ -24,8 +24,15 @@
         .meta-info span { margin-right: 1rem; color: #6c757d; }
         .content-box { background-color: #ffffff; padding: 2rem; border: 1px solid #dee2e6; border-radius: 0.25rem; margin: 1.5rem 0; }
         .date-info { color: #adb5bd; font-size: 0.9rem; }
-        .comment-form textarea, .reply-form textarea, .edit-form textarea { resize: vertical; }
+        /* 댓글 폼 */
+        .comment-form textarea, .reply-form textarea, .edit-form textarea {
+            max-width: 500px !important;
+            height: 60px !important;
+            resize: vertical;
+        }
         .toggle-replies { margin-left: 0.5rem; } /* 삭제 버튼과 간격 확보 */
+        .comment p { margin: 1.5rem 0; } /* 댓글 내용 여백 */
+        .toggle-replies { margin-left: 0.5rem; }
     </style>
 </head>
 <body>
@@ -93,9 +100,9 @@
             <div class="comment top-level" th:each="comment : ${comments}">
                 <div>
                     <strong th:text="${comment.userNickname}"></strong>
-                    <div class="text-muted small" th:text="${#temporals.format(comment.commentCreatedAt, 'yyyy년 M월 d일')}"></div>
+                    <div class="date-info" th:text="${#temporals.format(comment.commentCreatedAt, 'yyyy년 M월 d일')}"></div>
                 </div>
-                <p th:if="${comment.commentStatus == 'ACTIVE'}" th:text="${comment.commentContent}" class="mb-2"></p>
+                <p th:if="${comment.commentStatus == 'ACTIVE'}" th:text="${comment.commentContent}"></p>
                 <p th:if="${comment.commentStatus == 'INACTIVE'}" class="text-muted mb-2">삭제된 댓글입니다</p>
                 <div th:if="${comment.commentStatus == 'ACTIVE'}" class="mb-3">
                     <button th:if="${isAuthenticated}" class="btn btn-sm btn-outline-secondary reply-btn me-2" th:data-comment-id="${comment.commentId}">답글</button>
@@ -113,11 +120,11 @@
                         <input type="hidden" name="parentId" th:value="${comment.commentId}">
                         <button type="submit" class="btn btn-primary btn-sm">답글 작성</button>
                     </form>
-                    <form th:action="@{/posts/{postId}/comments/{commentId}(postId=${post.postId}, commentId=${comment.commentId})}" method="post" class="edit-form mt-2" th:id="'edit-form-' + ${comment.commentId}">
+                    <form th:action="@{/posts/{postId}/comments/{commentId}/update(postId=${post.postId}, commentId=${comment.commentId})}" method="post" class="edit-form mt-2" th:id="'edit-form-' + ${comment.commentId}">
                         <div class="mb-1">
-                            <textarea name="commentContent" th:value="${comment.commentContent}" class="form-control" rows="2" placeholder="댓글을 수정하세요" required></textarea>
+                            <textarea name="commentContent" th:text="${comment.commentContent}" class="form-control" rows="2" placeholder="댓글을 수정하세요" required></textarea>
+                            <button type="submit" class="btn btn-primary btn-sm">수정 완료</button>
                         </div>
-                        <button type="submit" class="btn btn-primary btn-sm">수정 완료</button>
                     </form>
                 </div>
                 <!-- 대댓글 -->
@@ -125,9 +132,9 @@
                     <div class="comment">
                         <div>
                             <strong th:text="${child.userNickname}"></strong>
-                            <div class="text-muted small" th:text="${#temporals.format(child.commentCreatedAt, 'yyyy년 M월 d일')}"></div>
+                            <div class="date-info" th:text="${#temporals.format(child.commentCreatedAt, 'yyyy년 M월 d일')}"></div>
                         </div>
-                        <p th:if="${child.commentStatus == 'ACTIVE'}" th:text="${child.commentContent}" class="mb-2"></p>
+                        <p th:if="${child.commentStatus == 'ACTIVE'}" th:text="${child.commentContent}"></p>
                         <p th:if="${child.commentStatus == 'INACTIVE'}" class="text-muted mb-2">삭제된 댓글입니다</p>
                         <div th:if="${child.commentStatus == 'ACTIVE'}" class="mb-3">
                             <button th:if="${isAuthenticated}" class="btn btn-sm btn-outline-secondary reply-btn me-2" th:data-comment-id="${child.commentId}">답글</button>
@@ -145,11 +152,11 @@
                                 <input type="hidden" name="parentId" th:value="${child.commentId}">
                                 <button type="submit" class="btn btn-primary btn-sm">답글 작성</button>
                             </form>
-                            <form th:action="@{/posts/{postId}/comments/{commentId}(postId=${post.postId}, commentId=${child.commentId})}" method="post" class="edit-form mt-2" th:id="'edit-form-' + ${child.commentId}">
+                            <form th:action="@{/posts/{postId}/comments/{commentId}/update(postId=${post.postId}, commentId=${child.commentId})}" method="post" class="edit-form mt-2" th:id="'edit-form-' + ${child.commentId}">
                                 <div class="mb-1">
-                                    <textarea name="commentContent" th:value="${child.commentContent}" class="form-control" rows="2" placeholder="댓글을 수정하세요" required></textarea>
+                                    <textarea name="commentContent" th:text="${child.commentContent}" class="form-control" rows="2" placeholder="댓글을 수정하세요" required></textarea>
+                                        <button type="submit" class="btn btn-primary btn-sm">수정 완료</button>
                                 </div>
-                                <button type="submit" class="btn btn-primary btn-sm">수정 완료</button>
                             </form>
                         </div>
                         <!-- 대대댓글 -->
@@ -157,20 +164,20 @@
                             <div class="comment">
                                 <div>
                                     <strong th:text="${grandchild.userNickname}"></strong>
-                                    <div class="text-muted small" th:text="${#temporals.format(grandchild.commentCreatedAt, 'yyyy년 M월 d일')}"></div>
+                                    <div class="date-info" th:text="${#temporals.format(grandchild.commentCreatedAt, 'yyyy년 M월 d일')}"></div>
                                 </div>
-                                <p th:if="${grandchild.commentStatus == 'ACTIVE'}" th:text="${grandchild.commentContent}" class="mb-2"></p>
+                                <p th:if="${grandchild.commentStatus == 'ACTIVE'}" th:text="${grandchild.commentContent}"></p>
                                 <p th:if="${grandchild.commentStatus == 'INACTIVE'}" class="text-muted mb-2">삭제된 댓글입니다</p>
                                 <div th:if="${grandchild.commentStatus == 'ACTIVE'}" class="mb-3">
                                     <button th:if="${isCommentAuthor[grandchild.commentId]}" class="btn btn-sm btn-outline-primary edit-btn me-2" th:data-comment-id="${grandchild.commentId}">수정</button>
                                     <form th:action="@{/posts/{postId}/comments/{commentId}/delete(postId=${post.postId}, commentId=${grandchild.commentId})}" method="post" style="display: inline;" onsubmit="return confirm('정말로 이 댓글을 삭제하시겠습니까?');">
                                         <button th:if="${isCommentAuthor[grandchild.commentId]}" type="submit" class="btn btn-sm btn-outline-danger">삭제</button>
                                     </form>
-                                    <form th:action="@{/posts/{postId}/comments/{commentId}(postId=${post.postId}, commentId=${grandchild.commentId})}" method="post" class="edit-form mt-2" th:id="'edit-form-' + ${grandchild.commentId}">
+                                    <form th:action="@{/posts/{postId}/comments/{commentId}/update(postId=${post.postId}, commentId=${grandchild.commentId})}" method="post" class="edit-form mt-2" th:id="'edit-form-' + ${grandchild.commentId}">
                                         <div class="mb-1">
-                                            <textarea name="commentContent" th:value="${grandchild.commentContent}" class="form-control" rows="2" placeholder="댓글을 수정하세요" required></textarea>
+                                            <textarea name="commentContent" th:text="${grandchild.commentContent}" class="form-control" rows="2" placeholder="댓글을 수정하세요" required></textarea>
+                                            <button type="submit" class="btn btn-primary btn-sm">수정 완료</button>
                                         </div>
-                                        <button type="submit" class="btn btn-primary btn-sm">수정 완료</button>
                                     </form>
                                 </div>
                             </div>

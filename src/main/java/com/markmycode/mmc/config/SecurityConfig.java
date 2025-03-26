@@ -74,6 +74,7 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/css/**", "/js/**", "/images/**", "/", "/home", "/auth/**", "/login", "/oauth2/callback", "/oauth2/authorization", "/users", "/users/signup", "/users/check-email", "/users/check-nickname", "/login_success").permitAll()
+                        .requestMatchers("/posts/new").authenticated()
                         .requestMatchers(HttpMethod.GET, "/posts/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/comments/**").permitAll()
                         .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")

@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/auth")
@@ -25,15 +26,16 @@ public class AuthController {
     public String login(@ModelAttribute LoginRequestDto requestDto,
                         @RequestParam(value = "redirect", required = false) String redirectUrl,
                         HttpServletResponse response,
-                        Model model) {
+                        RedirectAttributes redirectAttributes) {
         try {
             TokenResponseDto tokenResponseDto = authService.login(requestDto, response);
-            System.out.println("로그인 성공! Redirect URL: " + redirectUrl);
-            // 리디렉트 URL이 있을 경우 해당 경로로 이동
-            return (redirectUrl != null && !redirectUrl.isEmpty()) ? "redirect:" + redirectUrl : "redirect:/";
+            redirectAttributes.addFlashAttribute("successMessage", "로그인 되었습니다");
+            redirectAttributes.addAttribute("success", "true");
+            return "redirect:/";
         } catch (Exception e) {
-            model.addAttribute("error", "Invalid credentials");
-            return "users/login";
+            redirectAttributes.addFlashAttribute("errorMessage", "이메일 또는 비밀번호가 잘못되었습니다");
+            redirectAttributes.addAttribute("error", "true");
+            return "redirect:/auth/login";
         }
     }
 

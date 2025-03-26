@@ -60,9 +60,16 @@ body {
 }
 
 .btn-primary:hover,
-.btn-primary:focus {
-    background-color: var(--bs-hover-accent);
-    border-color: var(--bs-hover-accent);
+.btn-primary:focus,
+.btn-primary:active {
+    background-color: var(--bs-hover-accent) !important;
+    border-color: var(--bs-hover-accent) !important;
+}
+
+/* 헤더 섹션 스타일 */
+.header-section {
+    padding: 3rem 0; /* 상하 패딩 추가 */
+    margin-bottom: 2rem; /* 게시글과의 간격 */
 }
 
 /* 카드 스타일 */
@@ -147,8 +154,4 @@ textarea.form-control::placeholder {
     color: #adb5bd; /* 연한 회색 (Bootstrap의 muted gray) */
     font-style: italic;
     opacity: 1; /* 브라우저 기본 투명도 무시 */
-}
-
-textarea.form-control {
-    min-height: 300px; /* 최소 높이 설정 */
 }

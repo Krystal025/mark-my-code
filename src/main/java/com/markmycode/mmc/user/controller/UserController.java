@@ -26,21 +26,43 @@ public class UserController {
     public String createUser(@Valid @ModelAttribute("requestDto") UserRequestDto requestDto,
                              BindingResult bindingResult,
                              RedirectAttributes redirectAttributes){
-        if (bindingResult.hasErrors()){
+        // 유효성 검사 실패
+        if (bindingResult.hasErrors()) {
             return "users/signup";
         }
-        if (!requestDto.getUserPwd().equals(requestDto.getConfirmPwd())){
-            bindingResult.reject("password.mismatch", "비밀번호가 일치하지 않습니다.");
+
+        // 비밀번호 불일치
+        if (!requestDto.getUserPwd().equals(requestDto.getConfirmPwd())) {
+            bindingResult.reject("password.mismatch", "비밀번호가 일치하지 않습니다");
             return "users/signup";
         }
+
         try {
             userService.createUser(requestDto);
-            redirectAttributes.addFlashAttribute("successMessage", "회원가입이 성공적으로 완료되었습니다!");
+            redirectAttributes.addFlashAttribute("successMessage", "회원가입이 성공적으로 완료되었습니다");
+            redirectAttributes.addAttribute("success", "true");
             return "redirect:/auth/login";
         } catch (DuplicateException e) {
             bindingResult.reject(e.getErrorCode().name(), e.getMessage());
             return "users/signup";
         }
+//        if (bindingResult.hasErrors()){
+//            return "users/signup";
+//        }
+//        if (!requestDto.getUserPwd().equals(requestDto.getConfirmPwd())){
+//            bindingResult.reject("password.mismatch", "비밀번호가 일치하지 않습니다.");
+//            return "users/signup";
+//        }
+//        try {
+//            userService.createUser(requestDto);
+//            redirectAttributes.addFlashAttribute("successMessage", "회원가입이 성공적으로 완료되었습니다!");
+//            redirectAttributes.addAttribute("success", "true"); // 쿼리 파라미터로 success=true 추가
+//            return "redirect:/auth/login";
+//        } catch (DuplicateException e) {
+//            bindingResult.reject(e.getErrorCode().name(), e.getMessage());
+//            return "users/signup";
+//        }
+
     }
 
     // 사용자 정보 수정
@@ -50,6 +72,13 @@ public class UserController {
                              @ModelAttribute UserRequestDto requestDto){
         userService.updateUser(userPrincipal.getUserId(),userId,requestDto);
         return "redirect:/users/" + userId;
+    }
+
+    @PostMapping("/{userId}/deactivate")
+    public String deactivateUser(@AuthenticationPrincipal UserPrincipal userPrincipal,
+                                 @PathVariable("userId") Long userId){
+        userService.deactivateUser(userPrincipal.getUserId(), userId);
+        return "redirect:/";
     }
 
     // 사용자 프로필 조회

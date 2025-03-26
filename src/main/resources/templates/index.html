@@ -15,9 +15,23 @@
 </head>
 <body>
 <section layout:fragment="content">
-    <h1>Mark My Code</h1>
-    <h3>당신의 코드를 공유하세요</h3>
-    <p>게시글을 작성하고 목록을 확인해보세요.</p>
+
+    <!-- 성공 메시지 -->
+    <div th:if="${param.success == 'true' and successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <span th:text="${successMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <!-- 에러 메시지 -->
+    <div th:if="${param.error == 'true' and errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <span th:text="${errorMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <div class="header-section text-center">
+        <h1>Mark it, Master it!</h1>
+        <p>당신의 코드를 공유하고, 피드백을 받아보세요!</p>
+    </div>
 
     <!-- CTA(Call to Action) 버튼 -->
     <div class="text-center mb-4">
@@ -79,6 +93,25 @@
             </div>
         </div>
     </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const success = /*[[${param.success}]]*/ '';
+            console.log("Success param:", success);
+            if (success === "true") {
+                const successMessage = /*[[${param.successMessage}]]*/ '';
+                console.log("Success message:", successMessage);
+                if (successMessage && successMessage !== 'null') {
+                    toastr.success(successMessage, "성공");
+                }
+            }
+
+            const error = /*[[${param.error}]]*/ '';
+            if (error === "true") {
+                const errorMessage = /*[[${param.errorMessage}]]*/ '';
+                toastr.error(errorMessage, "에러");
+            }
+        });
+    </script>
 </section>
 </body>
 </html>

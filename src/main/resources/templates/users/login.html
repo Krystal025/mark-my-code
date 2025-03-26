@@ -9,10 +9,19 @@
 </head>
 <body>
 <section layout:fragment="content">
-    <!-- 회원가입 성공시.표시할 알림창 -->
-    <div th:if="${successMessage}" class="alert alert-success mb-3" role="alert">
+
+    <!-- 성공 메시지 -->
+    <div th:if="${param.success == 'true' and successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
         <span th:text="${successMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
+
+    <!-- 에러 메시지 -->
+    <div th:if="${param.error == 'true' and errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <span th:text="${errorMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
     <div class="card p-4 mx-auto mt-5" style="max-width: 400px; width: 100%;">
         <h2 class="text-center mb-4">Login</h2>
 
@@ -34,10 +43,42 @@
             <button onclick="window.location.href='/auth/google-login'" class="btn btn-outline-secondary w-100">Google 로그인</button>
         </div>
 
-        <div th:if="${error}" class="mt-3 alert alert-danger" role="alert">
-            <span th:text="${error}"></span>
-        </div>
     </div>
+    <script th:inline="javascript">
+        console.log("Script started in index.html");
+        document.addEventListener("DOMContentLoaded", function() {
+            console.log("DOMContentLoaded triggered in index.html");
+            const success = /*[[${param.success}]]*/ '';
+            console.log("Success param:", success);
+            if (success === "true") {
+                console.log("Entering success block");
+                const successMessage = /*[[${param.successMessage}]]*/ '';
+                console.log("Success message:", successMessage);
+                if (successMessage && successMessage !== 'null') {
+                    console.log("Before toastr.success");
+                    toastr.success(successMessage, "성공");
+                    console.log("After toastr.success");
+                }
+                console.log("Exiting success block");
+            }
+
+            const error = /*[[${param.error}]]*/ '';
+            console.log("Error param:", error);
+            if (error === "true") {
+                console.log("Entering error block");
+                const errorMessage = /*[[${param.errorMessage}]]*/ '';
+                console.log("Error message:", errorMessage);
+                if (errorMessage && errorMessage !== 'null') {
+                    console.log("Before toastr.error");
+                    toastr.error(errorMessage, "에러");
+                    console.log("After toastr.error");
+                }
+                console.log("Exiting error block");
+            }
+            console.log("Script completed in index.html");
+        });
+        console.log("Script ended in index.html");
+    </script>
 </section>
 </body>
 </html>
