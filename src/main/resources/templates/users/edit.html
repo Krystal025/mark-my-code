@@ -6,21 +6,80 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Update Form</title>
+    <style>
+        /* 사용자 정보 수정 카드 스타일 */
+        .update-card {
+            max-width: 600px;
+            margin: 2rem auto;
+            background-color: white;
+            border: 1px solid rgba(107, 114, 128, 0.1);
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .update-card .card-body {
+            padding: 2rem;
+        }
+
+        .update-card h1 {
+            color: var(--bs-primary);
+            font-size: 1.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        /* 폼 필드 스타일 */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--bs-secondary);
+            font-weight: 500;
+        }
+
+        /* 버튼 그룹 스타일 */
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        /* 탈퇴하기 버튼 */
+        .delete-account {
+            margin-top: 2rem;
+            text-align: center;
+        }
+
+        .delete-account a {
+            color: #dc3545;
+            text-decoration: none;
+            font-size: 0.875rem;
+        }
+
+        .delete-account a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
 <div layout:fragment="content">
-    <h1>사용자 정보 수정</h1>
-    <form id="userUpdateForm" th:action="@{/users/{userId}/update(userId=${loginUser.userId})}" method="post"
-          th:object="${requestDto}">
-        <div>
-            <label for="userNickname">닉네임:</label>
-            <input type="text" id="userNickname" th:field="*{userNickname}" required/>
+    <div class="update-card">
+        <div class="card-body">
+            <form id="userUpdateForm" th:action="@{/users/{userId}/update(userId=${loginUser.userId})}" method="post"
+                  th:object="${requestDto}">
+                <div class="form-group">
+                    <label for="userNickname">닉네임:</label>
+                    <input type="text" id="userNickname" th:field="*{userNickname}" class="form-control" required/>
+                </div>
+                <div class="button-group">
+                    <button type="submit" class="btn btn-primary">수정하기</button>
+                    <a th:href="@{/users/{userId}(userId=${loginUser.userId})}" class="btn btn-secondary">취소</a>
+                </div>
+            </form>
         </div>
-        <div>
-            <button type="submit">수정하기</button>
-        </div>
-    </form>
-    <a th:href="@{/users/{userId}(userId=${loginUser.userId})}">취소</a>
+    </div>
 </div>
 </body>
 </html>
