@@ -1,6 +1,6 @@
 package com.markmycode.mmc.config;
 
-import com.markmycode.mmc.auth.jwt.filter.AuthorizationFilter;
+import com.markmycode.mmc.auth.jwt.filter.JwtAuthenticationFilter;
 import com.markmycode.mmc.auth.jwt.provider.JwtTokenProvider;
 import com.markmycode.mmc.auth.oauth.handler.OAuth2SuccessHandler;
 import com.markmycode.mmc.auth.oauth.service.CustomOAuth2UserService;
@@ -73,7 +73,8 @@ public class SecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable);
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/css/**", "/js/**", "/images/**", "/", "/home", "/auth/**", "/login", "/oauth2/callback", "/oauth2/authorization", "/users", "/users/signup", "/users/check-email", "/users/check-nickname", "/login_success").permitAll()
+                        .requestMatchers("/css/**", "/js/**", "/images/**", "/", "/auth/**", "/login",
+                                "/oauth2/callback", "/oauth2/authorization", "/login_success", "/users", "/users/signup").permitAll()
                         .requestMatchers("/posts/new").authenticated()
                         .requestMatchers(HttpMethod.GET, "/posts/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/comments/**").permitAll()
@@ -96,7 +97,7 @@ public class SecurityConfig {
                         })
                 );
         http
-                .addFilterBefore(new AuthorizationFilter(jwtTokenProvider, tokenService), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, tokenService), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

@@ -19,34 +19,17 @@ import java.io.IOException;
 
 @Component
 @RequiredArgsConstructor
-public class AuthorizationFilter extends OncePerRequestFilter {
+public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final TokenService tokenService;
 
-    private boolean isPublicPath(String uri, String method) {
-        return uri.equals("/") // 메인 페이지 경로를 공용 경로로 허용
-                || uri.startsWith("/css/")
-                || uri.startsWith("/login")
-                || uri.startsWith("/auth/")
-                || uri.startsWith("/oauth2/authorization")
-                || uri.startsWith("/oauth2/callback")
-                || uri.startsWith("/users")
-                || uri.startsWith("/users/signup")
-                || uri.startsWith("/users/check-email")
-                || uri.startsWith("/users/check-nickname")
-                || (uri.startsWith("/posts") && "GET".equals(method))
-                || (uri.startsWith("/posts/") && "GET".equals(method))
-                || (uri.startsWith("/comments/") && "GET".equals(method));
-    }
-
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String requestURI = request.getRequestURI();
-        String method = request.getMethod();
         String accessToken = CookieUtils.getCookie(request, "Access_Token");
 
-        // 1. Access Token 확인 및 SecurityContext 설정
+        // 토큰이 있으면 인증 처리
         if (accessToken != null && !accessToken.isEmpty()) {
             try {
                 jwtTokenProvider.isExpired(accessToken);
@@ -70,22 +53,9 @@ public class AuthorizationFilter extends OncePerRequestFilter {
                 }
             }
         }
-        // 2. public 경로면 바로 통과
-        if (isPublicPath(requestURI, method)) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-        // 3. 비공개 경로면 토큰 필수
-        if (accessToken == null || accessToken.isEmpty()) {
-            response.sendRedirect("/auth/login");
-            return;
-        }
-        try {
-            jwtTokenProvider.isExpired(accessToken);
-            filterChain.doFilter(request, response);
-        } catch (UnauthorizedException e) {
-            response.sendRedirect("/auth/login");
-        }
+
+        filterChain.doFilter(request, response);
+
     }
 
 }

@@ -46,23 +46,6 @@ public class UserController {
             bindingResult.reject(e.getErrorCode().name(), e.getMessage());
             return "users/signup";
         }
-//        if (bindingResult.hasErrors()){
-//            return "users/signup";
-//        }
-//        if (!requestDto.getUserPwd().equals(requestDto.getConfirmPwd())){
-//            bindingResult.reject("password.mismatch", "비밀번호가 일치하지 않습니다.");
-//            return "users/signup";
-//        }
-//        try {
-//            userService.createUser(requestDto);
-//            redirectAttributes.addFlashAttribute("successMessage", "회원가입이 성공적으로 완료되었습니다!");
-//            redirectAttributes.addAttribute("success", "true"); // 쿼리 파라미터로 success=true 추가
-//            return "redirect:/auth/login";
-//        } catch (DuplicateException e) {
-//            bindingResult.reject(e.getErrorCode().name(), e.getMessage());
-//            return "users/signup";
-//        }
-
     }
 
     // 사용자 정보 수정
