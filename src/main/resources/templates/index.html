@@ -7,24 +7,25 @@
     <title>Index</title>
     <!-- Bootstrap Icons CDN 추가 (하트 아이콘 사용) -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-    <style>
-        .card-body-tight {
-            padding-bottom: 0.5rem; /* 하단 패딩 줄이기 */
-        }
-    </style>
 </head>
 <body>
 <section layout:fragment="content">
 
-    <!-- 성공 메시지 -->
-    <div th:if="${param.success == 'true' and successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
-        <span th:text="${successMessage}"></span>
+    <!-- 로그인 알림 -->
+    <div id="loginSuccessAlert" th:if="${loginSuccess}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <span th:text="${loginSuccess}"></span>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 
-    <!-- 에러 메시지 -->
-    <div th:if="${param.error == 'true' and errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
-        <span th:text="${errorMessage}"></span>
+    <!-- 로그아웃 알림 -->
+    <div id="logoutSuccessAlert" th:if="${logoutSuccess}" class="alert alert-secondary alert-dismissible fade show" role="alert">
+        <span th:text="${logoutSuccess}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <!-- 탈퇴 알림 -->
+    <div id="deactivateSuccessAlert" th:if="${deactivateSuccess}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <span th:text="${deactivateSuccess}"></span>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 
@@ -94,23 +95,30 @@
         </div>
     </div>
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const success = /*[[${param.success}]]*/ '';
-            console.log("Success param:", success);
-            if (success === "true") {
-                const successMessage = /*[[${param.successMessage}]]*/ '';
-                console.log("Success message:", successMessage);
-                if (successMessage && successMessage !== 'null') {
-                    toastr.success(successMessage, "성공");
-                }
+        // 알림창 1초 후에 자동으로 닫기 (로그인 성공 알림창)
+        window.onload = function() {
+            // 로그인 알림이 있는 경우
+            if (document.getElementById('loginSuccessAlert')) {
+                setTimeout(function() {
+                    var loginSuccessAlert = new bootstrap.Alert(document.getElementById('loginSuccessAlert'));
+                    loginSuccessAlert.close();
+                }, 2000);
             }
-
-            const error = /*[[${param.error}]]*/ '';
-            if (error === "true") {
-                const errorMessage = /*[[${param.errorMessage}]]*/ '';
-                toastr.error(errorMessage, "에러");
+            // 로그아웃 알림이 있는 경우
+            if (document.getElementById('logoutSuccessAlert')) {
+                setTimeout(function() {
+                    var logoutSuccessAlert = new bootstrap.Alert(document.getElementById('logoutSuccessAlert'));
+                    logoutSuccessAlert.close();
+                }, 2000);
             }
-        });
+            // 탈퇴 알림이 있는 경우
+            if (document.getElementById('deactivateSuccessAlert')) {
+                setTimeout(function() {
+                    var deactivateSuccessAlert = new bootstrap.Alert(document.getElementById('deactivateSuccessAlert'));
+                    deactivateSuccessAlert.close();
+                }, 2000);
+            }
+        }
     </script>
 </section>
 </body>

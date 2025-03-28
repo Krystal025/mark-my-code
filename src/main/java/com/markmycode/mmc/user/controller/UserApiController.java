@@ -3,6 +3,7 @@ package com.markmycode.mmc.user.controller;
 import com.markmycode.mmc.auth.model.UserPrincipal;
 import com.markmycode.mmc.user.dto.UserRequestDto;
 import com.markmycode.mmc.user.dto.UserResponseDto;
+import com.markmycode.mmc.user.dto.UserUpdateDto;
 import com.markmycode.mmc.user.service.UserService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +28,7 @@ public class UserApiController {
     @PatchMapping("/{userId}")
     public ResponseEntity<String> updateUser(@AuthenticationPrincipal UserPrincipal userPrincipal,
                                              @PathVariable("userId") Long userId,
-                                             @RequestBody UserRequestDto requestDto){
+                                             @RequestBody UserUpdateDto requestDto){
         userService.updateUser(userPrincipal.getUserId(), userId, requestDto);
         return ResponseEntity.ok("User Information Updated");
     }

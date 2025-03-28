@@ -118,7 +118,14 @@
     </style>
 </head>
 <body>
-<div layout:fragment="content">
+<section layout:fragment="content">
+
+    <!-- 회원정보 수정 알림 -->
+    <div id="updateSuccessAlert" th:if="${updateSuccess}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <span th:text="${updateSuccess}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
     <div class="profile-card">
         <div class="card-body">
             <div class="profile-header">
@@ -152,6 +159,24 @@
             </div>
         </div>
     </div>
-</div>
+    <script>
+        window.onload = function() {
+            // 회원정보 수정 알림이 있는 경우
+            if (document.getElementById('updateSuccessAlert')) {
+                setTimeout(function() {
+                    var updateSuccessAlert = new bootstrap.Alert(document.getElementById('updateSuccessAlert'));
+                    updateSuccessAlert.close();
+                }, 2000);
+            }
+            // 회원정보 수정 알림이 있는 경우
+            if (document.getElementById('errorAlert')) {
+                setTimeout(function() {
+                    var errorAlert = new bootstrap.Alert(document.getElementById('errorAlert'));
+                    errorAlert.close();
+                }, 2000);
+            }
+        }
+    </script>
+</section>
 </body>
 </html>

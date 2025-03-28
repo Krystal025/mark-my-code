@@ -12,12 +12,15 @@ public enum ErrorCode {
     // 400 BAD_REQUEST: 잘못된 요청
     INVALID_TOKEN(HttpStatus.BAD_REQUEST, "유효하지 않은 토큰입니다."),
     INVALID_CREDENTIALS(HttpStatus.BAD_REQUEST, "유효하지 않은 이메일이나 비밀번호입니다."),
-    INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다."),
+    INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "새 비밀번호와 확인 비밀번호가 일치하지 않습니다."),
+    CURRENT_PASSWORD_REQUIRED(HttpStatus.BAD_REQUEST, "현재 비밀번호를 입력해주세요."),
+    INVALID_CURRENT_PASSWORD(HttpStatus.BAD_REQUEST, "현재 비밀번호가 일치하지 않습니다."),
     INVALID_COMMENT(HttpStatus.BAD_REQUEST, "유효하지 않은 댓글 요청입니다."),
     INVALID_PARENT_CATEGORY(HttpStatus.BAD_REQUEST, "유효하지 않은 상위 카테고리입니다."),
     INVALID_CATEGORY(HttpStatus.BAD_REQUEST, "유효하지 않은 카테고리입니다."),
     INVALID_PLATFORM(HttpStatus.BAD_REQUEST, "유효하지 않은 플랫폼입니다."),
     INVALID_LANGUAGE(HttpStatus.BAD_REQUEST, "유효하지 않은 언어입니다."),
+    NO_CHANGES(HttpStatus.BAD_REQUEST, "변경사항이 없습니다."),
 
     // 401 UNAUTHORIZED: 인증 실패
     TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "토큰이 만료되었습니다."),

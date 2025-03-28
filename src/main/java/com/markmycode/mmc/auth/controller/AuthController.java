@@ -24,27 +24,25 @@ public class AuthController {
     // 로그인 처리
     @PostMapping("/login")
     public String login(@ModelAttribute LoginRequestDto requestDto,
-                        @RequestParam(value = "redirect", required = false) String redirectUrl,
                         HttpServletResponse response,
                         RedirectAttributes redirectAttributes) {
         try {
-            TokenResponseDto tokenResponseDto = authService.login(requestDto, response);
-            redirectAttributes.addFlashAttribute("successMessage", "로그인 되었습니다");
-            redirectAttributes.addAttribute("success", "true");
+            authService.login(requestDto, response);
+            redirectAttributes.addFlashAttribute("loginSuccess", "로그인 되었습니다");
             return "redirect:/";
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "이메일 또는 비밀번호가 잘못되었습니다");
-            redirectAttributes.addAttribute("error", "true");
             return "redirect:/auth/login";
         }
     }
 
     // 로그아웃 처리
     @PostMapping("/logout")
-    public String logout(HttpServletResponse response) {
-        // JWT 쿠키 삭제 (만료된 쿠키로 설정)
-        CookieUtils.deleteCookie(response, "Access_Token");
-        return "redirect:/";  // 로그인 페이지로 리다이렉트
+    public String logout(HttpServletResponse response,
+                         RedirectAttributes redirectAttributes) {
+        authService.logout(response);
+        redirectAttributes.addFlashAttribute("logoutSuccess", "로그아웃 되었습니다");
+        return "redirect:/";
     }
 
     @GetMapping("/login")

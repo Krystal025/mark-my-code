@@ -2,11 +2,13 @@ package com.markmycode.mmc.user.service;
 
 import com.markmycode.mmc.auth.service.AuthService;
 import com.markmycode.mmc.exception.ErrorCode;
+import com.markmycode.mmc.exception.custom.BadRequestException;
 import com.markmycode.mmc.exception.custom.DuplicateException;
 import com.markmycode.mmc.exception.custom.ForbiddenException;
 import com.markmycode.mmc.exception.custom.NotFoundException;
 import com.markmycode.mmc.user.dto.UserRequestDto;
 import com.markmycode.mmc.user.dto.UserResponseDto;
+import com.markmycode.mmc.user.dto.UserUpdateDto;
 import com.markmycode.mmc.user.entity.User;
 import com.markmycode.mmc.user.repository.UserRepository;
 import com.markmycode.mmc.util.EmailUtils;
@@ -33,34 +35,68 @@ public class UserService {
         if(userRepository.existsByUserEmail(userEmail)){
             throw new DuplicateException(ErrorCode.EMAIL_ALREADY_EXISTS);
         }
+        if (!requestDto.getUserPwd().equals(requestDto.getConfirmPwd())) {
+            throw new BadRequestException(ErrorCode.INVALID_PASSWORD);
+        }
         if(userRepository.existsByUserNickname(requestDto.getUserNickname())){
             throw new DuplicateException(ErrorCode.NICKNAME_ALREADY_EXIST);
         }
         String encodedPassword = passwordEncoder.encode(requestDto.getUserPwd());
         User user = User.fromDto(requestDto, encodedPassword);
         userRepository.save(user);
-
     }
 
     // 사용자 정보 수정
     @Transactional // 트랜잭션이 성공적으로 완료되면 변경사항이 자동으로 커밋되어 DB에 반영됨
-    public void updateUser(Long loggedInUserId, Long userId, UserRequestDto requestDto){
+    public void updateUser(Long loggedInUserId, Long userId, UserUpdateDto requestDto){
         // 영속성 컨텍스트에 사용자가 존재하는지 확인
         User user = getUser(userId);
         // JWT에서 추출한 이메일과 요청 이메일 비교
         validateUserOwnership(loggedInUserId, userId);
-        // 닉네임 중복 체크
-        if(requestDto.getUserNickname() != null  // 새로운 닉네임 요청이 들어왔는지
-                && !requestDto.getUserNickname().equals(user.getUserNickname()) // 사용자의 기존 닉네임과 다른지
-                && userRepository.existsByUserNickname(requestDto.getUserNickname())){ // 다른 사용자가 사용 중인 닉네임이 아닌지
-            throw new DuplicateException(ErrorCode.NICKNAME_ALREADY_EXIST);
-        }
-//        if (requestDto.getUserPwd() != null){
-//            user.updatePwd(passwordEncoder.encode(requestDto.getUserPwd()));
-//        }
-        if (requestDto.getUserNickname() != null){
+        boolean updated = false;
+        // 닉네임 업데이트 (변경 시에만)
+        if (requestDto.getUserNickname() != null &&
+                !requestDto.getUserNickname().equals(user.getUserNickname())) {
+            if (userRepository.existsByUserNickname(requestDto.getUserNickname())) {
+                throw new DuplicateException(ErrorCode.NICKNAME_ALREADY_EXIST);
+            }
             user.updateNickname(requestDto.getUserNickname());
+            updated = true;
         }
+
+        // 비밀번호 업데이트
+        boolean newPasswordProvided = requestDto.getUserPwd() != null && !requestDto.getUserPwd().isEmpty() &&
+                requestDto.getConfirmPwd() != null && !requestDto.getConfirmPwd().isEmpty();
+        boolean currentPasswordProvided = requestDto.getCurrentPwd() != null && !requestDto.getCurrentPwd().isEmpty();
+
+        if (newPasswordProvided && !currentPasswordProvided) {
+            throw new BadRequestException(ErrorCode.CURRENT_PASSWORD_REQUIRED);
+        }
+        if (currentPasswordProvided && newPasswordProvided) {
+            if (!passwordEncoder.matches(requestDto.getCurrentPwd(), user.getUserPwd())) {
+                throw new BadRequestException(ErrorCode.INVALID_CURRENT_PASSWORD);
+            }
+            if (!requestDto.getUserPwd().equals(requestDto.getConfirmPwd())) {
+                throw new BadRequestException(ErrorCode.INVALID_PASSWORD);
+            }
+            String encodedPassword = passwordEncoder.encode(requestDto.getUserPwd());
+            user.updatePwd(encodedPassword);
+            updated = true;
+        }
+        if (!updated) {
+            throw new BadRequestException(ErrorCode.NO_CHANGES);
+        }
+//        if (requestDto.getCurrentPwd() != null && !requestDto.getCurrentPwd().isEmpty() &&
+//                requestDto.getUserPwd() != null && !requestDto.getUserPwd().isEmpty() &&
+//                requestDto.getConfirmPwd() != null && !requestDto.getConfirmPwd().isEmpty()) {
+//            if (!passwordEncoder.matches(requestDto.getCurrentPwd(), user.getUserPwd())) {
+//                throw new BadRequestException(ErrorCode.INVALID_CURRENT_PASSWORD);
+//            }
+//            if (!requestDto.getUserPwd().equals(requestDto.getConfirmPwd())) {
+//                throw new BadRequestException(ErrorCode.INVALID_PASSWORD);
+//            }
+//            String encodedPassword = passwordEncoder.encode(requestDto.getUserPwd());
+//            user.updatePwd(encodedPassword);
     }
 
     // 사용자 비활성화(탈퇴)

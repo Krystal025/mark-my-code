@@ -64,15 +64,40 @@
     </style>
 </head>
 <body>
-<div layout:fragment="content">
+<section layout:fragment="content">
+
     <div class="update-card">
         <div class="card-body">
-            <form id="userUpdateForm" th:action="@{/users/{userId}/update(userId=${loginUser.userId})}" method="post"
-                  th:object="${requestDto}">
+            <form id="userUpdateForm" th:action="@{/users/{userId}/update(userId=${loginUser.userId})}" method="post" th:object="${requestDto}">
+                <!-- 에러 메시지 -->
+                <div id="errorAlert" th:if="${#fields.hasErrors('global')}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <div th:each="err : ${#fields.errors('global')}" th:text="${err}"></div>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+
+                <!-- 변경사항 없음 메시지 -->
+                <div id="noUpdateAlert" th:if="${noUpdate}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <span th:text="${noUpdate}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+
                 <div class="form-group">
                     <label for="userNickname">닉네임:</label>
-                    <input type="text" id="userNickname" th:field="*{userNickname}" class="form-control" required/>
+                    <input type="text" id="userNickname" th:field="*{userNickname}" class="form-control" th:value="${loginUser.userNickname}"/>
                 </div>
+                <div class="form-group">
+                    <label for="currentPwd">현재 비밀번호:</label>
+                    <input type="password" id="currentPwd" th:field="*{currentPwd}" class="form-control"/>
+                </div>
+                <div class="form-group">
+                    <label for="userPwd">새 비밀번호:</label>
+                    <input type="password" id="userPwd" th:field="*{userPwd}" class="form-control"/>
+                </div>
+                <div class="form-group">
+                    <label for="confirmPwd">새 비밀번호 확인:</label>
+                    <input type="password" id="confirmPwd" th:field="*{confirmPwd}" class="form-control"/>
+                </div>
+
                 <div class="button-group">
                     <button type="submit" class="btn btn-primary">수정하기</button>
                     <a th:href="@{/users/{userId}(userId=${loginUser.userId})}" class="btn btn-secondary">취소</a>
@@ -80,6 +105,24 @@
             </form>
         </div>
     </div>
-</div>
+    <script>
+        window.onload = function() {
+            // 회원정보 수정 알림이 있는 경우
+            if (document.getElementById('errorAlert')) {
+                setTimeout(function() {
+                    var errorAlert = new bootstrap.Alert(document.getElementById('errorAlert'));
+                    errorAlert.close();
+                }, 2000);
+            }
+            // 회원정보 수정 알림이 있는 경우
+            if (document.getElementById('noUpdateAlert')) {
+                setTimeout(function() {
+                    var noUpdateAlert = new bootstrap.Alert(document.getElementById('noUpdateAlert'));
+                    noUpdateAlert.close();
+                }, 2000);
+            }
+        }
+    </script>
+</section>
 </body>
 </html>

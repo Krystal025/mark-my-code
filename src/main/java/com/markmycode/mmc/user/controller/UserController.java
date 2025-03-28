@@ -1,9 +1,12 @@
 package com.markmycode.mmc.user.controller;
 
 import com.markmycode.mmc.auth.model.UserPrincipal;
+import com.markmycode.mmc.exception.custom.BadRequestException;
 import com.markmycode.mmc.exception.custom.DuplicateException;
+import com.markmycode.mmc.exception.custom.ForbiddenException;
 import com.markmycode.mmc.user.dto.UserRequestDto;
 import com.markmycode.mmc.user.dto.UserResponseDto;
+import com.markmycode.mmc.user.dto.UserUpdateDto;
 import com.markmycode.mmc.user.service.UserService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -27,22 +30,17 @@ public class UserController {
     public String createUser(@Valid @ModelAttribute("requestDto") UserRequestDto requestDto,
                              BindingResult bindingResult,
                              RedirectAttributes redirectAttributes){
-        // 유효성 검사 실패
+        // 유효성 검사 (실패 시 기존 입력값 유지)
         if (bindingResult.hasErrors()) {
             return "users/signup";
         }
-
-        // 비밀번호 불일치
-        if (!requestDto.getUserPwd().equals(requestDto.getConfirmPwd())) {
-            bindingResult.reject("password.mismatch", "비밀번호가 일치하지 않습니다");
-            return "users/signup";
-        }
-
         try {
             userService.createUser(requestDto);
-            redirectAttributes.addFlashAttribute("successMessage", "회원가입이 성공적으로 완료되었습니다");
-            redirectAttributes.addAttribute("success", "true");
+            redirectAttributes.addFlashAttribute("signupSuccess", "회원가입이 성공적으로 완료되었습니다");
             return "redirect:/auth/login";
+        } catch (ForbiddenException e) {
+            bindingResult.reject(e.getErrorCode().name(), e.getMessage());
+            return "users/signup";
         } catch (DuplicateException e) {
             bindingResult.reject(e.getErrorCode().name(), e.getMessage());
             return "users/signup";
@@ -53,16 +51,40 @@ public class UserController {
     @PostMapping("/{userId}/update")
     public String updateUser(@AuthenticationPrincipal UserPrincipal userPrincipal,
                              @PathVariable("userId") Long userId,
-                             @ModelAttribute UserRequestDto requestDto){
-        userService.updateUser(userPrincipal.getUserId(),userId,requestDto);
-        return "redirect:/users/" + userId;
+                             @Valid @ModelAttribute("requestDto") UserUpdateDto requestDto,
+                             BindingResult bindingResult,
+                             RedirectAttributes redirectAttributes){
+        // 유효성 검사 (실패 시 기존 입력값 유지)
+        if (bindingResult.hasErrors()) {
+            return "users/edit";
+        }
+        try {
+            userService.updateUser(userPrincipal.getUserId(),userId,requestDto);
+            redirectAttributes.addFlashAttribute("updateSuccess", "회원 정보가 성공적으로 수정되었습니다");
+            return "redirect:/users/" + userId;
+        } catch (ForbiddenException e) {
+            bindingResult.reject(e.getErrorCode().name(), e.getMessage());
+            return "users/edit";
+        } catch (DuplicateException e) {
+            bindingResult.reject(e.getErrorCode().name(), e.getMessage());
+            return "users/edit";
+        }catch (BadRequestException e) {
+//            if (e.getErrorCode() == ErrorCode.NO_CHANGES) {
+//                redirectAttributes.addFlashAttribute("noUpdate", "변경사항이 없습니다.");
+//                return "users/edit";
+//            }
+            bindingResult.reject(e.getErrorCode().name(), e.getMessage()); // 글로벌 처리
+            return "users/edit";
+        }
     }
 
     @PostMapping("/{userId}/deactivate")
     public String deactivateUser(@AuthenticationPrincipal UserPrincipal userPrincipal,
                                  @PathVariable("userId") Long userId,
-                                 HttpServletResponse response){
+                                 HttpServletResponse response,
+                                 RedirectAttributes redirectAttributes){
         userService.deactivateUser(userPrincipal.getUserId(), userId, response);
+        redirectAttributes.addFlashAttribute("deactivateSuccess", "회원 탈퇴가 완료되었습니다.");
         return "redirect:/";
     }
 
@@ -94,7 +116,7 @@ public class UserController {
     @GetMapping("/{userId}/edit")
     public String getUserUpdateForm(@PathVariable("userId") Long userId, Model model){
         UserResponseDto user = userService.getUserById(userId);
-        UserRequestDto requestDto = UserRequestDto.builder()
+        UserUpdateDto requestDto = UserUpdateDto.builder()
                 .userNickname(user.getUserNickname())
                 .build();
         model.addAttribute("user", user);
