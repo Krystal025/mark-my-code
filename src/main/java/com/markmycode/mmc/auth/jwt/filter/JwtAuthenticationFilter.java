@@ -2,7 +2,8 @@ package com.markmycode.mmc.auth.jwt.filter;
 
 import com.markmycode.mmc.auth.jwt.dto.TokenResponseDto;
 import com.markmycode.mmc.auth.jwt.provider.JwtTokenProvider;
-import com.markmycode.mmc.auth.oauth.service.TokenService;
+import com.markmycode.mmc.auth.service.TokenService;
+import com.markmycode.mmc.exception.ErrorCode;
 import com.markmycode.mmc.exception.custom.UnauthorizedException;
 import com.markmycode.mmc.util.CookieUtils;
 import jakarta.servlet.FilterChain;
@@ -33,14 +34,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (accessToken != null && !accessToken.isEmpty()) {
             try {
                 jwtTokenProvider.isExpired(accessToken);
+                // 상태값 확인
+                String userStatus = jwtTokenProvider.getClaim(accessToken, "userStatus");
+                if ("INACTIVE".equals(userStatus)) {
+                    throw new UnauthorizedException(ErrorCode.INACTIVE_USER);
+                }
                 Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
-                System.out.println("✅ SecurityContext 설정: " + requestURI);
             } catch (UnauthorizedException e) {
                 String refreshToken = CookieUtils.getCookie(request, "Refresh_Token");
                 if (refreshToken != null && !refreshToken.isEmpty()) {
                     try {
                         jwtTokenProvider.isExpired(refreshToken);
+                        // 상태값 확인
+                        String userStatus = jwtTokenProvider.getClaim(refreshToken, "userStatus");
+                        if ("INACTIVE".equals(userStatus)) {
+                            throw new UnauthorizedException(ErrorCode.INACTIVE_USER);
+                        }
                         TokenResponseDto newToken = tokenService.refreshAccessToken(refreshToken);
                         accessToken = newToken.getAccessToken();
                         CookieUtils.addCookie(response, "Access_Token", accessToken, 30 * 60);
@@ -53,9 +63,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 }
             }
         }
-
         filterChain.doFilter(request, response);
-
     }
-
 }
+
+// 로그아웃 시 블랙리스트 추가
+//public void logout(HttpServletResponse response, String accessToken, String refreshToken) {
+//    redisTemplate.opsForValue().set(accessToken, "blacklisted", 30, TimeUnit.MINUTES); // 액세스 토큰 유효 기간
+//    redisTemplate.opsForValue().set(refreshToken, "blacklisted", 7, TimeUnit.DAYS); // 리프레시 토큰 유효 기간
+//    CookieUtils.deleteCookie(response, "Access_Token");
+//    CookieUtils.deleteCookie(response, "Refresh_Token");
+//}

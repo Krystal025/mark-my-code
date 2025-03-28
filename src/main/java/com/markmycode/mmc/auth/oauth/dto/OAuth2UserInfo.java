@@ -2,6 +2,7 @@ package com.markmycode.mmc.auth.oauth.dto;
 
 import com.markmycode.mmc.user.enums.Provider;
 import com.markmycode.mmc.user.enums.Role;
+import com.markmycode.mmc.user.enums.Status;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -10,11 +11,12 @@ import lombok.Getter;
 @Builder
 public class OAuth2UserInfo {
 
-    private Long userId; // 사용자 ID
-    private String userName; // 사용자 이름
-    private String userEmail; // 사용자 이메일
-    private String userNickname; // 사용자 닉네임
-    private Role userRole; // 사용자 권한
+    private Long userId;
+    private String userName;
+    private String userEmail;
+    private String userNickname;
+    private Status userStatus;
+    private Role userRole;
     private String socialId; // 소셜 제공자와 ID를 조합한 고유 식별자
     private Provider socialProvider; // 소셜 제공자
 

@@ -6,6 +6,7 @@ import com.markmycode.mmc.auth.oauth.dto.OAuth2UserInfo;
 import com.markmycode.mmc.exception.ErrorCode;
 import com.markmycode.mmc.exception.custom.UnauthorizedException;
 import com.markmycode.mmc.user.enums.Role;
+import com.markmycode.mmc.user.enums.Status;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -34,10 +35,11 @@ public class JwtTokenProvider {
     }
 
     // JWT Access 토큰 생성
-    public String generateAccessJwt(Long userId, String userEmail, String userRole, String socialId){
+    public String generateAccessJwt(Long userId, String userEmail, String userStatus, String userRole, String socialId){
         return Jwts.builder()
                 .claim("userId", userId)
                 .claim("userEmail", userEmail)
+                .claim("userStatus", userStatus)
                 .claim("userRole", userRole)
                 .claim("socialId", socialId)
                 .claim("authType", (socialId == null ? "basic" : "social"))
@@ -48,9 +50,10 @@ public class JwtTokenProvider {
     }
 
     // JWT Refresh 토큰 생성
-    public String generateRefreshJwt(Long userId, String authType){
+    public String generateRefreshJwt(Long userId, String userStatus, String authType){
         return Jwts.builder()
                 .claim("userId", userId)
+                .claim("userStatus", userStatus)
                 .claim("authType", (authType == null ? "basic" : "social"))
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + 7 * 24 * 60 * 60 * 1000L)) // 7일 유효
@@ -58,19 +61,13 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    // WT 토큰을 파싱하여 Claims 객체 반환
+    // JWT 토큰을 파싱하여 Claims 객체 반환
     public Claims parseToken(String token) {
         return Jwts.parser()
                 .verifyWith(secretKey)  // Deprecated된 방식
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
-    }
-
-    // JWT 토큰에서 로그인 방식 (authType) 추출
-    public String getAuthType(String token){
-
-        return parseToken(token).get("authType", String.class);
     }
 
     // JWT 토큰의 유효기간 확인
@@ -82,12 +79,23 @@ public class JwtTokenProvider {
         }
     }
 
+    // JWT 토큰에서 특정 claim 추출 메서드 추가
+    public String getClaim(String token, String claimName) {
+        return parseToken(token).get(claimName, String.class);
+    }
+
+    // JWT 토큰에서 로그인 방식 (authType) 추출
+    public String getAuthType(String token){
+        return parseToken(token).get("authType", String.class);
+    }
+
     // JWT 토큰에서 사용자 정보를 추출하여 인증 객체 생성
     public Authentication getAuthentication(String token) {
         // JWT 토큰에서 사용자 정보 추출
         Claims claims = parseToken(token);
         Long userId = claims.get("userId", Long.class);
         String userEmail = claims.get("userEmail", String.class);
+        String userStatus = claims.get("userStatus", String.class);
         String userRole = claims.get("userRole", String.class);
         String authType = claims.get("authType", String.class);
 
@@ -101,6 +109,7 @@ public class JwtTokenProvider {
                     .userId(userId)
                     .userEmail(userEmail)
                     .userName(userEmail) // 소셜 로그인에서는 이메일을 사용자 이름으로 사용
+                    .userStatus(Status.valueOf(userStatus))
                     .userRole(Role.valueOf(userRole))
                     .socialId(socialId)
                     .build();
@@ -113,6 +122,7 @@ public class JwtTokenProvider {
                     .userId(userId)
                     .userEmail(userEmail)
                     .userPwd(null) // JWT 토큰이므로 비밀번호 없음
+                    .userStatus(Status.valueOf(userStatus))
                     .userRole(Role.valueOf(userRole))
                     .build();
             // 인증 토큰 생성 및 반환 (일반 로그인)

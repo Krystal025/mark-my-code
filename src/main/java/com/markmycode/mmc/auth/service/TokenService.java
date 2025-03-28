@@ -1,4 +1,4 @@
-package com.markmycode.mmc.auth.oauth.service;
+package com.markmycode.mmc.auth.service;
 
 import com.markmycode.mmc.auth.jwt.dto.TokenResponseDto;
 import com.markmycode.mmc.auth.jwt.provider.JwtTokenProvider;
@@ -34,10 +34,11 @@ public class TokenService {
             User user = userRepository.findById(userId)
                     .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
             String userEmail = user.getUserEmail();
+            String userStatus = user.getUserStatus().name();
             String userRole = user.getUserRole().name();
             String socialId = user.getSocialId();
             // 새로 발급된 Access Token 생성
-            String newAccessToken = jwtTokenProvider.generateAccessJwt(userId, userEmail, userRole, socialId);
+            String newAccessToken = jwtTokenProvider.generateAccessJwt(userId, userEmail, userStatus, userRole, socialId);
             // 기존의 Refresh Token과 함께 새로 발급된 Access Token 반환
             return new TokenResponseDto(newAccessToken, refreshToken);
         }

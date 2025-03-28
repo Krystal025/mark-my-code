@@ -5,6 +5,7 @@ import com.markmycode.mmc.exception.custom.DuplicateException;
 import com.markmycode.mmc.user.dto.UserRequestDto;
 import com.markmycode.mmc.user.dto.UserResponseDto;
 import com.markmycode.mmc.user.service.UserService;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -59,8 +60,9 @@ public class UserController {
 
     @PostMapping("/{userId}/deactivate")
     public String deactivateUser(@AuthenticationPrincipal UserPrincipal userPrincipal,
-                                 @PathVariable("userId") Long userId){
-        userService.deactivateUser(userPrincipal.getUserId(), userId);
+                                 @PathVariable("userId") Long userId,
+                                 HttpServletResponse response){
+        userService.deactivateUser(userPrincipal.getUserId(), userId, response);
         return "redirect:/";
     }
 

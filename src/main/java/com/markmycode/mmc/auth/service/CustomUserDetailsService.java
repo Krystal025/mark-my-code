@@ -1,4 +1,4 @@
-package com.markmycode.mmc.auth.jwt.service;
+package com.markmycode.mmc.auth.service;
 
 import com.markmycode.mmc.auth.jwt.dto.CustomUserDetails;
 import com.markmycode.mmc.exception.ErrorCode;

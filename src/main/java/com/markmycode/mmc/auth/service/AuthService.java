@@ -1,4 +1,4 @@
-package com.markmycode.mmc.auth.jwt.service;
+package com.markmycode.mmc.auth.service;
 
 import com.markmycode.mmc.auth.jwt.dto.CustomUserDetails;
 import com.markmycode.mmc.auth.jwt.dto.LoginRequestDto;
@@ -40,11 +40,12 @@ public class AuthService {
             String accessToken = jwtTokenProvider.generateAccessJwt(
                     customUserDetails.getUserId(),
                     customUserDetails.getUsername(),
+                    customUserDetails.getUserStatus().name(),
                     customUserDetails.getAuthorities().stream()
                             .findFirst()
                             .map(GrantedAuthority::getAuthority)
                             .orElse("ROLE_USER"), null );
-            String refreshToken = jwtTokenProvider.generateRefreshJwt(customUserDetails.getUserId(), null);
+            String refreshToken = jwtTokenProvider.generateRefreshJwt(customUserDetails.getUserId(), customUserDetails.getUserStatus().name(), null);
 
             // 쿠키에 엑세스 토큰 및 리프레시 토큰 저장
             CookieUtils.addCookie(response, "Access_Token", accessToken, 30 * 60); // 30분 유효
@@ -60,5 +61,12 @@ public class AuthService {
         }catch (AuthenticationException e){
             throw new BadRequestException(ErrorCode.INVALID_CREDENTIALS);
         }
+    }
+
+    public void logout(HttpServletResponse response){
+        // 인증 정보 삭제
+        SecurityContextHolder.clearContext();
+        // 쿠키에서 토큰 삭제
+        CookieUtils.deleteCookie(response, "Access_Token");
     }
 }

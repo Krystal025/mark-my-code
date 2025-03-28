@@ -4,6 +4,7 @@ import com.markmycode.mmc.auth.model.UserPrincipal;
 import com.markmycode.mmc.user.dto.UserResponseDto;
 import com.markmycode.mmc.user.entity.User;
 import com.markmycode.mmc.user.enums.Role;
+import com.markmycode.mmc.user.enums.Status;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ public class CustomUserDetails implements UserDetails, UserPrincipal {
     private final String userEmail;
     private final String userPwd;
     private final String userNickname;
+    private final Status userStatus;
     private final Role userRole;
 
     @Override
@@ -78,6 +80,7 @@ public class CustomUserDetails implements UserDetails, UserPrincipal {
                 .userEmail(user.getUserEmail())
                 .userPwd(user.getUserPwd())
                 .userNickname(user.getUserNickname())
+                .userStatus(user.getUserStatus())
                 .userRole(user.getUserRole())
                 .build();
     }

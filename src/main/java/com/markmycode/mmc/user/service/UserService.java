@@ -1,5 +1,6 @@
 package com.markmycode.mmc.user.service;
 
+import com.markmycode.mmc.auth.service.AuthService;
 import com.markmycode.mmc.exception.ErrorCode;
 import com.markmycode.mmc.exception.custom.DuplicateException;
 import com.markmycode.mmc.exception.custom.ForbiddenException;
@@ -9,6 +10,7 @@ import com.markmycode.mmc.user.dto.UserResponseDto;
 import com.markmycode.mmc.user.entity.User;
 import com.markmycode.mmc.user.repository.UserRepository;
 import com.markmycode.mmc.util.EmailUtils;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -22,6 +24,7 @@ import java.util.Objects;
 public class UserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final AuthService authService;
 
     // 사용자 회원가입
     @Transactional
@@ -62,7 +65,7 @@ public class UserService {
 
     // 사용자 비활성화(탈퇴)
     @Transactional
-    public void deactivateUser(Long loggedInUserId, Long userId){
+    public void deactivateUser(Long loggedInUserId, Long userId, HttpServletResponse response){
         // 사용자 조회
         User user = getUser(userId);
         // 관리자 여부 확인
@@ -76,6 +79,8 @@ public class UserService {
         validateUserOwnership(loggedInUserId, userId);
         // 본인 계정 비활성화(탈퇴)
         user.deactivate();
+        // 로그아웃 처리
+        authService.logout(response);
     }
 
     // 사용자 정보 조회

@@ -1,4 +1,4 @@
-package com.markmycode.mmc.auth.oauth.service;
+package com.markmycode.mmc.auth.service;
 
 import com.markmycode.mmc.auth.oauth.dto.CustomOAuth2User;
 import com.markmycode.mmc.auth.oauth.dto.OAuth2Response;
@@ -6,6 +6,7 @@ import com.markmycode.mmc.auth.oauth.dto.OAuth2UserInfo;
 import com.markmycode.mmc.user.entity.User;
 import com.markmycode.mmc.user.enums.Provider;
 import com.markmycode.mmc.user.enums.Role;
+import com.markmycode.mmc.user.enums.Status;
 import com.markmycode.mmc.user.repository.UserRepository;
 import com.markmycode.mmc.util.EmailUtils;
 import com.markmycode.mmc.util.OAuth2ResponseFactory;
@@ -51,6 +52,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 .userName(oAuth2Response.getUserName())
                 .userEmail(EmailUtils.normalizeEmail(oAuth2Response.getUserEmail()))
                 .userNickname(oAuth2Response.getUserEmail()) // 임시 닉네임으로 이메일 사용 (추후 변경)
+                .userStatus(Status.ACTIVE)
                 .userRole(Role.ROLE_USER)
                 .socialId(socialId)
                 .socialProvider(Provider.valueOf(oAuth2Response.getSocialProvider()))
@@ -72,6 +74,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 .userName(user.getUserName())
                 .userEmail(user.getUserEmail())
                 .userNickname(user.getUserNickname())
+                .userStatus(user.getUserStatus())
                 .userRole(user.getUserRole())
                 .socialId(user.getSocialId())
                 .socialProvider(user.getSocialProvider())

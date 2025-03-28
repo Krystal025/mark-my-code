@@ -23,7 +23,7 @@ public class CustomOAuth2User implements OAuth2User, UserPrincipal {
         collection.add(new GrantedAuthority() {
             @Override
             public String getAuthority() {
-                return oAuth2UserInfo.getUserRole().toString();
+                return oAuth2UserInfo.getUserRole().name();
             }
         });
         return collection;
@@ -51,6 +51,8 @@ public class CustomOAuth2User implements OAuth2User, UserPrincipal {
     public String getUserNickname(){
         return oAuth2UserInfo.getUserNickname();
     }
+
+    public String getUserStatus() { return oAuth2UserInfo.getUserStatus().name(); }
 
     public String getSocialId(){ return oAuth2UserInfo.getSocialId(); }
 

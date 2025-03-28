@@ -3,8 +3,8 @@ package com.markmycode.mmc.config;
 import com.markmycode.mmc.auth.jwt.filter.JwtAuthenticationFilter;
 import com.markmycode.mmc.auth.jwt.provider.JwtTokenProvider;
 import com.markmycode.mmc.auth.oauth.handler.OAuth2SuccessHandler;
-import com.markmycode.mmc.auth.oauth.service.CustomOAuth2UserService;
-import com.markmycode.mmc.auth.oauth.service.TokenService;
+import com.markmycode.mmc.auth.service.CustomOAuth2UserService;
+import com.markmycode.mmc.auth.service.TokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -85,7 +85,6 @@ public class SecurityConfig {
                         // 제공자로부터 Access 토큰을 받은 후 사용자 정보(e.g. 이메일, 이름)를 가져오기 위한 엔드포인트 설정
                         .userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig.userService(customOAuth2UserService))
                         .successHandler(oAuth2SuccessHandler)
-                        // .defaultSuccessUrl("/", true) // OAuth 로그인 성공 후 "/"로 이동
                 );
         http
                 .exceptionHandling(exception -> exception

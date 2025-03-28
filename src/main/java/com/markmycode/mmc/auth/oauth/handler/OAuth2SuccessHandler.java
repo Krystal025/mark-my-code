@@ -23,14 +23,12 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     // 소셜 로그인 성공시 AccessToken + RefreshToken 토큰 발급
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-        System.out.println("OAuth2SuccessHandler 실행 시작");
         // OAuth2 인증을 통해 얻은 사용자 정보를 CustomOAuth2User 객체로 반환
         CustomOAuth2User customOAuth2User = (CustomOAuth2User) authentication.getPrincipal();
-        // SecurityContextHolder에 Authentication 저장
-        // SecurityContextHolder.getContext().setAuthentication(authentication);
         // 소셜 로그인 사용자 정보 추출
         Long userId = customOAuth2User.getUserId();
         String userEmail = customOAuth2User.getUserEmail();
+        String userStatus = customOAuth2User.getUserStatus();
         String socialId = customOAuth2User.getSocialId();
         String userRole = authentication.getAuthorities().stream()
                 .findFirst()
@@ -38,8 +36,8 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                 .orElseThrow(() -> new RuntimeException("No authority found"));
 
         // 사용자 정보를 바탕으로 JWT 토큰 생성
-        String accessToken = jwtTokenProvider.generateAccessJwt(userId, userEmail, userRole, socialId);
-        String refreshToken = jwtTokenProvider.generateRefreshJwt(customOAuth2User.getUserId(), "social");
+        String accessToken = jwtTokenProvider.generateAccessJwt(userId, userEmail, userStatus, userRole, socialId);
+        String refreshToken = jwtTokenProvider.generateRefreshJwt(customOAuth2User.getUserId(), userStatus, "social");
 
         // 쿠키에 엑세스 토큰 및 리프레시 토큰 저장
         CookieUtils.addCookie(response, "Access_Token", accessToken, 30 * 60); // 30분 유효

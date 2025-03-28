@@ -13,7 +13,7 @@ public class CookieUtils {
         cookie.setPath("/");
         cookie.setMaxAge(expiration); // 쿠키 만료시간 (토큰 만료시간과 일치시킴)
         cookie.setAttribute("SameSite", "Lax"); // SameSite 설정
-        cookie.setHttpOnly(false); // true : Javascript 접근 차단
+        cookie.setHttpOnly(true); // true : Javascript 접근 차단
         // cookie.setSecure(true); // HTTPS 환경에서만 활성화 (개발/테스트 시에는 주석 처리)
         response.addCookie(cookie);
     }
