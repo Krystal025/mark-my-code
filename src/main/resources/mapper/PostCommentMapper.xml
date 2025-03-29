@@ -14,6 +14,7 @@
         <result property="commentCreatedAt" column="comment_created_at"/>
         <result property="commentUpdatedAt" column="comment_updated_at"/>
         <result property="userNickname" column="user_nickname"/>
+        <result property="userStatus" column="user_status"/>
         <collection property="childComments" ofType="com.markmycode.mmc.comment.dto.CommentResponseDto"
                     select="selectChildCommentsByParentId" column="comment_id"/>
     </resultMap>
@@ -28,7 +29,8 @@
         c.comment_created_at,
         c.comment_updated_at,
         u.user_id,
-        u.user_nickname
+        u.user_nickname,
+        u.user_status
         FROM post_comment c
         JOIN user u ON c.user_id = u.user_id
         WHERE c.post_id = #{postId}
@@ -46,7 +48,8 @@
         c.comment_created_at,
         c.comment_updated_at,
         u.user_id,
-        u.user_nickname
+        u.user_nickname,
+        u.user_status
         FROM post_comment c
         JOIN user u ON c.user_id = u.user_id
         WHERE c.parent_id = #{parentId}

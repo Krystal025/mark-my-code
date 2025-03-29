@@ -25,7 +25,7 @@ public enum ErrorCode {
     // 401 UNAUTHORIZED: 인증 실패
     TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "토큰이 만료되었습니다."),
     TOKEN_MISSING(HttpStatus.UNAUTHORIZED, "토큰이 존재하지 않습니다."),
-    INACTIVE_USER(HttpStatus.UNAUTHORIZED, "탈퇴한 사용자는 접근할 수 없습니다."),
+    INACTIVE_USER(HttpStatus.UNAUTHORIZED, "탈퇴한 사용자입니다."),
 
     // 403 FORBIDDEN: 권한 부족
     ACCESS_DENIED(HttpStatus.FORBIDDEN, "해당 리소스에 대한 접근 권한이 없습니다."),

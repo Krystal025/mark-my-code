@@ -6,6 +6,8 @@ import com.markmycode.mmc.auth.jwt.dto.TokenResponseDto;
 import com.markmycode.mmc.auth.jwt.provider.JwtTokenProvider;
 import com.markmycode.mmc.exception.ErrorCode;
 import com.markmycode.mmc.exception.custom.BadRequestException;
+import com.markmycode.mmc.exception.custom.UnauthorizedException;
+import com.markmycode.mmc.user.enums.Status;
 import com.markmycode.mmc.util.CookieUtils;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +30,6 @@ public class AuthService {
     public TokenResponseDto login(LoginRequestDto loginRequestDto, HttpServletResponse response){
         try{
             System.out.println("로그인 요청: 이메일 = " + loginRequestDto.getEmail() + ", 비밀번호 = " + loginRequestDto.getPassword());
-
             // 인증 처리
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(loginRequestDto.getEmail(), loginRequestDto.getPassword()));
@@ -36,6 +37,10 @@ public class AuthService {
             // 사용자 정보 추출
             CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
 
+            // 탈퇴 회원 체크
+            if (Status.INACTIVE.equals(customUserDetails.getUserStatus())) {
+                throw new UnauthorizedException(ErrorCode.INACTIVE_USER);
+            }
             // 토큰 생성
             String accessToken = jwtTokenProvider.generateAccessJwt(
                     customUserDetails.getUserId(),

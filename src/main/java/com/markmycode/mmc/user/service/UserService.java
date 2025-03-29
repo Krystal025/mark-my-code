@@ -6,10 +6,12 @@ import com.markmycode.mmc.exception.custom.BadRequestException;
 import com.markmycode.mmc.exception.custom.DuplicateException;
 import com.markmycode.mmc.exception.custom.ForbiddenException;
 import com.markmycode.mmc.exception.custom.NotFoundException;
+import com.markmycode.mmc.post.repository.PostRepository;
 import com.markmycode.mmc.user.dto.UserRequestDto;
 import com.markmycode.mmc.user.dto.UserResponseDto;
 import com.markmycode.mmc.user.dto.UserUpdateDto;
 import com.markmycode.mmc.user.entity.User;
+import com.markmycode.mmc.user.enums.Status;
 import com.markmycode.mmc.user.repository.UserRepository;
 import com.markmycode.mmc.util.EmailUtils;
 import jakarta.servlet.http.HttpServletResponse;
@@ -25,6 +27,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    private final PostRepository postRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final AuthService authService;
 
@@ -32,13 +35,13 @@ public class UserService {
     @Transactional
     public void createUser(UserRequestDto requestDto){
         String userEmail = EmailUtils.normalizeEmail(requestDto.getUserEmail());
-        if(userRepository.existsByUserEmail(userEmail)){
+        if(userRepository.existsByUserEmailAndUserStatus(userEmail, Status.ACTIVE)){
             throw new DuplicateException(ErrorCode.EMAIL_ALREADY_EXISTS);
         }
         if (!requestDto.getUserPwd().equals(requestDto.getConfirmPwd())) {
             throw new BadRequestException(ErrorCode.INVALID_PASSWORD);
         }
-        if(userRepository.existsByUserNickname(requestDto.getUserNickname())){
+        if(userRepository.existsByUserNicknameAndUserStatus(requestDto.getUserNickname(), Status.ACTIVE)){
             throw new DuplicateException(ErrorCode.NICKNAME_ALREADY_EXIST);
         }
         String encodedPassword = passwordEncoder.encode(requestDto.getUserPwd());
@@ -57,13 +60,12 @@ public class UserService {
         // 닉네임 업데이트 (변경 시에만)
         if (requestDto.getUserNickname() != null &&
                 !requestDto.getUserNickname().equals(user.getUserNickname())) {
-            if (userRepository.existsByUserNickname(requestDto.getUserNickname())) {
+            if (userRepository.existsByUserNicknameAndUserStatus(requestDto.getUserNickname(), Status.ACTIVE)) {
                 throw new DuplicateException(ErrorCode.NICKNAME_ALREADY_EXIST);
             }
             user.updateNickname(requestDto.getUserNickname());
             updated = true;
         }
-
         // 비밀번호 업데이트
         boolean newPasswordProvided = requestDto.getUserPwd() != null && !requestDto.getUserPwd().isEmpty() &&
                 requestDto.getConfirmPwd() != null && !requestDto.getConfirmPwd().isEmpty();
@@ -86,17 +88,6 @@ public class UserService {
         if (!updated) {
             throw new BadRequestException(ErrorCode.NO_CHANGES);
         }
-//        if (requestDto.getCurrentPwd() != null && !requestDto.getCurrentPwd().isEmpty() &&
-//                requestDto.getUserPwd() != null && !requestDto.getUserPwd().isEmpty() &&
-//                requestDto.getConfirmPwd() != null && !requestDto.getConfirmPwd().isEmpty()) {
-//            if (!passwordEncoder.matches(requestDto.getCurrentPwd(), user.getUserPwd())) {
-//                throw new BadRequestException(ErrorCode.INVALID_CURRENT_PASSWORD);
-//            }
-//            if (!requestDto.getUserPwd().equals(requestDto.getConfirmPwd())) {
-//                throw new BadRequestException(ErrorCode.INVALID_PASSWORD);
-//            }
-//            String encodedPassword = passwordEncoder.encode(requestDto.getUserPwd());
-//            user.updatePwd(encodedPassword);
     }
 
     // 사용자 비활성화(탈퇴)
@@ -115,6 +106,8 @@ public class UserService {
         validateUserOwnership(loggedInUserId, userId);
         // 본인 계정 비활성화(탈퇴)
         user.deactivate();
+        // 게시글 삭제
+        postRepository.deleteByUserUserId(userId);
         // 로그아웃 처리
         authService.logout(response);
     }

@@ -14,6 +14,7 @@ import com.markmycode.mmc.post.entity.Post;
 import com.markmycode.mmc.post.repository.PostMapper;
 import com.markmycode.mmc.post.service.PostService;
 import com.markmycode.mmc.user.entity.User;
+import com.markmycode.mmc.user.enums.Status;
 import com.markmycode.mmc.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -81,7 +82,15 @@ public class CommentService {
         if (postResponseDto == null) {
             throw new NotFoundException(ErrorCode.POST_NOT_FOUND);
         }
-        return commentMapper.selectCommentsByPostId(postId);
+        List<CommentResponseDto> comments = commentMapper.selectCommentsByPostId(postId);
+        comments.forEach(comment -> {
+            System.out.println("UserStatus: " + comment.getUserStatus());
+            if (Status.INACTIVE.name().equals(comment.getUserStatus())) {
+                comment.setUserNickname("[탈퇴한 회원]");
+            }
+        });
+        return comments;
+        //return commentMapper.selectCommentsByPostId(postId);
     }
 
     // 유효성 검사 및 부모 댓글 엔티티 객체 반환
