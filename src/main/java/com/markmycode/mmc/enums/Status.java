@@ -1,4 +1,4 @@
-package com.markmycode.mmc.comment.enums;
+package com.markmycode.mmc.enums;
 
 public enum Status {
     ACTIVE,

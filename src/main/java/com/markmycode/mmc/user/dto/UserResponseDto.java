@@ -1,6 +1,5 @@
 package com.markmycode.mmc.user.dto;
 
-import com.markmycode.mmc.user.enums.Status;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,7 +17,7 @@ public class UserResponseDto {
     private String userName;
     private String userEmail;
     private String userNickname;
-    private Status userStatus;
+    private String userStatus;
     private LocalDateTime userCreatedAt;
 
 }

@@ -1,8 +1,8 @@
 package com.markmycode.mmc.auth.oauth.dto;
 
-import com.markmycode.mmc.user.enums.Provider;
-import com.markmycode.mmc.user.enums.Role;
-import com.markmycode.mmc.user.enums.Status;
+import com.markmycode.mmc.enums.Provider;
+import com.markmycode.mmc.enums.Role;
+import com.markmycode.mmc.enums.Status;
 import lombok.Builder;
 import lombok.Getter;
 

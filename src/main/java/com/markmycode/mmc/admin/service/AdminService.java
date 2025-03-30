@@ -1,7 +1,7 @@
 package com.markmycode.mmc.admin.service;
 
 import com.markmycode.mmc.user.dto.UserResponseDto;
-import com.markmycode.mmc.user.enums.Status;
+import com.markmycode.mmc.enums.Status;
 import com.markmycode.mmc.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,7 +23,7 @@ public class AdminService {
                         .userName(user.getUserName())
                         .userEmail(user.getUserEmail())
                         .userNickname(user.getUserNickname())
-                        .userStatus(user.getUserStatus())
+                        .userStatus(user.getUserStatus().name())
                         .userCreatedAt(user.getUserCreatedAt())
                         .build())
                 .toList();// 스트림의 요소를 수집하여 List 컬렉션 타입으로 변환

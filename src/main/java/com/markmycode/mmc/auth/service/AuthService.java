@@ -7,7 +7,7 @@ import com.markmycode.mmc.auth.jwt.provider.JwtTokenProvider;
 import com.markmycode.mmc.exception.ErrorCode;
 import com.markmycode.mmc.exception.custom.BadRequestException;
 import com.markmycode.mmc.exception.custom.UnauthorizedException;
-import com.markmycode.mmc.user.enums.Status;
+import com.markmycode.mmc.enums.Status;
 import com.markmycode.mmc.util.CookieUtils;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;

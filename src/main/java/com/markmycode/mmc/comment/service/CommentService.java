@@ -3,7 +3,6 @@ package com.markmycode.mmc.comment.service;
 import com.markmycode.mmc.comment.dto.CommentRequestDto;
 import com.markmycode.mmc.comment.dto.CommentResponseDto;
 import com.markmycode.mmc.comment.entity.Comment;
-import com.markmycode.mmc.comment.repository.CommentMapper;
 import com.markmycode.mmc.comment.repository.CommentRepository;
 import com.markmycode.mmc.exception.ErrorCode;
 import com.markmycode.mmc.exception.custom.BadRequestException;
@@ -14,7 +13,6 @@ import com.markmycode.mmc.post.entity.Post;
 import com.markmycode.mmc.post.repository.PostMapper;
 import com.markmycode.mmc.post.service.PostService;
 import com.markmycode.mmc.user.entity.User;
-import com.markmycode.mmc.user.enums.Status;
 import com.markmycode.mmc.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -22,30 +20,23 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class CommentService {
 
     private final PostMapper postMapper;
-    private final CommentMapper commentMapper;
-
     private final CommentRepository commentRepository;
-
     private final UserService userService;
     private final PostService postService;
 
     @Transactional
     public void createComment(Long userId, Long postId, CommentRequestDto requestDto){
-        // 사용자 확인
         User user = userService.getUser(userId);
-        // 게시글 확인
         Post post = postService.getPost(postId);
-        // 댓글 유효성 검사
         Comment parentComment = validateAndGetParentComment(requestDto.getParentId(), postId);
-        // 댓글 엔티티 생성
         Comment comment = Comment.fromDto(requestDto, post, user, parentComment);
-        // 댓글 저장
         commentRepository.save(comment);
     }
 
@@ -53,7 +44,6 @@ public class CommentService {
     public void updateComment(Long userId, Long commentId, String commentContent){
         User user = userService.getUser(userId);
         Comment comment = getComment(commentId);
-        // 댓글 작성자와 요청한 사용자 간 일치 여부 확인
         validateCommentOwnership(user, comment);
         // 변경된 필드 반영
         if (commentContent != null){
@@ -82,15 +72,10 @@ public class CommentService {
         if (postResponseDto == null) {
             throw new NotFoundException(ErrorCode.POST_NOT_FOUND);
         }
-        List<CommentResponseDto> comments = commentMapper.selectCommentsByPostId(postId);
-        comments.forEach(comment -> {
-            System.out.println("UserStatus: " + comment.getUserStatus());
-            if (Status.INACTIVE.name().equals(comment.getUserStatus())) {
-                comment.setUserNickname("[탈퇴한 회원]");
-            }
-        });
-        return comments;
-        //return commentMapper.selectCommentsByPostId(postId);
+        List<Comment> comments = commentRepository.findByPostPostIdAndParentCommentIsNullOrderByCommentCreatedAt(postId);
+        return comments.stream()
+                .map(Comment::toResponseDto)
+                .collect(Collectors.toList());
     }
 
     // 유효성 검사 및 부모 댓글 엔티티 객체 반환

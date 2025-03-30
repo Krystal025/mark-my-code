@@ -1,4 +1,4 @@
-package com.markmycode.mmc.user.enums;
+package com.markmycode.mmc.enums;
 
 public enum Role {
     ROLE_USER,

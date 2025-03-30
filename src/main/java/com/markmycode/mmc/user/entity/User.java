@@ -2,9 +2,9 @@ package com.markmycode.mmc.user.entity;
 
 import com.markmycode.mmc.user.dto.UserRequestDto;
 import com.markmycode.mmc.user.dto.UserResponseDto;
-import com.markmycode.mmc.user.enums.Provider;
-import com.markmycode.mmc.user.enums.Role;
-import com.markmycode.mmc.user.enums.Status;
+import com.markmycode.mmc.enums.Provider;
+import com.markmycode.mmc.enums.Role;
+import com.markmycode.mmc.enums.Status;
 import com.markmycode.mmc.util.EmailUtils;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -78,7 +78,7 @@ public class User {
                 .userName(userName)
                 .userEmail(userEmail)
                 .userNickname(userNickname)
-                .userStatus(userStatus)
+                .userStatus(userStatus.name())
                 .userCreatedAt(userCreatedAt)
                 .build();
     }

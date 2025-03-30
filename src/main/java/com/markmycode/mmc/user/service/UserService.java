@@ -11,7 +11,7 @@ import com.markmycode.mmc.user.dto.UserRequestDto;
 import com.markmycode.mmc.user.dto.UserResponseDto;
 import com.markmycode.mmc.user.dto.UserUpdateDto;
 import com.markmycode.mmc.user.entity.User;
-import com.markmycode.mmc.user.enums.Status;
+import com.markmycode.mmc.enums.Status;
 import com.markmycode.mmc.user.repository.UserRepository;
 import com.markmycode.mmc.util.EmailUtils;
 import jakarta.servlet.http.HttpServletResponse;

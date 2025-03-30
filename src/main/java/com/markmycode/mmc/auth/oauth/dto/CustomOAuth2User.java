@@ -2,7 +2,7 @@ package com.markmycode.mmc.auth.oauth.dto;
 
 import com.markmycode.mmc.auth.model.UserPrincipal;
 import com.markmycode.mmc.user.dto.UserResponseDto;
-import com.markmycode.mmc.user.enums.Provider;
+import com.markmycode.mmc.enums.Provider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
