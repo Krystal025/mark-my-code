@@ -11,7 +11,7 @@
     <style>
         .comment-section { margin-top: 2rem; }
         .comment-list { margin-left: 1.5rem; }
-        .child-comment-list { display: none; margin-left: 1.5rem; }
+        .child-comment-list { margin-left: 1.5rem; }
         .reply-form, .edit-form { display: none; margin-left: 2.5rem; }
         .comment.top-level { border-bottom: 1px solid #dee2e6; padding: 1rem 0; }
         .comment { padding: 1rem 0; }
@@ -128,8 +128,8 @@
                     </form>
                 </div>
                 <!-- 대댓글 -->
-                <div class="child-comment-list" th:id="'child-comments-' + ${comment.commentId}" th:each="child : ${comment.childComments}">
-                    <div class="comment">
+                <div class="child-comment-list" th:id="'child-comments-' + ${comment.commentId}" th:unless="${#lists.isEmpty(comment.childComments)}">
+                    <div class="comment" th:each="child : ${comment.childComments}">
                         <div>
                             <strong th:text="${child.userNickname}"></strong>
                             <div class="date-info" th:text="${#temporals.format(child.commentCreatedAt, 'yyyy년 M월 d일')}"></div>
@@ -160,8 +160,8 @@
                             </form>
                         </div>
                         <!-- 대대댓글 -->
-                        <div class="child-comment-list" th:id="'child-comments-' + ${child.commentId}" th:each="grandchild : ${child.childComments}">
-                            <div class="comment">
+                        <div class="child-comment-list" th:id="'child-comments-' + ${child.commentId}" th:unless="${#lists.isEmpty(child.childComments)}">
+                            <div class="comment" th:each="grandchild : ${child.childComments}">
                                 <div>
                                     <strong th:text="${grandchild.userNickname}"></strong>
                                     <div class="date-info" th:text="${#temporals.format(grandchild.commentCreatedAt, 'yyyy년 M월 d일')}"></div>
@@ -169,6 +169,7 @@
                                 <p th:if="${grandchild.commentStatus == 'ACTIVE'}" th:text="${grandchild.commentContent}"></p>
                                 <p th:if="${grandchild.commentStatus == 'INACTIVE'}" class="text-muted mb-2">삭제된 댓글입니다</p>
                                 <div th:if="${grandchild.commentStatus == 'ACTIVE'}" class="mb-3">
+                                    <!-- 대대댓글은 답글 버튼 제외 -->
                                     <button th:if="${isCommentAuthor[grandchild.commentId]}" class="btn btn-sm btn-outline-primary edit-btn me-2" th:data-comment-id="${grandchild.commentId}">수정</button>
                                     <form th:action="@{/posts/{postId}/comments/{commentId}/delete(postId=${post.postId}, commentId=${grandchild.commentId})}" method="post" style="display: inline;" onsubmit="return confirm('정말로 이 댓글을 삭제하시겠습니까?');">
                                         <button th:if="${isCommentAuthor[grandchild.commentId]}" type="submit" class="btn btn-sm btn-outline-danger">삭제</button>
@@ -192,19 +193,16 @@
             document.addEventListener("DOMContentLoaded", function() {
                 hljs.highlightAll();
 
-                // 모든 child-comment-list를 숨김 상태로 초기화
-                document.querySelectorAll('.child-comment-list').forEach(list => {
-                    list.style.display = 'none';
-                });
-
                 // 답글 토글 버튼 초기화 및 이벤트 설정
                 document.querySelectorAll('.toggle-replies').forEach(button => {
                     const commentId = button.getAttribute('data-comment-id');
                     const childComments = document.getElementById(`child-comments-${commentId}`);
                     const replyCount = button.querySelector('span').textContent;
 
-                    // 초기 텍스트를 "답글 보기"로 설정
-                    button.textContent = `답글 보기 (${replyCount})`;
+                    if (childComments) {
+                        childComments.style.display = 'none'; // 개별 숨김
+                        button.textContent = `답글 보기 (${replyCount})`;
+                    }
 
                     button.addEventListener('click', function() {
                         if (childComments) {
