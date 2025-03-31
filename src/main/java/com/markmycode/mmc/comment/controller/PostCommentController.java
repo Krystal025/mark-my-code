@@ -2,12 +2,15 @@ package com.markmycode.mmc.comment.controller;
 
 import com.markmycode.mmc.auth.model.UserPrincipal;
 import com.markmycode.mmc.comment.dto.CommentRequestDto;
+import com.markmycode.mmc.comment.dto.CommentResponseDto;
 import com.markmycode.mmc.comment.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.List;
 
 @Controller
 @RequestMapping("/posts")
@@ -50,6 +53,12 @@ public class PostCommentController {
         commentService.deactivateComment(userPrincipal.getUserId(), commentId);
         redirectAttributes.addAttribute("postId", postId);
         return "redirect:/posts/{postId}";
+    }
+
+    @GetMapping("/comments/{parentId}/children")
+    @ResponseBody
+    public List<CommentResponseDto> getChildComments(@PathVariable("parentId") Long parentId) {
+        return commentService.getChildComments(parentId);
     }
 
 }

@@ -113,13 +113,13 @@ public class PostController {
         if (loginUserId != null) {
             for (CommentResponseDto comment : comments) {
                 isCommentAuthor.put(comment.getCommentId(), comment.getUserId().equals(loginUserId));
-                // 대댓글 및 대대댓글도 처리
-                for (CommentResponseDto child : comment.getChildComments()) {
-                    isCommentAuthor.put(child.getCommentId(), child.getUserId().equals(loginUserId));
-                    for (CommentResponseDto grandchild : child.getChildComments()) {
-                        isCommentAuthor.put(grandchild.getCommentId(), grandchild.getUserId().equals(loginUserId));
-                    }
-                }
+//                // 대댓글 및 대대댓글도 처리
+//                for (CommentResponseDto child : comment.getChildComments()) {
+//                    isCommentAuthor.put(child.getCommentId(), child.getUserId().equals(loginUserId));
+//                    for (CommentResponseDto grandchild : child.getChildComments()) {
+//                        isCommentAuthor.put(grandchild.getCommentId(), grandchild.getUserId().equals(loginUserId));
+//                    }
+//                }
             }
         }
         boolean isLiked = false;
@@ -135,6 +135,7 @@ public class PostController {
         model.addAttribute("isAuthenticated", isAuthenticated); // 로그인 여부 추가
         model.addAttribute("isLiked", isLiked);
         model.addAttribute("requestDto", new CommentRequestDto()); // 빈 DTO 추가
+        model.addAttribute("loginUserId", loginUserId); // loginUserId 추가
         return "posts/detail";
     }
 

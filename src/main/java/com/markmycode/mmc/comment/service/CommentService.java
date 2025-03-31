@@ -78,6 +78,14 @@ public class CommentService {
                 .collect(Collectors.toList());
     }
 
+    public List<CommentResponseDto> getChildComments(Long parentId) {
+        List<Comment> childComments = commentRepository.findByParentCommentCommentIdOrderByCommentCreatedAt(parentId);
+        return childComments.stream()
+                .map(Comment::toResponseDto)
+                .collect(Collectors.toList());
+    }
+
+
     // 유효성 검사 및 부모 댓글 엔티티 객체 반환
     public Comment validateAndGetParentComment(Long parentCommentId, Long postId){
         if (parentCommentId == null){
@@ -88,12 +96,10 @@ public class CommentService {
                 .orElseThrow(()-> new NotFoundException(ErrorCode.PARENT_COMMENT_NOT_FOUND));
         // 부모 댓글이 해당 게시글에 속하는지 확인
         if(!parentComment.getPost().getPostId().equals(postId)){
-            System.out.println("해당 게시글에 속하지 않는 댓글입니다.");
             throw new BadRequestException(ErrorCode.INVALID_COMMENT);
         }
         // 깊이 체크 : 대대댓글(2단계)까지만 허용
         if (parentComment.getParentComment() != null && parentComment.getParentComment().getParentComment() != null) {
-            System.out.println("대대댓글까지만 요청 가능합니다.");
             throw new BadRequestException(ErrorCode.INVALID_COMMENT);
         }
         return parentComment;

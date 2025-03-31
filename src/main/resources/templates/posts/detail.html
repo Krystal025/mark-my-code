@@ -110,8 +110,8 @@
                     <form th:action="@{/posts/{postId}/comments/{commentId}/delete(postId=${post.postId}, commentId=${comment.commentId})}" method="post" style="display: inline;" onsubmit="return confirm('정말로 이 댓글을 삭제하시겠습니까?');">
                         <button th:if="${isCommentAuthor[comment.commentId]}" type="submit" class="btn btn-sm btn-outline-danger">삭제</button>
                     </form>
-                    <button th:if="${#lists.size(comment.childComments) > 0}" class="btn btn-sm btn-outline-secondary toggle-replies me-2" th:data-comment-id="${comment.commentId}">
-                        답글 보기 (<span th:text="${#lists.size(comment.childComments)}"></span>)
+                    <button class="btn btn-sm btn-outline-secondary toggle-replies me-2" th:data-comment-id="${comment.commentId}">
+                        답글 보기
                     </button>
                     <form th:action="@{/posts/{postId}/comments(postId=${post.postId})}" method="post" th:object="${requestDto}" class="reply-form mt-2" th:id="'reply-form-' + ${comment.commentId}">
                         <div class="mb-1">
@@ -127,64 +127,8 @@
                         </div>
                     </form>
                 </div>
-                <!-- 대댓글 -->
-                <div class="child-comment-list" th:id="'child-comments-' + ${comment.commentId}" th:unless="${#lists.isEmpty(comment.childComments)}">
-                    <div class="comment" th:each="child : ${comment.childComments}">
-                        <div>
-                            <strong th:text="${child.userNickname}"></strong>
-                            <div class="date-info" th:text="${#temporals.format(child.commentCreatedAt, 'yyyy년 M월 d일')}"></div>
-                        </div>
-                        <p th:if="${child.commentStatus == 'ACTIVE'}" th:text="${child.commentContent}"></p>
-                        <p th:if="${child.commentStatus == 'INACTIVE'}" class="text-muted mb-2">삭제된 댓글입니다</p>
-                        <div th:if="${child.commentStatus == 'ACTIVE'}" class="mb-3">
-                            <button th:if="${isAuthenticated}" class="btn btn-sm btn-outline-secondary reply-btn me-2" th:data-comment-id="${child.commentId}">답글</button>
-                            <button th:if="${isCommentAuthor[child.commentId]}" class="btn btn-sm btn-outline-primary edit-btn me-2" th:data-comment-id="${child.commentId}">수정</button>
-                            <form th:action="@{/posts/{postId}/comments/{commentId}/delete(postId=${post.postId}, commentId=${child.commentId})}" method="post" style="display: inline;" onsubmit="return confirm('정말로 이 댓글을 삭제하시겠습니까?');">
-                                <button th:if="${isCommentAuthor[child.commentId]}" type="submit" class="btn btn-sm btn-outline-danger">삭제</button>
-                            </form>
-                            <button th:if="${#lists.size(child.childComments) > 0}" class="btn btn-sm btn-outline-secondary toggle-replies me-2" th:data-comment-id="${child.commentId}">
-                                답글 보기 (<span th:text="${#lists.size(child.childComments)}"></span>)
-                            </button>
-                            <form th:action="@{/posts/{postId}/comments(postId=${post.postId})}" method="post" th:object="${requestDto}" class="reply-form mt-2" th:id="'reply-form-' + ${child.commentId}">
-                                <div class="mb-1">
-                                    <textarea name="commentContent" th:field="*{commentContent}" class="form-control" rows="2" placeholder="답글을 입력하세요" required></textarea>
-                                </div>
-                                <input type="hidden" name="parentId" th:value="${child.commentId}">
-                                <button type="submit" class="btn btn-primary btn-sm">답글 작성</button>
-                            </form>
-                            <form th:action="@{/posts/{postId}/comments/{commentId}/update(postId=${post.postId}, commentId=${child.commentId})}" method="post" class="edit-form mt-2" th:id="'edit-form-' + ${child.commentId}">
-                                <div class="mb-1">
-                                    <textarea name="commentContent" th:text="${child.commentContent}" class="form-control" rows="2" placeholder="댓글을 수정하세요" required></textarea>
-                                        <button type="submit" class="btn btn-primary btn-sm">수정 완료</button>
-                                </div>
-                            </form>
-                        </div>
-                        <!-- 대대댓글 -->
-                        <div class="child-comment-list" th:id="'child-comments-' + ${child.commentId}" th:unless="${#lists.isEmpty(child.childComments)}">
-                            <div class="comment" th:each="grandchild : ${child.childComments}">
-                                <div>
-                                    <strong th:text="${grandchild.userNickname}"></strong>
-                                    <div class="date-info" th:text="${#temporals.format(grandchild.commentCreatedAt, 'yyyy년 M월 d일')}"></div>
-                                </div>
-                                <p th:if="${grandchild.commentStatus == 'ACTIVE'}" th:text="${grandchild.commentContent}"></p>
-                                <p th:if="${grandchild.commentStatus == 'INACTIVE'}" class="text-muted mb-2">삭제된 댓글입니다</p>
-                                <div th:if="${grandchild.commentStatus == 'ACTIVE'}" class="mb-3">
-                                    <!-- 대대댓글은 답글 버튼 제외 -->
-                                    <button th:if="${isCommentAuthor[grandchild.commentId]}" class="btn btn-sm btn-outline-primary edit-btn me-2" th:data-comment-id="${grandchild.commentId}">수정</button>
-                                    <form th:action="@{/posts/{postId}/comments/{commentId}/delete(postId=${post.postId}, commentId=${grandchild.commentId})}" method="post" style="display: inline;" onsubmit="return confirm('정말로 이 댓글을 삭제하시겠습니까?');">
-                                        <button th:if="${isCommentAuthor[grandchild.commentId]}" type="submit" class="btn btn-sm btn-outline-danger">삭제</button>
-                                    </form>
-                                    <form th:action="@{/posts/{postId}/comments/{commentId}/update(postId=${post.postId}, commentId=${grandchild.commentId})}" method="post" class="edit-form mt-2" th:id="'edit-form-' + ${grandchild.commentId}">
-                                        <div class="mb-1">
-                                            <textarea name="commentContent" th:text="${grandchild.commentContent}" class="form-control" rows="2" placeholder="댓글을 수정하세요" required></textarea>
-                                            <button type="submit" class="btn btn-primary btn-sm">수정 완료</button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <!-- 자식 댓글을 로드할 빈 div -->
+                <div class="child-comment-list" th:id="'child-comments-' + ${comment.commentId}"></div>
             </div>
         </div>
 
@@ -193,46 +137,127 @@
             document.addEventListener("DOMContentLoaded", function() {
                 hljs.highlightAll();
 
-                // 답글 토글 버튼 초기화 및 이벤트 설정
-                document.querySelectorAll('.toggle-replies').forEach(button => {
-                    const commentId = button.getAttribute('data-comment-id');
-                    const childComments = document.getElementById(`child-comments-${commentId}`);
-                    const replyCount = button.querySelector('span').textContent;
+                // loginUserId를 모델에서 가져옴
+                const loginUserId = [[${loginUserId != null ? loginUserId : 'null'}]];
 
-                    if (childComments) {
-                        childComments.style.display = 'none'; // 개별 숨김
-                        button.textContent = `답글 보기 (${replyCount})`;
+                // 댓글의 계층을 추적하기 위한 맵
+                const commentDepthMap = new Map();
+
+                // 최상위 댓글의 depth를 1로 설정
+                document.querySelectorAll('.comment.top-level').forEach(comment => {
+                    const commentId = comment.querySelector('.toggle-replies').getAttribute('data-comment-id');
+                    commentDepthMap.set(parseInt(commentId), 1);
+                });
+
+                // 답글 토글 버튼 이벤트 설정 (이벤트 위임 사용)
+                document.addEventListener('click', function(event) {
+                    // 답글 보기 버튼 클릭
+                    if (event.target.classList.contains('toggle-replies')) {
+                        const button = event.target;
+                        const commentId = parseInt(button.getAttribute('data-comment-id'));
+                        const childCommentsDiv = document.getElementById(`child-comments-${commentId}`);
+                        if (childCommentsDiv.innerHTML.trim() === '') {
+                            console.log('Fetching child comments for commentId:', commentId);
+                            fetch(`/posts/comments/${commentId}/children`, {
+                                credentials: 'include' // 세션 쿠키 포함
+                            })
+                                .then(response => {
+                                    console.log('Response status:', response.status);
+                                    if (!response.ok) {
+                                        throw new Error(`Network response was not ok: ${response.status} ${response.statusText}`);
+                                    }
+                                    return response.json();
+                                })
+                                .then(data => {
+                                    console.log('Fetched child comments:', data);
+                                    if (data.length === 0) {
+                                        childCommentsDiv.innerHTML = '<p class="text-muted">답글이 없습니다.</p>';
+                                        button.textContent = '답글 숨기기';
+                                        return;
+                                    }
+                                    const parentDepth = commentDepthMap.get(commentId) || 1;
+                                    const childHtml = data.map(child => {
+                                        // 자식 댓글의 depth 계산
+                                        const childDepth = parentDepth + 1;
+                                        commentDepthMap.set(child.commentId, childDepth);
+                                        const isSecondLevel = childDepth === 2;
+                                        console.log(`CommentId: ${child.commentId}, Depth: ${childDepth}, IsSecondLevel: ${isSecondLevel}`);
+                                        return `
+                                        <div class="comment">
+                                            <div>
+                                                <strong>${child.userNickname}</strong>
+                                                <div class="date-info">${new Date(child.commentCreatedAt).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })}</div>
+                                            </div>
+                                            <p>${child.commentStatus === 'ACTIVE' ? child.commentContent : '삭제된 댓글입니다'}</p>
+                                            ${child.commentStatus === 'ACTIVE' ? `
+                                            <div class="mb-3">
+                                                ${isSecondLevel ? `
+                                                <button class="btn btn-sm btn-outline-secondary reply-btn me-2" data-comment-id="${child.commentId}">답글</button>
+                                                ` : ''}
+                                                <button class="btn btn-sm btn-outline-primary edit-btn me-2" data-comment-id="${child.commentId}" style="${child.userId === loginUserId ? '' : 'display: none;'}">수정</button>
+                                                <form action="/posts/${child.postId}/comments/${child.commentId}/delete" method="post" style="display: inline;" onsubmit="return confirm('정말로 이 댓글을 삭제하시겠습니까?');">
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger" style="${child.userId === loginUserId ? '' : 'display: none;'}">삭제</button>
+                                                </form>
+                                                ${isSecondLevel ? `
+                                                <button class="btn btn-sm btn-outline-secondary toggle-replies me-2" data-comment-id="${child.commentId}">답글 보기</button>
+                                                <form action="/posts/${child.postId}/comments" method="post" class="reply-form mt-2" id="reply-form-${child.commentId}" style="display: none;">
+                                                    <div class="mb-1">
+                                                        <textarea name="commentContent" class="form-control" rows="2" placeholder="답글을 입력하세요" required></textarea>
+                                                    </div>
+                                                    <input type="hidden" name="parentId" value="${child.commentId}">
+                                                    <button type="submit" class="btn btn-primary btn-sm">답글 작성</button>
+                                                </form>
+                                                ` : ''}
+                                                <form action="/posts/${child.postId}/comments/${child.commentId}/update" method="post" class="edit-form mt-2" id="edit-form-${child.commentId}" style="display: none;">
+                                                    <div class="mb-1">
+                                                        <textarea name="commentContent" class="form-control" rows="2" placeholder="댓글을 수정하세요" required>${child.commentContent}</textarea>
+                                                    </div>
+                                                    <button type="submit" class="btn btn-primary btn-sm">수정 완료</button>
+                                                </form>
+                                            </div>
+                                            ` : ''}
+                                            <div class="child-comment-list" id="child-comments-${child.commentId}"></div>
+                                        </div>
+                                        `;
+                                    }).join('');
+                                    childCommentsDiv.innerHTML = childHtml;
+                                    button.textContent = '답글 숨기기';
+                                })
+                                .catch(error => {
+                                    console.error('Fetch error:', error);
+                                    childCommentsDiv.innerHTML = '<p class="text-danger">답글을 불러오는 중 오류가 발생했습니다: ' + error.message + '</p>';
+                                    button.textContent = '답글 숨기기';
+                                });
+                        } else {
+                            childCommentsDiv.innerHTML = '';
+                            button.textContent = '답글 보기';
+                        }
                     }
 
-                    button.addEventListener('click', function() {
-                        if (childComments) {
-                            if (childComments.style.display === 'block') {
-                                childComments.style.display = 'none';
-                                this.textContent = `답글 보기 (${replyCount})`;
-                            } else {
-                                childComments.style.display = 'block';
-                                this.textContent = `답글 숨기기 (${replyCount})`;
-                            }
-                        }
-                    });
-                });
-
-                // 답글 작성 폼 토글
-                document.querySelectorAll('.reply-btn').forEach(button => {
-                    button.addEventListener('click', function() {
-                        const commentId = this.getAttribute('data-comment-id');
+                    // 답글 작성 폼 토글
+                    if (event.target.classList.contains('reply-btn')) {
+                        const commentId = event.target.getAttribute('data-comment-id');
                         const replyForm = document.getElementById(`reply-form-${commentId}`);
                         replyForm.style.display = replyForm.style.display === 'block' ? 'none' : 'block';
-                    });
-                });
+                    }
 
-                // 댓글 수정 폼 토글
-                document.querySelectorAll('.edit-btn').forEach(button => {
-                    button.addEventListener('click', function() {
-                        const commentId = this.getAttribute('data-comment-id');
+                    // 댓글 수정 폼 토글
+                    if (event.target.classList.contains('edit-btn')) {
+                        const commentId = event.target.getAttribute('data-comment-id');
                         const editForm = document.getElementById(`edit-form-${commentId}`);
                         editForm.style.display = editForm.style.display === 'block' ? 'none' : 'block';
-                    });
+                    }
+                });
+
+                // 대댓글 작성 폼 제출 시 디버깅 로그 추가
+                document.addEventListener('submit', function(event) {
+                    if (event.target.classList.contains('reply-form')) {
+                        const form = event.target;
+                        const commentId = form.querySelector('input[name="parentId"]').value;
+                        const commentContent = form.querySelector('textarea[name="commentContent"]').value;
+                        console.log('Submitting reply form for parentId:', commentId);
+                        console.log('Comment content:', commentContent);
+                    }
                 });
             });
         </script>
