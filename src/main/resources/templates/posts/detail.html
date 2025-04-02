@@ -9,30 +9,34 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/styles/default.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <style>
-        .comment-section { margin-top: 2rem; }
-        .comment-list { margin-left: 1.5rem; }
-        .child-comment-list { margin-left: 1.5rem; }
-        .reply-form, .edit-form { display: none; margin-left: 2.5rem; }
-        .comment.top-level { border-bottom: 1px solid #dee2e6; padding: 1rem 0; }
-        .comment { padding: 1rem 0; }
+        /* 게시글 스타일 */
+        .content-box { background-color: #ffffff; padding: 2rem; border: 1px solid #dee2e6; border-radius: 0.25rem; margin: 1.5rem 0; }
+        .meta-info { margin-bottom: 1rem; }
+        .meta-info span { margin-right: 1rem; color: #6c757d; }
+        .date-info { color: #adb5bd; font-size: 0.9rem; }
         .like-btn { background: none; border: none; cursor: pointer; font-size: 1.25rem; padding: 0; margin-right: 0.5rem; outline: none; }
         .like-btn.liked i { color: #dc3545; }
         .like-btn:not(.liked) i { color: #6c757d; }
         .like-btn:disabled i { color: #6c757d; cursor: not-allowed; }
         .like-count { margin-right: 0.25rem; vertical-align: middle; }
-        .meta-info { margin-bottom: 1rem; }
-        .meta-info span { margin-right: 1rem; color: #6c757d; }
-        .content-box { background-color: #ffffff; padding: 2rem; border: 1px solid #dee2e6; border-radius: 0.25rem; margin: 1.5rem 0; }
-        .date-info { color: #adb5bd; font-size: 0.9rem; }
-        /* 댓글 폼 */
+        /* 댓글 섹션 스타일 */
+        .comment-section { margin: 30px; }
+        .comment-list { padding: 30px 60px; }
+        .comment { padding: 1rem 0; }
+        .comment.top-level { border-bottom: 1px solid #dee2e6; padding: 1rem 0; }
+        .child-comment-list { margin-left: 1.5rem; }
         .comment-form textarea, .reply-form textarea, .edit-form textarea {
-            max-width: 500px !important;
-            height: 60px !important;
-            resize: vertical;
+            max-width: 100%; height: 60px; resize: vertical; margin-bottom: 0.5rem;
         }
-        .toggle-replies { margin-left: 0.5rem; } /* 삭제 버튼과 간격 확보 */
-        .comment p { margin: 1.5rem 0; } /* 댓글 내용 여백 */
+        .comment-input-form { max-width: 100%; }
+        .comment-textarea { width: 100%; }
+        .comment-meta { margin-bottom: 0.5rem; }
+        .comment-meta strong { display: block; }
+        .comment-meta .date-info { color: #adb5bd; font-size: 0.85rem; }
+        .comment-actions { display: flex; gap: 0.5rem; margin-top: 0.5rem; }
+        .comment-actions .btn { font-size: 0.875rem; padding: 0.25rem 0.5rem; }
         .toggle-replies { margin-left: 0.5rem; }
+        .reply-form, .edit-form { display: none; margin-top: 1rem; }
     </style>
 </head>
 <body>
@@ -56,6 +60,9 @@
             </div>
             <div class="content-box">
                 <div class="card-text" th:utext="${post.postContent}"></div>
+            </div>
+            <div class="problem-link mt-3 mb-3">
+                <strong><a th:if="${post.problemLink != null and !post.problemLink.isEmpty()}" th:href="${post.problemLink}" target="_blank">문제 바로가기</a></strong>
             </div>
             <div class="d-flex justify-content-between align-items-center">
                 <div class="d-flex align-items-center">
@@ -83,16 +90,18 @@
     <div class="comment-section">
         <h3 class="mb-3">댓글</h3>
         <div th:if="${isAuthenticated}" class="mb-3 comment-form">
-            <form th:action="@{/posts/{postId}/comments(postId=${post.postId})}" method="post" th:object="${requestDto}">
+            <form th:action="@{/posts/{postId}/comments(postId=${post.postId})}" method="post" th:object="${requestDto}" class="comment-input-form">
                 <div class="mb-2">
-                    <textarea name="commentContent" th:field="*{commentContent}" class="form-control" rows="2" placeholder="댓글을 입력하세요" required></textarea>
+                    <textarea name="commentContent" th:field="*{commentContent}" class="form-control comment-textarea" rows="3" placeholder="댓글을 입력하세요" required></textarea>
                 </div>
                 <input type="hidden" name="parentId" value="">
-                <button type="submit" class="btn btn-primary btn-sm">댓글 작성</button>
+                <div class="text-end">
+                    <button type="submit" class="btn btn-primary btn-sm">댓글 작성</button>
+                </div>
             </form>
         </div>
-        <div th:unless="${isAuthenticated}" class="mb-3">
-            <p class="text-muted">댓글 작성은 <a th:href="@{/auth/login}">로그인</a> 후에 가능합니다.</p>
+        <div th:unless="${isAuthenticated}" class="mt-4 mb-4">
+            <p class="text-muted">댓글 작성은 <strong><a th:href="@{/auth/login}">로그인</a></strong> 후에 가능합니다.</p>
         </div>
 
         <div class="comment-list">
@@ -102,32 +111,41 @@
                     <strong th:text="${comment.userNickname}"></strong>
                     <div class="date-info" th:text="${#temporals.format(comment.commentCreatedAt, 'yyyy년 M월 d일')}"></div>
                 </div>
-                <p th:if="${comment.commentStatus == 'ACTIVE'}" th:text="${comment.commentContent}"></p>
+                <p th:if="${comment.commentStatus == 'ACTIVE'}" th:text="${comment.commentContent}" class="comment-text"></p>
                 <p th:if="${comment.commentStatus == 'INACTIVE'}" class="text-muted mb-2">삭제된 댓글입니다</p>
-                <div th:if="${comment.commentStatus == 'ACTIVE'}" class="mb-3">
-                    <button th:if="${isAuthenticated}" class="btn btn-sm btn-outline-secondary reply-btn me-2" th:data-comment-id="${comment.commentId}">답글</button>
-                    <button th:if="${isCommentAuthor[comment.commentId]}" class="btn btn-sm btn-outline-primary edit-btn me-2" th:data-comment-id="${comment.commentId}">수정</button>
-                    <form th:action="@{/posts/{postId}/comments/{commentId}/delete(postId=${post.postId}, commentId=${comment.commentId})}" method="post" style="display: inline;" onsubmit="return confirm('정말로 이 댓글을 삭제하시겠습니까?');">
-                        <button th:if="${isCommentAuthor[comment.commentId]}" type="submit" class="btn btn-sm btn-outline-danger">삭제</button>
-                    </form>
-                    <button class="btn btn-sm btn-outline-secondary toggle-replies me-2" th:data-comment-id="${comment.commentId}">
-                        답글 보기
-                    </button>
-                    <form th:action="@{/posts/{postId}/comments(postId=${post.postId})}" method="post" th:object="${requestDto}" class="reply-form mt-2" th:id="'reply-form-' + ${comment.commentId}">
-                        <div class="mb-1">
-                            <textarea name="commentContent" th:field="*{commentContent}" class="form-control" rows="2" placeholder="답글을 입력하세요" required></textarea>
-                        </div>
-                        <input type="hidden" name="parentId" th:value="${comment.commentId}">
-                        <button type="submit" class="btn btn-primary btn-sm">답글 작성</button>
-                    </form>
-                    <form th:action="@{/posts/{postId}/comments/{commentId}/update(postId=${post.postId}, commentId=${comment.commentId})}" method="post" class="edit-form mt-2" th:id="'edit-form-' + ${comment.commentId}">
-                        <div class="mb-1">
-                            <textarea name="commentContent" th:text="${comment.commentContent}" class="form-control" rows="2" placeholder="댓글을 수정하세요" required></textarea>
-                            <button type="submit" class="btn btn-primary btn-sm">수정 완료</button>
-                        </div>
-                    </form>
+<!--                <div th:if="${comment.commentStatus == 'ACTIVE'}" class="mb-3 d-flex align-items-center">-->
+<!--                    <button class="btn btn-sm btn-outline-secondary toggle-replies me-2" th:data-comment-id="${comment.commentId}">답글 보기</button>-->
+<!--                    <button th:if="${isAuthenticated}" class="btn btn-sm btn-outline-secondary reply-btn ms-auto" th:data-comment-id="${comment.commentId}">답글</button>-->
+<!--                    <button th:if="${isCommentAuthor[comment.commentId]}" class="btn btn-sm btn-outline-primary edit-btn ms-2" th:data-comment-id="${comment.commentId}">수정</button>-->
+<!--                    <form th:action="@{/posts/{postId}/comments/{commentId}/delete(postId=${post.postId}, commentId=${comment.commentId})}" method="post" style="display: inline;" onsubmit="return confirm('정말로 이 댓글을 삭제하시겠습니까?');">-->
+<!--                        <button th:if="${isCommentAuthor[comment.commentId]}" type="submit" class="btn btn-sm btn-outline-danger ms-2">삭제</button>-->
+<!--                    </form>-->
+<!--                </div>-->
+                <div th:if="${comment.commentStatus == 'ACTIVE'}" class="mb-3 d-flex justify-content-between align-items-center">
+                    <div class="comment-actions">
+                        <button class="btn btn-sm btn-outline-secondary toggle-replies me-2" th:data-comment-id="${comment.commentId}">답글 보기</button>
+                    </div>
+                    <div class="comment-actions">
+                        <button th:if="${isAuthenticated}" class="btn btn-sm btn-outline-secondary reply-btn me-2" th:data-comment-id="${comment.commentId}">답글</button>
+                        <button th:if="${isCommentAuthor[comment.commentId]}" class="btn btn-sm btn-outline-primary edit-btn me-2" th:data-comment-id="${comment.commentId}">수정</button>
+                        <form th:action="@{/posts/{postId}/comments/{commentId}/delete(postId=${post.postId}, commentId=${comment.commentId})}" method="post" style="display: inline;" onsubmit="return confirm('정말로 이 댓글을 삭제하시겠습니까?');">
+                            <button th:if="${isCommentAuthor[comment.commentId]}" type="submit" class="btn btn-sm btn-outline-danger">삭제</button>
+                        </form>
+                    </div>
                 </div>
-                <!-- 자식 댓글을 로드할 빈 div -->
+                <form th:action="@{/posts/{postId}/comments(postId=${post.postId})}" method="post" th:object="${requestDto}" class="reply-form mt-2 comment-input-form" th:id="'reply-form-' + ${comment.commentId}">
+                    <textarea name="commentContent" th:field="*{commentContent}" class="form-control comment-textarea" rows="2" placeholder="답글을 입력하세요" required></textarea>
+                    <input type="hidden" name="parentId" th:value="${comment.commentId}">
+                    <div class="text-end">
+                        <button type="submit" class="btn btn-primary btn-sm">답글 작성</button>
+                    </div>
+                </form>
+                <form th:action="@{/posts/{postId}/comments/{commentId}/update(postId=${post.postId}, commentId=${comment.commentId})}" method="post" class="edit-form mt-2 comment-input-form" th:id="'edit-form-' + ${comment.commentId}">
+                    <textarea name="commentContent" th:text="${comment.commentContent}" class="form-control comment-textarea" rows="2" placeholder="댓글을 수정하세요" required></textarea>
+                    <div class="text-end">
+                        <button type="submit" class="btn btn-primary btn-sm ms-auto">수정 완료</button>
+                    </div>
+                </form>
                 <div class="child-comment-list" th:id="'child-comments-' + ${comment.commentId}"></div>
             </div>
         </div>
@@ -137,9 +155,8 @@
             document.addEventListener("DOMContentLoaded", function() {
                 hljs.highlightAll();
 
-                // loginUserId를 모델에서 가져옴
                 const loginUserId = [[${loginUserId != null ? loginUserId : 'null'}]];
-
+                const isAuthenticated = [[${isAuthenticated}]];
                 // 댓글의 계층을 추적하기 위한 맵
                 const commentDepthMap = new Map();
 
@@ -190,31 +207,37 @@
                                             </div>
                                             <p>${child.commentStatus === 'ACTIVE' ? child.commentContent : '삭제된 댓글입니다'}</p>
                                             ${child.commentStatus === 'ACTIVE' ? `
-                                            <div class="mb-3">
-                                                ${isSecondLevel ? `
-                                                <button class="btn btn-sm btn-outline-secondary reply-btn me-2" data-comment-id="${child.commentId}">답글</button>
-                                                ` : ''}
-                                                <button class="btn btn-sm btn-outline-primary edit-btn me-2" data-comment-id="${child.commentId}" style="${child.userId === loginUserId ? '' : 'display: none;'}">수정</button>
-                                                <form action="/posts/${child.postId}/comments/${child.commentId}/delete" method="post" style="display: inline;" onsubmit="return confirm('정말로 이 댓글을 삭제하시겠습니까?');">
-                                                    <button type="submit" class="btn btn-sm btn-outline-danger" style="${child.userId === loginUserId ? '' : 'display: none;'}">삭제</button>
-                                                </form>
-                                                ${isSecondLevel ? `
-                                                <button class="btn btn-sm btn-outline-secondary toggle-replies me-2" data-comment-id="${child.commentId}">답글 보기</button>
-                                                <form action="/posts/${child.postId}/comments" method="post" class="reply-form mt-2" id="reply-form-${child.commentId}" style="display: none;">
-                                                    <div class="mb-1">
-                                                        <textarea name="commentContent" class="form-control" rows="2" placeholder="답글을 입력하세요" required></textarea>
-                                                    </div>
-                                                    <input type="hidden" name="parentId" value="${child.commentId}">
-                                                    <button type="submit" class="btn btn-primary btn-sm">답글 작성</button>
-                                                </form>
-                                                ` : ''}
-                                                <form action="/posts/${child.postId}/comments/${child.commentId}/update" method="post" class="edit-form mt-2" id="edit-form-${child.commentId}" style="display: none;">
-                                                    <div class="mb-1">
-                                                        <textarea name="commentContent" class="form-control" rows="2" placeholder="댓글을 수정하세요" required>${child.commentContent}</textarea>
-                                                    </div>
-                                                    <button type="submit" class="btn btn-primary btn-sm">수정 완료</button>
-                                                </form>
+                                            <div class="mb-3 d-flex justify-content-between align-items-center">
+                                                <div class="comment-actions">
+                                                    ${isSecondLevel ? `
+                                                    <button class="btn btn-sm btn-outline-secondary toggle-replies me-2" data-comment-id="${child.commentId}">답글 보기</button>
+                                                    ` : ''} <!-- 대대댓글에서는 답글 보기 버튼 제거 -->
+                                                </div>
+                                                <div class="comment-actions">
+                                                    ${isAuthenticated && isSecondLevel ? `
+                                                    <button class="btn btn-sm btn-outline-secondary reply-btn me-2" data-comment-id="${child.commentId}">답글</button>
+                                                    ` : ''}
+                                                    <button class="btn btn-sm btn-outline-primary edit-btn me-2" data-comment-id="${child.commentId}" style="${child.userId === loginUserId ? '' : 'display: none;'}">수정</button>
+                                                    <form action="/posts/${child.postId}/comments/${child.commentId}/delete" method="post" style="display: inline;" onsubmit="return confirm('정말로 이 댓글을 삭제하시겠습니까?');">
+                                                        <button type="submit" class="btn btn-sm btn-outline-danger" style="${child.userId === loginUserId ? '' : 'display: none;'}">삭제</button>
+                                                    </form>
+                                                </div>
                                             </div>
+                                            ${isSecondLevel ? `
+                                            <form action="/posts/${child.postId}/comments" method="post" class="reply-form mt-2" id="reply-form-${child.commentId}" style="display: none;">
+                                                <div class="mb-1">
+                                                    <textarea name="commentContent" class="form-control" rows="2" placeholder="답글을 입력하세요" required></textarea>
+                                                </div>
+                                                <input type="hidden" name="parentId" value="${child.commentId}">
+                                                <button type="submit" class="btn btn-primary btn-sm">답글 작성</button>
+                                            </form>
+                                            ` : ''}
+                                            <form action="/posts/${child.postId}/comments/${child.commentId}/update" method="post" class="edit-form mt-2" id="edit-form-${child.commentId}" style="display: none;">
+                                                <div class="mb-1">
+                                                    <textarea name="commentContent" class="form-control" rows="2" placeholder="댓글을 수정하세요" required>${child.commentContent}</textarea>
+                                                </div>
+                                                <button type="submit" class="btn btn-primary btn-sm">수정 완료</button>
+                                            </form>
                                             ` : ''}
                                             <div class="child-comment-list" id="child-comments-${child.commentId}"></div>
                                         </div>
@@ -249,15 +272,9 @@
                     }
                 });
 
-                // 대댓글 작성 폼 제출 시 디버깅 로그 추가
-                document.addEventListener('submit', function(event) {
-                    if (event.target.classList.contains('reply-form')) {
-                        const form = event.target;
-                        const commentId = form.querySelector('input[name="parentId"]').value;
-                        const commentContent = form.querySelector('textarea[name="commentContent"]').value;
-                        console.log('Submitting reply form for parentId:', commentId);
-                        console.log('Comment content:', commentContent);
-                    }
+                // 수정 4: 버튼의 원래 텍스트를 저장 (개수 포함)
+                document.querySelectorAll('.toggle-replies').forEach(button => {
+                    button.setAttribute('data-original-text', button.textContent);
                 });
             });
         </script>

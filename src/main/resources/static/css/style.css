@@ -100,6 +100,7 @@ h1, h2, h3 {
 /* 링크 스타일 */
 a {
     color: var(--bs-link-color);
+    text-decoration: none;
 }
 
 a:hover {

@@ -54,22 +54,29 @@
 
             <div class="col-12">
                 <label for="postTitle" class="form-label">제목</label>
-                <input type="text" id="postTitle" th:field="*{postTitle}" class="form-control" placeholder="문제의 제목 또는 번호를 적어주세요  (ex. BOJ 1920 - 수 찾기)" required/>
+                <input type="text" id="postTitle" th:field="*{postTitle}" class="form-control" placeholder="예: BOJ 1920 - 수 찾기  (문제 번호 또는 제목을 포함하면 쉽게 찾아볼 수 있습니다.)" required/>
             </div>
 
             <div class="col-12">
                 <label for="problemLink" class="form-label">문제 링크</label>
-                <input type="url" id="problemLink" th:field="*{problemLink}" class="form-control" placeholder="문제 페이지의 주소를 넣어주세요  (ex. https://www.acmicpc.net/problem/1920)"/>
+                <input type="url" id="problemLink" th:field="*{problemLink}" class="form-control" placeholder="참고할 문제의 URL을 입력하세요.  (ex. https://www.acmicpc.net/problem/1920)"/>
             </div>
 
             <div class="col-12">
                 <label for="postContent" class="form-label">내용</label>
-                <div class="mb-2 text-muted small">
-                    코드를 작성하려면 아래 형식을 사용하세요:
-                    <span id="codeFormat">&lt;pre&gt;&lt;code&gt; 코드를 여기에 &lt;/code&gt;&lt;/pre&gt;</span>
-                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="copyCodeFormat()">복사</button>
+                <div class="mb-2 small d-flex align-items-center gap-2" style="color: #747474;">
+                    <span>코드 작성 시 다음 형식을 사용하세요 : </span>
+                    <code id="codeFormat" style="color: #597812;">&lt;pre&gt;&lt;code&gt; <span style="color: #A6A6A6;">코드를 여기에</span> &lt;/code&gt;&lt;/pre&gt;</code>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="copyCodeFormat()">
+                        <i class="bi bi-clipboard"></i> 복사
+                    </button>
+                    <span id="copyMessage" class="text-success small" style="display:none; margin-left: 10px;">복사되었습니다!</span>
                 </div>
                 <textarea id="postContent" th:field="*{postContent}" class="form-control" rows="15" placeholder="문제 풀이 회고를 작성하세요" required></textarea>
+                <p class="small mt-3" style="color: #A6A6A6;">
+                    문제의 저작권 및 사용 정책은 해당 플랫폼의 정책을 따르며, 문제 내용의 무단 복사는 책임지지 않습니다.<br>
+                    문제 링크는 사용자가 직접 복사하여 붙여넣기 해야 하며, 참고를 위해 링크 추가를 권장합니다.
+                </p>
             </div>
 
             <div class="col-12 text-end">
@@ -99,9 +106,12 @@
         }
 
         function copyCodeFormat() {
-            var codeFormat = document.getElementById("codeFormat").innerText;
+            var codeFormat = "<pre><code>\n\n</code></pre>";
             navigator.clipboard.writeText(codeFormat).then(() => {
-                alert("코드 형식이 복사되었습니다!");
+                document.getElementById("copyMessage").style.display = "inline";
+                setTimeout(() => {
+                    document.getElementById("copyMessage").style.display = "none";
+                }, 2000);
             });
         }
     </script>

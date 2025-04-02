@@ -22,6 +22,7 @@ public class PostResponseDto {
     private String problemLink;
     private LocalDateTime postCreatedAt;
     private LocalDateTime postUpdatedAt;
+    // private int commentCount;
     private long postLikeCount;
     private String userNickname;
     private String parentCategoryName;

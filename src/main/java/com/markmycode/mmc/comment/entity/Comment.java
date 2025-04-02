@@ -98,9 +98,6 @@ public class Comment {
                 .userNickname(user.getUserStatus() == Status.INACTIVE
                         ? "[탈퇴한 회원]" : user.getUserNickname())
                 .userStatus(user.getUserStatus().name())
-//                .childComments(childComments.stream()
-//                        .map(Comment::toResponseDto)
-//                        .collect(Collectors.toList()))
                 .build();
     }
 }
