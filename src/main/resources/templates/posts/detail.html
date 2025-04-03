@@ -10,7 +10,15 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <style>
         /* 게시글 스타일 */
-        .content-box { background-color: #ffffff; padding: 2rem; border: 1px solid #dee2e6; border-radius: 0.25rem; margin: 1.5rem 0; }
+        .post-content {
+            background-color: #ffffff;
+            padding: 2rem;
+            border: 1px solid #dee2e6;
+            border-radius: 0.25rem;
+            margin: 2rem 0;
+            white-space: pre-wrap; /* 개행 유지 */
+            line-height: 1.6; /* 줄 간격 조정 */
+        }
         .meta-info { margin-bottom: 1rem; }
         .meta-info span { margin-right: 1rem; color: #6c757d; }
         .date-info { color: #adb5bd; font-size: 0.9rem; }
@@ -58,12 +66,13 @@
                 <span th:text="${post.platformName} + ' | '"></span>
                 <span th:text="${post.languageName}"></span>
             </div>
-            <div class="content-box">
-                <div class="card-text" th:utext="${post.postContent}"></div>
-            </div>
+            <!-- 게시글 내용 -->
+            <div class="post-content" th:utext="${post.postContent}"></div>
+            <!-- 문제 링크 -->
             <div class="problem-link mt-3 mb-3">
                 <strong><a th:if="${post.problemLink != null and !post.problemLink.isEmpty()}" th:href="${post.problemLink}" target="_blank">문제 바로가기</a></strong>
             </div>
+            <!-- 좋아요 하트 -->
             <div class="d-flex justify-content-between align-items-center">
                 <div class="d-flex align-items-center">
                     <form th:action="@{/posts/{postId}/like(postId=${post.postId})}" method="post" style="display: inline;" th:if="${isAuthenticated}">
@@ -113,14 +122,6 @@
                 </div>
                 <p th:if="${comment.commentStatus == 'ACTIVE'}" th:text="${comment.commentContent}" class="comment-text"></p>
                 <p th:if="${comment.commentStatus == 'INACTIVE'}" class="text-muted mb-2">삭제된 댓글입니다</p>
-<!--                <div th:if="${comment.commentStatus == 'ACTIVE'}" class="mb-3 d-flex align-items-center">-->
-<!--                    <button class="btn btn-sm btn-outline-secondary toggle-replies me-2" th:data-comment-id="${comment.commentId}">답글 보기</button>-->
-<!--                    <button th:if="${isAuthenticated}" class="btn btn-sm btn-outline-secondary reply-btn ms-auto" th:data-comment-id="${comment.commentId}">답글</button>-->
-<!--                    <button th:if="${isCommentAuthor[comment.commentId]}" class="btn btn-sm btn-outline-primary edit-btn ms-2" th:data-comment-id="${comment.commentId}">수정</button>-->
-<!--                    <form th:action="@{/posts/{postId}/comments/{commentId}/delete(postId=${post.postId}, commentId=${comment.commentId})}" method="post" style="display: inline;" onsubmit="return confirm('정말로 이 댓글을 삭제하시겠습니까?');">-->
-<!--                        <button th:if="${isCommentAuthor[comment.commentId]}" type="submit" class="btn btn-sm btn-outline-danger ms-2">삭제</button>-->
-<!--                    </form>-->
-<!--                </div>-->
                 <div th:if="${comment.commentStatus == 'ACTIVE'}" class="mb-3 d-flex justify-content-between align-items-center">
                     <div class="comment-actions">
                         <button class="btn btn-sm btn-outline-secondary toggle-replies me-2" th:data-comment-id="${comment.commentId}">답글 보기</button>
