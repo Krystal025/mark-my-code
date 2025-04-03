@@ -1,9 +1,9 @@
 # JPA 설정
 spring: # spring.datasource : SpringBoot의 JPA와 관련된 DB 연결 정보를 설정하는 곳
   datasource:
-    url: jdbc:mysql://localhost:3307/mmc   # 아직 애플리케이션은 로컬에서 실행중이므로 localhost로 접속 시도
-    username: root
-    password: Root88*
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://144.24.79.37:3306/mmc}  # 환경 변수 사용, 기본값은 VM MySQL
+    username: ${SPRING_DATASOURCE_USERNAME:root}
+    password: ${SPRING_DATASOURCE_PASSWORD:Root88**}
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
