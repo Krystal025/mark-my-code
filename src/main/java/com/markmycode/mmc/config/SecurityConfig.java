@@ -16,6 +16,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -33,8 +34,9 @@ public class SecurityConfig {
     private final JwtTokenProvider jwtTokenProvider;
     private final CustomOAuth2UserService customOAuth2UserService;
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
+    private final ClientRegistrationRepository clientRegistrationRepository;
 
-//    // 사용자 인증(Authentication)을 처리하는 AuthenticationManager 반환
+    // 사용자 인증(Authentication)을 처리하는 AuthenticationManager 반환
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception{
         return configuration.getAuthenticationManager();
@@ -82,6 +84,7 @@ public class SecurityConfig {
                         .anyRequest().authenticated());
         http
                 .oauth2Login(oauth2 -> oauth2
+                        .clientRegistrationRepository(clientRegistrationRepository) // 추가
                         // 제공자로부터 Access 토큰을 받은 후 사용자 정보(e.g. 이메일, 이름)를 가져오기 위한 엔드포인트 설정
                         .userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig.userService(customOAuth2UserService))
                         .successHandler(oAuth2SuccessHandler)
