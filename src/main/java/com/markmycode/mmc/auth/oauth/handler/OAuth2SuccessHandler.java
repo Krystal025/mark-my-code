@@ -7,6 +7,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.env.Environment;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -19,6 +20,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
     private final JwtTokenProvider jwtTokenProvider;
+    private final Environment environment;
 
     // 소셜 로그인 성공시 AccessToken + RefreshToken 토큰 발급
     @Override
@@ -42,9 +44,9 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         // 쿠키에 엑세스 토큰 및 리프레시 토큰 저장
         CookieUtils.addCookie(response, "Access_Token", accessToken, 30 * 60); // 30분 유효
         CookieUtils.addCookie(response, "Refresh_Token", refreshToken, 7 * 24 * 60 * 60); // 7일 유효
-        System.out.println("OAuth2 Success - Access Token" + accessToken);
-        // 사용자가 로그인 후 이동할 페이지로 리다이렉트
-        response.sendRedirect("http://localhost:8080/");
+        // 동적으로 리디렉션 URL 설정
+        String redirectBaseUrl = environment.getProperty("OAUTH2_REDIRECT_URI", "http://localhost:8080");
+        response.sendRedirect(redirectBaseUrl + "/");
     }
 
 }
