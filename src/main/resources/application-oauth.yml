@@ -6,7 +6,7 @@ spring:
           google:
             client-id: ${GOOGLE_CLIENT_ID}
             client-secret: ${GOOGLE_CLIENT_SECRET}
-            redirect-uri: https://port-0-mark-my-code-m8y93hx3b8d18232.sel4.cloudtype.app/login/oauth2/code/google
+            redirect-uri: ${OAUTH2_REDIRECT_URI}/login/oauth2/code/google
             authorization-grant-type: authorization_code
             scope:
               - email
