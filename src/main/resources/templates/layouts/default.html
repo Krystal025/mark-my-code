@@ -31,7 +31,8 @@
     <div th:replace="~{fragments/header :: header}"></div>
 
     <!-- 본문 -->
-    <div class="container mt-4 mb-5 content" layout:fragment="content">
+    <div layout:fragment="content"
+         th:class="${isIndexPage} ? 'content p-0' : 'container mt-4 mb-5 content'">
         <!-- 개별 페이지에서 채워짐 -->
     </div>
 

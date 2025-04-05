@@ -91,13 +91,6 @@ public class PostService {
         return responseDto;
     }
 
-//    public List<PostPreviewResponseDto> getFilteredPosts(PostListRequestDto requestDto){
-//        validateFilterCondition(requestDto);
-//        List<PostPreviewResponseDto> posts = postMapper.selectPostsByFilters(requestDto);
-//        // 조회 API에서 빈 리스트는 예외가 아닌 빈 배열 반환이 더 적합함
-//        return posts.isEmpty() ? Collections.emptyList() : posts;
-//    }
-
     public PagedPostResponseDto getFilteredPosts(PostListRequestDto requestDto){
         validateFilterCondition(requestDto);
         // 전체 게시글 개수 조회

@@ -9,7 +9,6 @@
 </head>
 <body>
 <section layout:fragment="content">
-
     <!-- 성공 메시지 (회원가입 성공 시) -->
     <div id="signupSuccessAlert" th:if="${signupSuccess}" class="alert alert-success alert-dismissible fade show" role="alert">
         <span th:text="${signupSuccess}"></span>
@@ -42,8 +41,8 @@
         <div class="mt-3 text-center">
             <button onclick="window.location.href='/auth/google-login'" class="btn btn-outline-secondary w-100">Google 로그인</button>
         </div>
-
     </div>
+
     <script>
         window.onload = function() {
             // 성공 메시지 알림이 있는 경우

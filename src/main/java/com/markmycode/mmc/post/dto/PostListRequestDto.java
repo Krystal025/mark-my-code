@@ -12,7 +12,7 @@ public class PostListRequestDto {
     private Integer platformId;
     private Integer languageId;
     private int page = 1; // 클라이언트가 요청한 페이지 번호 (기본값 : 1)
-    private int size = 10; // 한 페이지에 보여줄 데이터 개수 (기본값 : 10)
+    private int size = 12; // 한 페이지에 보여줄 데이터 개수 (기본값 : 12)
     // private String sort;
     // private String direction;
 
