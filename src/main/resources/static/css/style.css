@@ -2,14 +2,14 @@
 :root {
     --bs-primary: #355E3B; /* 메인 컬러: 딥그린 */
     --bs-secondary: #6B7280;
-    --bs-body-bg: #F9FAFB;
+    --bs-body-bg: #F5F8F2;
     --bs-success: #A0D6B2;
     --bs-success-border: #6DBE8A;
     --bs-danger: #FDEDEC;
     --bs-danger-border: #C0392B;
     --bs-link-color: #355E3B;
     --bs-link-hover-color: #6E7F5A; /* 모든 링크 호버를 어두운 올리브로 */
-    --bs-navbar-bg: #DDE6D5;
+    --bs-navbar-bg: #7D9C36;
     --bs-hover-accent: #6E7F5A; /* 일반 호버 색상 */
     --bs-pagination-hover-bg: rgba(53, 94, 59, 0.5); /* 페이지네이션 호버 반투명 배경 */
 }
