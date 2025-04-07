@@ -56,9 +56,9 @@ public class AuthService {
             CookieUtils.addCookie(response, "Access_Token", accessToken, 30 * 60); // 30분 유효
             CookieUtils.addCookie(response, "Refresh_Token", refreshToken, 7 * 24 * 60 * 60); // 7일 유효
 
-            // SecurityContext에 인증 정보 설정
-            Authentication auth = jwtTokenProvider.getAuthentication(accessToken);
-            SecurityContextHolder.getContext().setAuthentication(auth);
+            // SecurityContext에 인증 정보 설정 (세션리스 구조로 매 요청마다 필터를 통해 설정되므로 필요 없음)
+//            Authentication auth = jwtTokenProvider.getAuthentication(accessToken);
+//            SecurityContextHolder.getContext().setAuthentication(auth);
 
             // 토큰 응답 반환
             return new TokenResponseDto(accessToken, refreshToken);

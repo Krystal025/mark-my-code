@@ -36,6 +36,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 jwtTokenProvider.isExpired(accessToken);
                 // 상태값 확인
                 String userStatus = jwtTokenProvider.getClaim(accessToken, "userStatus");
+                System.out.println("Token Status: " + userStatus);
                 if ("INACTIVE".equals(userStatus)) {
                     throw new UnauthorizedException(ErrorCode.INACTIVE_USER);
                 }
@@ -66,11 +67,3 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 }
-
-// 로그아웃 시 블랙리스트 추가
-//public void logout(HttpServletResponse response, String accessToken, String refreshToken) {
-//    redisTemplate.opsForValue().set(accessToken, "blacklisted", 30, TimeUnit.MINUTES); // 액세스 토큰 유효 기간
-//    redisTemplate.opsForValue().set(refreshToken, "blacklisted", 7, TimeUnit.DAYS); // 리프레시 토큰 유효 기간
-//    CookieUtils.deleteCookie(response, "Access_Token");
-//    CookieUtils.deleteCookie(response, "Refresh_Token");
-//}
