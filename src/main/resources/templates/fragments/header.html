@@ -25,9 +25,9 @@
                         <div class="d-flex align-items-center">
                             <div th:if="${loginUser}" class="d-flex align-items-center">
                                 <span class="navbar-text me-2" th:text="${loginUser?.userNickname ?: 'Guest'}"></span>
-                                <a class="btn btn-outline-secondary me-2" th:href="@{/users/{userId}(userId=${loginUser.userId})}">마이페이지</a>
+                                <a class="btn btn-profile" th:href="@{/users/{userId}(userId=${loginUser.userId})}">마이페이지</a>
                                 <form method="post" th:action="@{/auth/logout}" class="d-inline">
-                                    <button type="submit" class="btn btn-outline-secondary">로그아웃</button>
+                                    <button type="submit" class="btn btn-logout">로그아웃</button>
                                 </form>
                             </div>
                             <div th:unless="${loginUser}">

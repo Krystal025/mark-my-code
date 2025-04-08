@@ -11,8 +11,6 @@
 </head>
 <body>
 <section layout:fragment="content">
-    <h1 class="mb-4">게시글 목록</h1>
-
     <!-- 검색 폼 -->
     <form th:action="@{/posts}" method="get" th:object="${requestDto}" class="mb-4">
         <div class="row g-3">

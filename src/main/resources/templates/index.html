@@ -5,7 +5,9 @@
       th:with="isIndexPage=true">
 <head>
     <meta charset="UTF-8">
-    <title>Index</title>
+    <meta name="description" content="Mark My Code is a platform for code review, collaboration, and sharing. Improve your coding skills with our community!">
+    <meta name="keywords" content="mark my code, code review, coding platform, collaboration">
+    <title>Mark My Code</title>
     <style>
         body {
             min-height: 100vh;
@@ -13,9 +15,9 @@
             flex-direction: column;
         }
 
-        .content {
-            flex: 1 0 auto;
-        }
+<!--        .content {-->
+<!--            flex: 1 0 auto;-->
+<!--        }-->
 
         footer {
             flex-shrink: 0;
@@ -23,16 +25,13 @@
 
         /* 헤더 영역 */
         .header-section {
-            background-color: #7D9C36;
+            background-color: var(--bs-navbar-bg);
             color: white;
-            padding: 150px 0;
+            padding: 50px 0;
         }
 
         .header-section h1 {
-            color: #2E3B12;
-            font-size: 3rem;
-            font-weight: 700;
-            margin-bottom: 30px;
+            color: white;
         }
 
         .header-section p {
@@ -42,9 +41,11 @@
 
         .cta-button {
             background-color: #FFA726;
-            padding: 12px 40px;
-            font-size: 1.25rem;
-            border: none;
+            border-color: #FFA726;
+        }
+        .cta-button:hover {
+            background-color: #E6951A;
+            border-color: #E6951A;
         }
 
         /* 게시글 목록 영역 */
@@ -83,8 +84,8 @@
     <div class="header-section text-center">
         <div class="container">
             <h1>Mark it, Master it!</h1>
-            <p>당신의 코드를 공유하고, 피드백을 받아보세요!</p>
-            <a href="/posts/new" class="btn btn-primary btn-lg cta-button">Go to Mark My Code</a>
+            <p class="lead">코드 리뷰로 성장하세요. Mark My Code와 함께!</p>
+            <a href="/posts/new" class="btn btn-primary btn-lg cta-button">지금 코드 공유하기</a>
         </div>
     </div>
 
