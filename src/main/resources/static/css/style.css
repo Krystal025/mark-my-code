@@ -117,10 +117,11 @@ body {
 
 h1, h2, h3 {
     color: var(--bs-primary);
+    font-weight: bold;
 }
 
 a {
-    color: var(--bs-link-color);
+    color: var(--color-green-dark);
     text-decoration: none;
 }
 
@@ -129,14 +130,13 @@ a:hover {
 }
 
 .content-section .card {
-    color: black;
     background-color: white;
     border: 1px solid rgba(107, 114, 128, 0.1);
     transition: transform 0.3s, box-shadow 0.3s;
 }
 
 .content-section .card:hover {
-    color: black;
+    color: var(--color-green-dark);
     transform: translateY(-3px); /* 약간 위로 이동 */
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* 그림자 추가 */
 }

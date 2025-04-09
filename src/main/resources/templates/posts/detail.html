@@ -84,6 +84,8 @@
                         <i class="bi bi-heart-fill"></i>
                     </button>
                     <span class="like-count" th:text="${post.postLikeCount}"></span>
+                    <span class="mx-2"> · </span>
+                    <span th:text="'댓글 ' + ${post.postCommentCount}"></span>
                 </div>
                 <div th:if="${isPostAuthor}" class="text-end">
                     <a th:href="@{/posts/{postId}/edit(postId=${post.postId})}" class="btn btn-outline-primary btn-sm me-2">수정하기</a>

@@ -84,8 +84,11 @@
                         <div class="card-body card-body-tight d-flex flex-column">
                             <h5 th:text="${post.postTitle}"></h5>
                             <div class="mt-5 pt-3 mb-2">
-                                <small class="text-muted" th:text="${#temporals.format(post.postCreatedAt, 'yyyy년 M월 d일')}"></small>
-                                <small class="text-muted ms-2">[댓글 수 추후 추가]</small>
+                                <small class="text-muted">
+                                    <span th:text="${#temporals.format(post.postCreatedAt, 'yyyy년 M월 d일')}"></span>
+                                    <span class="mx-2"> · </span>
+                                    <span th:text="'댓글 ' + ${post.postCommentCount}"></span>
+                                </small>
                             </div>
                             <hr class="my-2 text-muted">  <!-- 수평선 -->
                             <div class="d-flex justify-content-between align-items-center mb-2">
@@ -111,7 +114,7 @@
                             <h5 th:text="${post.postTitle}"></h5>
                             <div class="mt-5 pt-3 mb-2">
                                 <small class="text-muted" th:text="${#temporals.format(post.postCreatedAt, 'yyyy년 M월 d일')}"></small>
-                                <small class="text-muted ms-2">[댓글 수 추후 추가]</small>
+                                <small class="text-muted ms-2" th:text="'댓글 ' + ${post.postCommentCount}"></small>
                             </div>
                             <hr class="my-2 text-muted">
                             <div class="d-flex justify-content-between align-items-center mb-2">

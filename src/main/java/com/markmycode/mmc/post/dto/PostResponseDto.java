@@ -3,11 +3,13 @@ package com.markmycode.mmc.post.dto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Getter // 클라이언트에서 필요
 @Builder
+@NoArgsConstructor
 @AllArgsConstructor
 public class PostResponseDto {
 
@@ -22,7 +24,7 @@ public class PostResponseDto {
     private String problemLink;
     private LocalDateTime postCreatedAt;
     private LocalDateTime postUpdatedAt;
-    // private int commentCount;
+    private long postCommentCount;
     private long postLikeCount;
     private String userNickname;
     private String parentCategoryName;

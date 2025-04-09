@@ -18,6 +18,6 @@ public class PostPreviewResponseDto {
     private LocalDateTime postCreatedAt;
     private long postLikeCount;
     private String userNickname;
-//    private long postCommentCount;
+    private long postCommentCount;
 
 }

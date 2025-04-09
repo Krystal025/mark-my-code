@@ -30,13 +30,19 @@
         c1.category_name AS child_category_name,  <!--하위 카테고리-->
         c2.category_name AS parent_category_name,  <!--상위 카테고리-->
         ppl.platform_name,
-        l.display_name AS language_name
+        l.display_name AS language_name,
+        COALESCE(pc.comment_count, 0) AS postCommentCount
         FROM post p
         JOIN user u ON p.user_id = u.user_id
         JOIN post_category c1 ON p.category_id = c1.category_id  <!-- 하위 카테고리 조인 -->
         LEFT JOIN post_category c2 ON c1.parent_id = c2.category_id  <!-- 부모 카테고리는 parent_id가 Null이므로 LEFT JOIN -->
         JOIN problem_platform ppl ON p.platform_id = ppl.platform_id
         JOIN problem_language l ON p.language_id = l.language_id
+        LEFT JOIN (
+        SELECT post_id, COUNT(*) AS comment_count
+            FROM post_comment
+            GROUP BY post_id
+        ) pc ON p.post_id = pc.post_id
         WHERE p.post_id = #{postId}
         ORDER BY p.post_created_at DESC
     </select>
@@ -50,13 +56,19 @@
         p.post_title,
         p.post_created_at,
         p.post_like_count,
-        u.user_nickname
+        u.user_nickname,
+        COALESCE(pc.comment_count, 0) AS postCommentCount
         FROM post p
         JOIN user u ON p.user_id = u.user_id
         JOIN post_category c1 ON p.category_id = c1.category_id  <!-- 하위 카테고리 조인 -->
         LEFT JOIN post_category c2 ON c1.parent_id = c2.category_id  <!-- 부모 카테고리는 parent_id가 Null이므로 LEFT JOIN -->
         JOIN problem_platform ppl ON p.platform_id = ppl.platform_id
         JOIN problem_language l ON p.language_id = l.language_id
+        LEFT JOIN (
+            SELECT post_id, COUNT(*) AS comment_count
+            FROM post_comment
+            GROUP BY post_id
+        ) pc ON p.post_id = pc.post_id
         <!-- 필터링 조건이 있을 때만 WHERE 절이 추가됨 -->
         <where>
             <if test="parentCategoryId != null">
@@ -110,9 +122,15 @@
         p.post_title,
         p.post_created_at,
         p.post_like_count,
-        u.user_nickname
+        u.user_nickname,
+        COALESCE(pc.comment_count, 0) AS postCommentCount
         FROM post p
         JOIN user u ON p.user_id = u.user_id
+        LEFT JOIN (
+        SELECT post_id, COUNT(*) AS comment_count
+            FROM post_comment
+            GROUP BY post_id
+        ) pc ON p.post_id = pc.post_id
         ORDER BY p.post_created_at DESC
         LIMIT 6 OFFSET 0
     </select>
@@ -125,9 +143,15 @@
         p.post_title,
         p.post_created_at,
         p.post_like_count,
-        u.user_nickname
+        u.user_nickname,
+        COALESCE(pc.comment_count, 0) AS postCommentCount
         FROM post p
         JOIN user u ON p.user_id = u.user_id
+        LEFT JOIN (
+        SELECT post_id, COUNT(*) AS comment_count
+            FROM post_comment
+            GROUP BY post_id
+        ) pc ON p.post_id = pc.post_id
         ORDER BY p.post_like_count DESC, p.post_created_at DESC
         LIMIT 6 OFFSET 0
     </select>
