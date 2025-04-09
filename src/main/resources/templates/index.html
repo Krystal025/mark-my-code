@@ -9,43 +9,26 @@
     <meta name="keywords" content="mark my code, code review, coding platform, collaboration">
     <title>Mark My Code</title>
     <style>
-        body {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-<!--        .content {-->
-<!--            flex: 1 0 auto;-->
-<!--        }-->
-
-        footer {
-            flex-shrink: 0;
-        }
-
         /* 헤더 영역 */
         .header-section {
             background-color: var(--bs-navbar-bg);
             color: white;
-            padding: 50px 0;
+            padding: 80px 0;
+            min-height: 300px; /* 최소 높이 설정 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header-section .container {
+            max-width: 800px;
         }
 
         .header-section h1 {
             color: white;
-        }
-
-        .header-section p {
-            font-size: 1.5rem;
-            margin-bottom: 50px;
-        }
-
-        .cta-button {
-            background-color: #FFA726;
-            border-color: #FFA726;
-        }
-        .cta-button:hover {
-            background-color: #E6951A;
-            border-color: #E6951A;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
         }
 
         /* 게시글 목록 영역 */
@@ -84,8 +67,10 @@
     <div class="header-section text-center">
         <div class="container">
             <h1>Mark it, Master it!</h1>
-            <p class="lead">코드 리뷰로 성장하세요. Mark My Code와 함께!</p>
-            <a href="/posts/new" class="btn btn-primary btn-lg cta-button">지금 코드 공유하기</a>
+            <p class="mb-4">
+                흩어진 문제 풀이, 한 곳에 정리하고<br>
+                다양한 풀이를 보며 더 깊이 있게 이해해보세요</p>
+            <a href="/posts/new" class="btn btn-primary btn-lg">Start Writing</a>
         </div>
     </div>
 
@@ -96,16 +81,14 @@
             <h2 class="mb-4">최신 게시글</h2>
             <div class="row g-3">
                 <div class="col-md-4" th:each="post : ${recentPosts}">
-                    <div class="card h-100">
+                    <a th:href="@{/posts/{postId}(postId=${post.postId})}" class="card h-100 text-decoration-none">
                         <div class="card-body card-body-tight d-flex flex-column">
-                            <h5 class="card-title">
-                                <a th:href="@{/posts/{postId}(postId=${post.postId})}" th:text="${post.postTitle}"></a>
-                            </h5>
+                            <h5 th:text="${post.postTitle}"></h5>
                             <div class="mt-5 pt-3 mb-2">
                                 <small class="text-muted" th:text="${#temporals.format(post.postCreatedAt, 'yyyy년 M월 d일')}"></small>
                                 <small class="text-muted ms-2">[댓글 수 추후 추가]</small>
                             </div>
-                            <hr class="my-2 text-muted">
+                            <hr class="my-2 text-muted">  <!-- 수평선 -->
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <small><span class="text-muted">by.</span> <strong th:text="${post.userNickname}"></strong></small>
                                 <div>
@@ -114,7 +97,7 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </a>
                 </div>
             </div>
         </div>
@@ -124,11 +107,9 @@
             <h2 class="mb-4">인기 게시글</h2>
             <div class="row g-3">
                 <div class="col-md-4" th:each="post : ${popularPosts}">
-                    <div class="card h-100">
+                    <a th:href="@{/posts/{postId}(postId=${post.postId})}" class="card h-100 text-decoration-none">
                         <div class="card-body card-body-tight d-flex flex-column">
-                            <h5 class="card-title">
-                                <a th:href="@{/posts/{postId}(postId=${post.postId})}" th:text="${post.postTitle}"></a>
-                            </h5>
+                            <h5 th:text="${post.postTitle}"></h5>
                             <div class="mt-5 pt-3 mb-2">
                                 <small class="text-muted" th:text="${#temporals.format(post.postCreatedAt, 'yyyy년 M월 d일')}"></small>
                                 <small class="text-muted ms-2">[댓글 수 추후 추가]</small>
@@ -142,7 +123,7 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </a>
                 </div>
             </div>
         </div>
