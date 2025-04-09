@@ -1,14 +1,16 @@
 :root {
-    --bs-primary: #7f8f5f;  /* 어두운 올리브 */
+    --bs-primary: #4f602e;  /* 어두운 올리브 */
     --bs-navbar-bg: #7f8f5f;    /* 어두운 올리브 */
     --bs-body-bg: #F5F8F2;  /* 아주 연한 녹색-회색 */
 
-    --bs-link-color: #355E3B;
-    --bs-link-hover-color: #6E7F5A;
+    --bs-link-color: #536a42;
 
     --color-orange: #ee8a10; /* 주황색 */
-    --color-orange-dark: #eeab10; /* 노란색 */
-    --color-grey: #5a5a5a; /* 회색 */
+    --color-yellow: #eeab10; /* 노란색 */
+    --color-green-light: #768b50; /* 밝은 초록색 */
+    --color-green: #4b623c; /* 초록색 */
+    --color-green-dark: #1f361b; /* 어두운 초록색 */
+    --color-grey: #878787; /* 회색 */
 }
 
 body {
@@ -28,13 +30,21 @@ body {
     color: white;
 }
 
+/* navbar 로고 */
+.navbar .navbar-brand {
+    color: var(--color-green-dark);
+}
+
 /* navbar 링크 */
 .navbar .nav-link {
     color: white;
+    font-size: 1.1rem;
 }
 .navbar .nav-link:hover,
 .navbar .nav-link:active{
-    color: var(--color-orange);
+    color: var(--color-green-dark);
+    font-size: 1.1rem;
+    font-weight: bold;
 }
 
 /* navbar 로그인 버튼 */
@@ -52,14 +62,14 @@ body {
 
 /* navbar 회원가입 버튼 */
 .navbar .btn-signup {
-    background-color: transparent;
-    border-color: var(--color-orange);
-    color: var(--color-orange);
+    background-color: var(--color-green);
+    border-color: var(--color-green);
+    color: white;
 }
 .navbar .btn-signup:hover,
 .navbar .btn-signup:active{
-    background-color: var(--color-orange);
-    border-color: var(--color-orange);
+    background-color: var(--color-green-dark);
+    border-color: var(--color-green-dark);
     color: white;
 }
 
@@ -79,16 +89,18 @@ body {
     color: white;
 }
 
-.btn-primary {
+.btn-primary,
+.btn-primary:focus{
     background-color: var(--color-orange);
     border-color: var(--color-orange);
     color: white;
 }
+
 .btn-primary:hover,
 .btn-primary:active{
-    background-color: var(--color-orange-dark);
-    border-color: var(--color-orange-dark);
-    color: white;
+    background-color: var(--color-yellow) !important;
+    border-color: var(--color-yellow) !important;
+    color: white !important;
 }
 
 .btn-secondary {
@@ -113,7 +125,7 @@ a {
 }
 
 a:hover {
-    color: var(--bs-link-hover-color);
+    color: var(--color-green-light);
 }
 
 .content-section .card {
@@ -138,4 +150,30 @@ a:hover {
     width: 80%; /* 가로 길이를 넓힘 */
     max-width: 600px; /* 최대 가로 크기 설정 */
     z-index: 1050; /* 다른 콘텐츠 위에 표시되도록 설정 */
+}
+
+.page-item.disabled .page-link {
+    background-color: transparent;
+    border-color: var(--color-green-light);
+    color: var(--color-grey);
+}
+
+.page-item.active .page-link {
+    background-color: var(--color-green);
+    border-color: var(--color-green-light);
+    color: white;
+    font-weight: bold;
+    transition: all 0.2s ease-in-out;
+}
+
+.page-link {
+    background-color: transparent;
+    border-color: var(--color-green-light);
+    color: var(--color-green-light);
+}
+
+.page-link:hover {
+    background-color: transparent;
+    border-color: var(--color-green-light);
+    color: var(--color-green);
 }
