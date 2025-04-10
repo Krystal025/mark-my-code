@@ -10,7 +10,7 @@
             <nav class="navbar navbar-expand-lg navbar-light">
                 <div class="container px-2">
                     <!-- 로고 -->
-                    <a class="navbar-brand" href="/">
+                    <a class="navbar-brand me-5" href="/">
                         <span style="font-size: 1.5rem; font-weight: bold;">MMC</span>
                     </a>
                     <!-- 모바일 토글 버튼 -->
@@ -19,39 +19,79 @@
                     </button>
                     <!-- 네비게이션 메뉴 -->
                     <div class="collapse navbar-collapse" id="navbarNav">
-                        <ul class="navbar-nav me-auto">
-                            <li class="nav-item">
+                        <!-- 왼쪽 메뉴 -->
+                        <ul class="navbar-nav">
+                            <li class="nav-item me-4">
                                 <a class="nav-link" href="/posts">전체 보기</a>
                             </li>
                             <li class="nav-item" th:if="${loginUser}">
                                 <a class="nav-link" href="/posts/new">새 글 작성</a>
                             </li>
                         </ul>
-                        <div class="d-flex align-items-center">
-                            <!-- 회원 메뉴 -->
-                            <div th:if="${loginUser}" class="d-flex align-items-center gap-3">
-                                <div class="dropdown">
-                                    <button class="btn btn-profile dropdown-toggle" type="button" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <span class="ms-1 me-2" th:text="${loginUser?.userNickname ?: 'Guest'}"></span>
-                                        <i class="bi bi-caret-down-fill"></i>
-                                    </button>
+                        <!-- 오른쪽 메뉴 -->
+                        <ul class="navbar-nav ms-auto">
+                            <th:block th:if="${loginUser}">
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" id="userMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <span th:text="${loginUser?.userNickname ?: 'Guest'}"></span>
+                                    </a>
                                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
                                         <li><a class="dropdown-item" th:href="@{/users/{userId}(userId=${loginUser.userId})}">마이페이지</a></li>
                                         <li><a class="dropdown-item" href="/posts/my-posts">내 게시글</a></li>
                                         <li><a class="dropdown-item" href="/posts/my-liked">즐겨찾기</a></li>
+                                        <li><hr class="dropdown-divider"></li> <!-- 구분선 추가 -->
+                                        <li>
+                                            <form method="post" th:action="@{/auth/logout}" class="d-inline">
+                                                <button type="submit" class="dropdown-item">로그아웃</button>
+                                            </form>
+                                        </li>
                                     </ul>
-                                </div>
-                                <form method="post" th:action="@{/auth/logout}" class="d-inline">
-                                    <button type="submit" class="btn btn-logout">로그아웃</button>
-                                </form>
-                            </div>
-                            <!-- 비회원 메뉴 -->
-                            <div th:unless="${loginUser}" class="d-flex align-items-center gap-3">
-                                <a href="/auth/login" class="btn btn-login">로그인</a>
-                                <a href="/users/signup" class="btn btn-signup">회원가입</a>
-                            </div>
-                        </div>
+                                </li>
+                            </th:block>
+                            <th:block th:unless="${loginUser}">
+                                <li class="nav-item">
+                                    <a class="nav-link" href="/auth/login">로그인</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="/users/signup">회원가입</a>
+                                </li>
+                            </th:block>
+                        </ul>
                     </div>
+<!--                    <div class="collapse navbar-collapse" id="navbarNav">-->
+<!--                        <ul class="navbar-nav me-auto">-->
+<!--                            <li class="nav-item">-->
+<!--                                <a class="nav-link" href="/posts">전체 보기</a>-->
+<!--                            </li>-->
+<!--                            <li class="nav-item" th:if="${loginUser}">-->
+<!--                                <a class="nav-link" href="/posts/new">새 글 작성</a>-->
+<!--                            </li>-->
+<!--                        </ul>-->
+<!--                        <div class="d-flex align-items-center">-->
+<!--                            &lt;!&ndash; 회원 메뉴 &ndash;&gt;-->
+<!--                            <div th:if="${loginUser}" class="d-flex align-items-center gap-3">-->
+<!--                                <div class="dropdown">-->
+<!--                                    <button class="btn btn-profile dropdown-toggle" type="button" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false">-->
+<!--                                        <span class="ms-1 me-2" th:text="${loginUser?.userNickname ?: 'Guest'}"></span>-->
+<!--                                        <i class="bi bi-caret-down-fill"></i>-->
+<!--                                    </button>-->
+<!--                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">-->
+<!--                                        <li><a class="dropdown-item" th:href="@{/users/{userId}(userId=${loginUser.userId})}">마이페이지</a></li>-->
+<!--                                        <li><a class="dropdown-item" href="/posts/my-posts">내 게시글</a></li>-->
+<!--                                        <li><a class="dropdown-item" href="/posts/my-liked">즐겨찾기</a></li>-->
+<!--                                    </ul>-->
+<!--                                </div>-->
+<!--                                <form method="post" th:action="@{/auth/logout}" class="d-inline">-->
+<!--                                    <button type="submit" class="btn btn-logout">로그아웃</button>-->
+<!--                                </form>-->
+<!--                            </div>-->
+<!--                            &lt;!&ndash; 비회원 메뉴 &ndash;&gt;-->
+<!--                            <div th:unless="${loginUser}" class="d-flex align-items-center gap-3">-->
+<!--                                <a href="/auth/login" class="btn btn-login">로그인</a>-->
+<!--                                <a href="/users/signup" class="btn btn-signup">회원가입</a>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
                 </div>
             </nav>
         </header>

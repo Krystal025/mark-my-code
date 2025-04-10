@@ -8,6 +8,7 @@
     --color-orange: #ee8a10; /* 주황색 */
     --color-yellow: #eeab10; /* 노란색 */
     --color-green-light: #768b50; /* 밝은 초록색 */
+    --color-green-medium: #9baa6e;
     --color-green: #4b623c; /* 초록색 */
     --color-green-dark: #1f361b; /* 어두운 초록색 */
     --color-grey: #878787; /* 회색 */
@@ -57,35 +58,6 @@ body {
 .navbar .btn-login:active {
     background-color: var(--color-orange);
     border-color: var(--color-orange);
-    color: white;
-}
-
-/* navbar 회원가입 버튼 */
-.navbar .btn-signup {
-    background-color: var(--color-green);
-    border-color: var(--color-green);
-    color: white;
-}
-.navbar .btn-signup:hover,
-.navbar .btn-signup:active{
-    background-color: var(--color-green-dark);
-    border-color: var(--color-green-dark);
-    color: white;
-}
-
-/* navbar 마이페이지, 로그아웃 버튼 */
-.navbar .btn-profile,
-.navbar .btn-logout {
-    background-color: transparent;
-    border-color: white;
-    color: white;
-}
-.navbar .btn-profile:hover,
-.navbar .btn-profile:active,
-.navbar .btn-logout:hover,
-.navbar .btn-logout:active{
-    background-color: var(--color-green);
-    border-color: var(--color-green);
     color: white;
 }
 
@@ -187,6 +159,25 @@ textarea.form-control::placeholder {
     color: var(--color-green);
 }
 
-.btn-profile.dropdown-toggle::after {
-    display: none;
+/* 드롭다운 메뉴 배경 및 텍스트 색상 */
+.dropdown-menu {
+    background-color: var(--color-green-medium); /* 내비게이션 바와 동일한 올리브 색상 */
+    border: 1px solid var(--color-green-light); /* 테두리 색상 */
+}
+
+/* 드롭다운 항목 기본 스타일 */
+.dropdown-item {
+    color: white; /* 내비게이션 링크와 동일한 흰색 */
+}
+
+/* 드롭다운 항목 호버 및 활성화 상태 */
+.dropdown-item:hover,
+.dropdown-item:active {
+    background-color: var(--color-green); /* 버튼 호버와 유사 */
+    color: white; /* 텍스트 색상 유지 */
+}
+
+/* 드롭다운 구분선 색상 */
+.dropdown-divider {
+    border-top: 1px solid var(--color-green-light); /* 연한 초록색으로 조화 */
 }
