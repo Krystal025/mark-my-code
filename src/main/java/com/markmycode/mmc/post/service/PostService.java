@@ -91,13 +91,13 @@ public class PostService {
         return responseDto;
     }
 
-    public PagedPostResponseDto getFilteredPosts(PostListRequestDto requestDto){
+    public PagedPostResponseDto getFilteredPosts(PostListRequestDto requestDto, boolean isLikedPosts){
         validateFilterCondition(requestDto);
         // 전체 게시글 개수 조회
-        long totalPosts = postMapper.countPostsByFilters(requestDto);
-        // 페이징된 게시글 목록 조회
-        List<PostPreviewResponseDto> posts = postMapper.selectPostsByFilters(requestDto);
-        // 전체 페이지 수 계산
+        long totalPosts = isLikedPosts ? postMapper.countLikedPostsByFilters(requestDto)
+                                    : postMapper.countPostsByFilters(requestDto);
+        List<PostPreviewResponseDto> posts = isLikedPosts ? postMapper.selectLikedPostsByFilters(requestDto)
+                                                        : postMapper.selectPostsByFilters(requestDto);
         int totalPages = (int) Math.ceil((double) totalPosts / requestDto.getSize());
         // PagedPostResponseDto 반환
         return PagedPostResponseDto.builder()
@@ -106,6 +106,28 @@ public class PostService {
                 .pageSize(requestDto.getSize())
                 .totalPosts(totalPosts)
                 .totalPages(totalPages)
+                .build();
+    }
+
+    public PagedPostResponseDto getUserPosts(Long userId, PostListRequestDto requestDto) {
+        PostListRequestDto filteredDto = buildFilteredDto(userId, requestDto);
+        return getFilteredPosts(filteredDto, false);
+    }
+
+    public PagedPostResponseDto getLikedPostsByUserId(Long userId, PostListRequestDto requestDto) {
+        PostListRequestDto filteredDto = buildFilteredDto(userId, requestDto);
+        return getFilteredPosts(filteredDto, true);
+    }
+
+    private PostListRequestDto buildFilteredDto(Long userId, PostListRequestDto requestDto) {
+        return PostListRequestDto.builder()
+                .userId(userId)
+                .parentCategoryId(requestDto.getParentCategoryId())
+                .childCategoryId(requestDto.getChildCategoryId())
+                .platformId(requestDto.getPlatformId())
+                .languageId(requestDto.getLanguageId())
+                .page(requestDto.getPage())
+                .size(requestDto.getSize())
                 .build();
     }
 

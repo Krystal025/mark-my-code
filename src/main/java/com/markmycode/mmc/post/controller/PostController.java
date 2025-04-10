@@ -76,23 +76,42 @@ public class PostController {
     // 게시글 목록 조회 (필터링 포함)
     @GetMapping
     public String getList(@ModelAttribute PostListRequestDto requestDto, Model model) {
-        // 필터 목록 조회
-        List<CategoryResponseDto> parentCategories = categoryService.getParentCategories();
-        List<CategoryResponseDto> childCategories = new ArrayList<>(); // 부모 카테고리 선택 후 프론트에서 동적으로 변경
-        if (requestDto.getParentCategoryId() != null) {
-            childCategories = categoryService.getChildCategories(requestDto.getParentCategoryId()); // 부모 카테고리에 맞는 하위 카테고리
-        }
-        List<PlatformResponseDto> platforms = platformService.getPlatforms();
-        List<LanguageResponseDto> languages = languageService.getLanguages();
-        PagedPostResponseDto pagedPosts = postService.getFilteredPosts(requestDto);
+        PagedPostResponseDto pagedPosts = postService.getFilteredPosts(requestDto, false);
         // 조회된 목록을 모델에 추가하여 뷰에서 사용할 수 있도록 전달
         model.addAttribute("pagedPosts", pagedPosts);
         model.addAttribute("requestDto" , requestDto);
-        model.addAttribute("parentCategories", parentCategories);
-        model.addAttribute("childCategories", childCategories);
-        model.addAttribute("platforms", platforms);
-        model.addAttribute("languages", languages);
+        model.addAttribute("pageTitle", "전체 보기");
+        model.addAttribute("currentPath", "/posts");
+        addFilterAttributes(model, requestDto);
         // 템플릿 렌더링하여 반환
+        return "posts/list";
+    }
+
+    @GetMapping("/my-posts")
+    public String getUserPosts(@AuthenticationPrincipal UserPrincipal userPrincipal,
+                               @ModelAttribute PostListRequestDto requestDto,
+                               Model model) {
+        PagedPostResponseDto pagedPosts = postService.getUserPosts(userPrincipal.getUserId(), requestDto);
+        model.addAttribute("pagedPosts", pagedPosts);
+        model.addAttribute("requestDto", requestDto);
+        model.addAttribute("userId", userPrincipal.getUserId());
+        model.addAttribute("pageTitle", "내 게시글");
+        model.addAttribute("currentPath", "/posts/my-posts");
+        addFilterAttributes(model, requestDto);
+        return "posts/list";
+    }
+
+    @GetMapping("/my-liked")
+    public String getUserLikedPosts(@AuthenticationPrincipal UserPrincipal userPrincipal,
+                                    @ModelAttribute PostListRequestDto requestDto,
+                                    Model model) {
+        PagedPostResponseDto pagedPosts = postService.getLikedPostsByUserId(userPrincipal.getUserId(), requestDto);
+        model.addAttribute("pagedPosts", pagedPosts);
+        model.addAttribute("requestDto", requestDto);
+        model.addAttribute("userId", userPrincipal.getUserId());
+        model.addAttribute("pageTitle", "즐겨찾기");
+        model.addAttribute("currentPath", "/posts/my-liked");
+        addFilterAttributes(model, requestDto);
         return "posts/list";
     }
 
@@ -178,4 +197,14 @@ public class PostController {
         return "posts/edit";
     }
 
+    // 필터링 드롭다운 데이터 추가 메서드
+    private void addFilterAttributes(Model model, PostListRequestDto requestDto) {
+        model.addAttribute("parentCategories", categoryService.getParentCategories());
+        List<CategoryResponseDto> childCategories = requestDto.getParentCategoryId() != null
+                ? categoryService.getChildCategories(requestDto.getParentCategoryId())
+                : new ArrayList<>();
+        model.addAttribute("childCategories", childCategories);
+        model.addAttribute("platforms", platformService.getPlatforms());
+        model.addAttribute("languages", languageService.getLanguages());
+    }
 }

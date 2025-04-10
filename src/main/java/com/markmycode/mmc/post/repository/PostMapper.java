@@ -12,7 +12,9 @@ public interface PostMapper {
     Integer selectParentIdByCategoryId(Integer childCategoryId);
     PostResponseDto selectPost(Long postId);
     List<PostPreviewResponseDto> selectPostsByFilters(PostListRequestDto postListRequestDto);
+    List<PostPreviewResponseDto> selectLikedPostsByFilters(PostListRequestDto requestDto);
     long countPostsByFilters(PostListRequestDto requestDto);
+    long countLikedPostsByFilters(PostListRequestDto requestDto);
     List<PostPreviewResponseDto> selectRecentPosts();
     List<PostPreviewResponseDto> selectPopularPosts();
 }

@@ -1,9 +1,13 @@
 package com.markmycode.mmc.post.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor
 public class PostListRequestDto {
 
@@ -11,6 +15,7 @@ public class PostListRequestDto {
     private Integer childCategoryId;
     private Integer platformId;
     private Integer languageId;
+    private Long userId;
     private int page = 1; // 클라이언트가 요청한 페이지 번호 (기본값 : 1)
     private int size = 12; // 한 페이지에 보여줄 데이터 개수 (기본값 : 12)
     // private String sort;

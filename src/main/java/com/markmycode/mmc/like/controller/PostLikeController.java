@@ -37,17 +37,6 @@ public class PostLikeController {
         postLikeService.toggleLikePost(loginUserId, postId);
         return "redirect:/posts/{postId}";
 
-//        User user = userService.getUser(userPrincipal.getUserId());
-//        Post post = postService.getPost(postId);
-//        redirectAttributes.addAttribute("postId", postId);
-//        try {
-//            postService.validatePostOwnership(user, post);
-//            redirectAttributes.addFlashAttribute("error", "본인의 게시글에는 좋아요를 누를 수 없습니다.");
-//            return "redirect:/posts/{postId}";
-//        }catch (ForbiddenException e){
-//            postLikeService.toggleLikePost(userPrincipal.getUserId(), postId);
-//            return "redirect:/posts/{postId}";
-//        }
     }
 
 }

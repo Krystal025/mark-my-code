@@ -5,6 +5,22 @@
 
 <mapper namespace="com.markmycode.mmc.post.repository.PostMapper">
 
+    <!-- 공통 필터링 조건 -->
+    <sql id="postFilterConditions">
+        <if test="parentCategoryId != null">
+            AND c2.category_id = #{parentCategoryId}
+        </if>
+        <if test="childCategoryId != null">
+            AND p.category_id = #{childCategoryId}
+        </if>
+        <if test="platformId != null">
+            AND p.platform_id = #{platformId}
+        </if>
+        <if test="languageId != null">
+            AND p.language_id = #{languageId}
+        </if>
+    </sql>
+
     <select id="selectParentIdByCategoryId" parameterType="Integer" resultType="Integer">
         SELECT parent_id
         FROM post_category
@@ -51,13 +67,13 @@
     <select id="selectPostsByFilters" parameterType="com.markmycode.mmc.post.dto.PostListRequestDto"
             resultType="com.markmycode.mmc.post.dto.PostPreviewResponseDto">
         SELECT
-        p.post_id,
-        p.user_id,
-        p.post_title,
-        p.post_created_at,
-        p.post_like_count,
-        u.user_nickname,
-        COALESCE(pc.comment_count, 0) AS postCommentCount
+            p.post_id,
+            p.user_id,
+            p.post_title,
+            p.post_created_at,
+            p.post_like_count,
+            u.user_nickname,
+            COALESCE(pc.comment_count, 0) AS postCommentCount
         FROM post p
         JOIN user u ON p.user_id = u.user_id
         JOIN post_category c1 ON p.category_id = c1.category_id  <!-- 하위 카테고리 조인 -->
@@ -69,24 +85,45 @@
             FROM post_comment
             GROUP BY post_id
         ) pc ON p.post_id = pc.post_id
-        <!-- 필터링 조건이 있을 때만 WHERE 절이 추가됨 -->
         <where>
-            <if test="parentCategoryId != null">
-                AND c2.category_id = #{parentCategoryId}  <!-- 상위 카테고리 ID로 필터링 -->
+            <if test="userId != null">
+                AND p.user_id = #{userId}
             </if>
-            <if test="childCategoryId != null">
-                AND p.category_id = #{childCategoryId}  <!-- 하위 카테고리 ID로 필터링 -->
-            </if>
-            <if test="platformId != null">
-                AND p.platform_id = #{platformId}  <!-- 플랫폼 ID로 필터링 -->
-            </if>
-            <if test="languageId != null">
-                AND p.language_id = #{languageId}  <!-- 언어 ID로 필터링 -->
-            </if>
+            <include refid="postFilterConditions"/>
         </where>
         ORDER BY p.post_created_at DESC
         <!-- 클라이언트에서 "page" 필드로 페이지를 요청하면 DTO의 getOffset()이 계산해서 전달 -->
         LIMIT #{size} OFFSET #{offset}  <!-- LIMIT {가져올 데이터 개수} OFFSET {건너뛸 데이터 개수} -->
+    </select>
+
+    <!-- 좋아요한 게시글 조회 -->
+    <select id="selectLikedPostsByFilters" parameterType="com.markmycode.mmc.post.dto.PostListRequestDto"
+            resultType="com.markmycode.mmc.post.dto.PostPreviewResponseDto">
+        SELECT
+            p.post_id,
+            p.user_id,
+            p.post_title,
+            p.post_created_at,
+            p.post_like_count,
+            u.user_nickname,
+        COALESCE(pc.comment_count, 0) AS postCommentCount
+        FROM post p
+        JOIN post_like pl ON p.post_id = pl.post_id AND pl.user_id = #{userId}
+        JOIN user u ON p.user_id = u.user_id
+        JOIN post_category c1 ON p.category_id = c1.category_id
+        LEFT JOIN post_category c2 ON c1.parent_id = c2.category_id
+        JOIN problem_platform ppl ON p.platform_id = ppl.platform_id
+        JOIN problem_language l ON p.language_id = l.language_id
+        LEFT JOIN (
+            SELECT post_id, COUNT(*) AS comment_count
+            FROM post_comment
+            GROUP BY post_id
+        ) pc ON p.post_id = pc.post_id
+        <where>
+            <include refid="postFilterConditions"/>
+        </where>
+        ORDER BY p.post_created_at DESC
+        LIMIT #{size} OFFSET #{offset}
     </select>
 
     <!-- 전체 게시글 개수 조회 -->
@@ -99,18 +136,25 @@
         JOIN problem_platform ppl ON p.platform_id = ppl.platform_id
         JOIN problem_language l ON p.language_id = l.language_id
         <where>
-            <if test="parentCategoryId != null">
-                AND c2.category_id = #{parentCategoryId}
+            <if test="userId != null">
+                AND p.user_id = #{userId}
             </if>
-            <if test="childCategoryId != null">
-                AND p.category_id = #{childCategoryId}
-            </if>
-            <if test="platformId != null">
-                AND p.platform_id = #{platformId}
-            </if>
-            <if test="languageId != null">
-                AND p.language_id = #{languageId}
-            </if>
+            <include refid="postFilterConditions"/>
+        </where>
+    </select>
+
+    <!-- 좋아요 누른 게시글 개수 조회 -->
+    <select id="countLikedPostsByFilters" parameterType="com.markmycode.mmc.post.dto.PostListRequestDto" resultType="long">
+        SELECT COUNT(*)
+        FROM post p
+        JOIN user u ON p.user_id = u.user_id
+        JOIN post_like pl ON p.post_id = pl.post_id AND pl.user_id = #{userId}
+        JOIN post_category c1 ON p.category_id = c1.category_id
+        LEFT JOIN post_category c2 ON c1.parent_id = c2.category_id
+        JOIN problem_platform ppl ON p.platform_id = ppl.platform_id
+        JOIN problem_language l ON p.language_id = l.language_id
+        <where>
+            <include refid="postFilterConditions"/>
         </where>
     </select>
 

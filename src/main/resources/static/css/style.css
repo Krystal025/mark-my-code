@@ -84,8 +84,8 @@ body {
 .navbar .btn-profile:active,
 .navbar .btn-logout:hover,
 .navbar .btn-logout:active{
-    background-color: var(--color-orange);
-    border-color: var(--color-orange);
+    background-color: var(--color-green);
+    border-color: var(--color-green);
     color: white;
 }
 
@@ -152,6 +152,15 @@ a:hover {
     z-index: 1050; /* 다른 콘텐츠 위에 표시되도록 설정 */
 }
 
+/* Placeholder 스타일 */
+.form-control::placeholder,
+.form-select::placeholder,
+textarea.form-control::placeholder {
+    color: #adb5bd; /* 연한 회색 (Bootstrap의 muted gray) */
+    font-style: italic;
+    opacity: 1; /* 브라우저 기본 투명도 무시 */
+}
+
 .page-item.disabled .page-link {
     background-color: transparent;
     border-color: var(--color-green-light);
@@ -176,4 +185,8 @@ a:hover {
     background-color: transparent;
     border-color: var(--color-green-light);
     color: var(--color-green);
+}
+
+.btn-profile.dropdown-toggle::after {
+    display: none;
 }

@@ -7,7 +7,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Detail</title>
     <style>
-        /* 사용자 프로필 카드 스타일 */
         .profile-card {
             max-width: 600px;
             margin: 2rem auto;
@@ -16,60 +15,40 @@
             border-radius: 0.5rem;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
-
-        .profile-card .card-body {
-            padding: 2rem;
-        }
-
-        /* 프로필 상단 섹션 */
+        .profile-card .card-body { padding: 2rem; }
         .profile-header {
             display: flex;
             align-items: center;
             gap: 1.5rem;
             margin-bottom: 1.5rem;
         }
-
         .profile-avatar {
             width: 80px;
             height: 80px;
             border-radius: 50%;
-            background-color: #e9ecef; /* 기본 아바타 색상 */
+            background-color: #e9ecef;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 2rem;
             color: #6c757d;
         }
-
-        .profile-info {
-            flex: 1;
-        }
-
-        .profile-info h1 {
-            color: var(--bs-primary);
-            font-size: 1.75rem;
-            margin-bottom: 0.5rem;
-        }
-
+        .profile-info { flex: 1; }
         .nickname-section {
             display: flex;
             align-items: center;
             gap: 1rem;
         }
-
         .nickname-section h2 {
             color: var(--bs-secondary);
-            font-size: 2rem; /* 닉네임 크게 */
+            font-size: 2rem;
             margin-bottom: 0;
         }
-
         .profile-info p.name {
             color: #6c757d;
-            font-size: 1rem; /* 이름 작게 */
+            font-size: 1rem;
             margin-bottom: 0;
         }
-
-        /* 수정하기 버튼 */
         .edit-button a {
             background-color: var(--bs-primary);
             color: white;
@@ -79,47 +58,24 @@
             font-size: 0.875rem;
             transition: background-color 0.2s ease;
         }
-
-        .edit-button a:hover {
-            background-color: var(--bs-hover-accent);
-        }
-
-        /* 세부 정보 섹션 */
+        .edit-button a:hover { background-color: var(--bs-hover-accent); }
         .profile-details {
             border-top: 1px solid #dee2e6;
             padding-top: 1.5rem;
         }
-
         .profile-details p {
             margin-bottom: 0.75rem;
             color: var(--bs-secondary);
         }
-
         .profile-details p span {
             font-weight: 500;
             color: black;
         }
-
-        /* 탈퇴하기 버튼 */
-        .delete-account {
-            margin-top: 2rem;
-            text-align: center;
-        }
-
-        .delete-account a {
-            color: #dc3545; /* Bootstrap danger 색상 */
-            text-decoration: none;
-            font-size: 0.875rem;
-        }
-
-        .delete-account a:hover {
-            text-decoration: underline;
-        }
+        .delete-account { margin-top: 2rem; text-align: center; }
     </style>
 </head>
 <body>
 <section layout:fragment="content">
-
     <!-- 회원정보 수정 알림 -->
     <div id="updateSuccessAlert" th:if="${updateSuccess}" class="alert alert-success alert-dismissible fade show" role="alert">
         <span th:text="${updateSuccess}"></span>
@@ -129,53 +85,41 @@
     <div class="profile-card">
         <div class="card-body">
             <div class="profile-header">
-                <!-- 프로필 아바타 (기본 아바타) -->
                 <div class="profile-avatar">
                     <i class="bi bi-person-fill"></i>
                 </div>
                 <div class="profile-info">
                     <div class="nickname-section">
                         <h2 th:text="${user.userNickname}"></h2>
-                        <!-- 수정하기 버튼: 프로필 소유자인 경우에만 보임 -->
                         <div th:if="${isProfileOwner}" class="edit-button">
-                            <a th:href="@{/users/{userId}/edit(userId=${loginUser.userId})}">수정</a>
+                            <a th:href="@{/users/{userId}/edit(userId=${user.userId})}">수정</a>
                         </div>
                     </div>
                     <p class="name" th:text="${user.userName}"></p>
                 </div>
             </div>
             <div class="profile-details">
-                <!-- 사용자 이메일 -->
                 <p>이메일: <span th:text="${user.userEmail}"></span></p>
-                <!-- 가입일 -->
                 <p>가입일: <span th:text="${#temporals.format(user.userCreatedAt, 'yyyy년 M월 d일')}"></span></p>
             </div>
-            <!-- 탈퇴하기 버튼 -->
             <div th:if="${isProfileOwner}" class="delete-account">
-                <form th:action="@{/users/{userId}/deactivate(userId=${loginUser.userId})}" method="post"
+                <form th:action="@{/users/{userId}/deactivate(userId=${user.userId})}" method="post"
                       onsubmit="return confirm('이 계정을 탈퇴하시겠습니까?');">
                     <button type="submit" class="btn btn-outline-danger btn-sm">탈퇴하기</button>
                 </form>
             </div>
         </div>
     </div>
+
     <script>
-        window.onload = function() {
-            // 회원정보 수정 알림이 있는 경우
+        document.addEventListener('DOMContentLoaded', function() {
             if (document.getElementById('updateSuccessAlert')) {
                 setTimeout(function() {
                     var updateSuccessAlert = new bootstrap.Alert(document.getElementById('updateSuccessAlert'));
                     updateSuccessAlert.close();
                 }, 2000);
             }
-            // 회원정보 수정 알림이 있는 경우
-            if (document.getElementById('errorAlert')) {
-                setTimeout(function() {
-                    var errorAlert = new bootstrap.Alert(document.getElementById('errorAlert'));
-                    errorAlert.close();
-                }, 2000);
-            }
-        }
+        });
     </script>
 </section>
 </body>

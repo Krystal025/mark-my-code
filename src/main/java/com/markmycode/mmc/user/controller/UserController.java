@@ -73,7 +73,7 @@ public class UserController {
 //                redirectAttributes.addFlashAttribute("noUpdate", "변경사항이 없습니다.");
 //                return "users/edit";
 //            }
-            bindingResult.reject(e.getErrorCode().name(), e.getMessage()); // 글로벌 처리
+            bindingResult.reject(e.getErrorCode().name(), e.getMessage());
             return "users/edit";
         }
     }

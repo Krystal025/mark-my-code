@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
     <title>Header</title>
@@ -27,15 +27,25 @@
                                 <a class="nav-link" href="/posts/new">새 글 작성</a>
                             </li>
                         </ul>
-                        <!-- 유저 메뉴 -->
                         <div class="d-flex align-items-center">
+                            <!-- 회원 메뉴 -->
                             <div th:if="${loginUser}" class="d-flex align-items-center gap-3">
-                                <span class="navbar-text me-2" th:text="${loginUser?.userNickname ?: 'Guest'}"></span>
-                                <a class="btn btn-profile" th:href="@{/users/{userId}(userId=${loginUser.userId})}">마이페이지</a>
+                                <div class="dropdown">
+                                    <button class="btn btn-profile dropdown-toggle" type="button" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <span class="ms-1 me-2" th:text="${loginUser?.userNickname ?: 'Guest'}"></span>
+                                        <i class="bi bi-caret-down-fill"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
+                                        <li><a class="dropdown-item" th:href="@{/users/{userId}(userId=${loginUser.userId})}">마이페이지</a></li>
+                                        <li><a class="dropdown-item" href="/posts/my-posts">내 게시글</a></li>
+                                        <li><a class="dropdown-item" href="/posts/my-liked">즐겨찾기</a></li>
+                                    </ul>
+                                </div>
                                 <form method="post" th:action="@{/auth/logout}" class="d-inline">
                                     <button type="submit" class="btn btn-logout">로그아웃</button>
                                 </form>
                             </div>
+                            <!-- 비회원 메뉴 -->
                             <div th:unless="${loginUser}" class="d-flex align-items-center gap-3">
                                 <a href="/auth/login" class="btn btn-login">로그인</a>
                                 <a href="/users/signup" class="btn btn-signup">회원가입</a>

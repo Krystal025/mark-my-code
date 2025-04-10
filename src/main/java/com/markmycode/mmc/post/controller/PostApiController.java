@@ -49,7 +49,7 @@ public class PostApiController {
 
     @GetMapping
     public PagedPostResponseDto getFilteredPosts(@RequestBody PostListRequestDto requestDto){
-        return postService.getFilteredPosts(requestDto);
+        return postService.getFilteredPosts(requestDto, false);
     }
 
 
