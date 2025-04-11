@@ -47,6 +47,13 @@ body {
     font-size: 1.1rem;
     font-weight: bold;
 }
+.navbar .nav-link.dropdown-toggle {
+    color: var(--color-yellow);
+}
+.navbar .nav-link.dropdown-toggle:hover,
+.navbar .nav-link.dropdown-toggle:active{
+    color: var(--color-green-dark);
+}
 
 /* navbar 로그인 버튼 */
 .navbar .btn-login {
@@ -116,7 +123,7 @@ a:hover {
 /* 알림창을 화면 상단에 고정 */
 .alert {
     position: fixed;
-    top: 40px;
+    top: 60px;
     left: 50%;
     transform: translateX(-50%); /* 화면 중앙 정렬 */
     width: 80%; /* 가로 길이를 넓힘 */
