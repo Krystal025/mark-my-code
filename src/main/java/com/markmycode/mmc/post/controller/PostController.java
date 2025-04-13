@@ -47,9 +47,9 @@ public class PostController {
     // 게시글 등록
     @PostMapping
     public String create(@AuthenticationPrincipal UserPrincipal userPrincipal,
-                         @ModelAttribute PostRequestDto postRequestDto,
+                         @ModelAttribute PostRequestDto requestDto,
                          RedirectAttributes redirectAttributes) {
-        Long postId = postService.createPost(userPrincipal.getUserId(), postRequestDto);
+        Long postId = postService.createPost(userPrincipal.getUserId(), requestDto);
         redirectAttributes.addAttribute("postId", postId);
         return "redirect:/posts/{postId}";
     }

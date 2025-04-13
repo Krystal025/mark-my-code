@@ -18,5 +18,4 @@ public class PostRequestDto {
     private String postTitle;
     private String postContent;
     private String problemLink;
-
 }

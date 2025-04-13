@@ -30,4 +30,3 @@ mybatis:
 # JWT 설정
 jwt:
   secret: "D72jNk@dG73slP@Ue94R&ZgJ69Fn!Lr@wP$Yb7xQ2wF9nSb5Q"
-
