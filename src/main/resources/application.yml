@@ -20,15 +20,17 @@ spring: # spring.datasource : SpringBoot의 JPA와 관련된 DB 연결 정보를
     mode: HTML
     encoding: UTF-8
     layout-decorator: layouts/default
-  management: # 헬스체크를 위한 Actuator 설정 추가
+  management:
     endpoint:
       health:
         enabled: true
-        show-details: always  # 헬스체크 상세 정보 표시 (DB 연결 상태 등)
+        show-details: always
     endpoints:
       web:
         exposure:
-          include: health,info  # /actuator/health, /actuator/info 엔드포인트 노출
+          include: health
+  security:
+    ignored: /actuator/health
 
 # MyBatis 설정
 mybatis:
