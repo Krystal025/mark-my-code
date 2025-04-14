@@ -1,6 +1,8 @@
 # 기반 이미지: Java 17 사용
 FROM openjdk:17-jdk-slim
 
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+
 # 작업 디렉토리 설정
 WORKDIR /app
 
