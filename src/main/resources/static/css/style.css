@@ -5,6 +5,7 @@
 
     --bs-link-color: #536a42;
 
+    --color-red: #dc3545; /* 빨간색 */
     --color-orange: #ee8a10; /* 주황색 */
     --color-yellow: #eeab10; /* 노란색 */
     --color-green-light: #768b50; /* 밝은 초록색 */
@@ -187,4 +188,32 @@ textarea.form-control::placeholder {
 /* 드롭다운 구분선 색상 */
 .dropdown-divider {
     border-top: 1px solid var(--color-green-light); /* 연한 초록색으로 조화 */
+}
+
+.profile-actions .btn-edit {
+    background-color: transparent;
+    color: var(--color-green);
+    border-color: var(--color-green);
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.profile-actions .btn-danger {
+    background-color: transparent;
+    color: var(--color-red);
+    border-color: var(--color-red);
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.profile-actions .btn-edit:hover,
+.profile-actions .btn-edit:active {
+    background-color: var(--color-green);
+    color: white;
+    border-color: var(--color-green);
+}
+
+.profile-actions .btn-danger:hover,
+.profile-actions .btn-danger:active {
+    background-color: var(--color-red);
+    color: white;
+    border-color: var(--color-red);
 }

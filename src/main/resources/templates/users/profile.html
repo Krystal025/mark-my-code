@@ -84,26 +84,6 @@
             margin-top: 1.5rem;
             text-align: right;
         }
-
-        .profile-actions .btn-outline-primary,
-        .profile-actions .btn-outline-danger {
-            margin-left: 0.5rem;
-            font-size: 0.875rem;
-            padding: 0.25rem 0.75rem;
-            transition: background-color 0.2s ease, color 0.2s ease;
-        }
-
-        .profile-actions .btn-outline-primary:hover {
-            background-color: #005566;
-            color: white;
-            border-color: #005566;
-        }
-
-        .profile-actions .btn-outline-danger:hover {
-            background-color: #dc3545;
-            color: white;
-            border-color: #dc3545;
-        }
     </style>
 </head>
 <body>
@@ -123,9 +103,6 @@
                 <div class="profile-info">
                     <div class="nickname-section">
                         <h2 th:text="${user.userNickname}"></h2>
-                        <div th:if="${isProfileOwner}" class="edit-button">
-                            <a th:href="@{/users/{userId}/edit(userId=${user.userId})}">수정</a>
-                        </div>
                     </div>
                     <p class="name" th:text="${user.userName}"></p>
                 </div>
@@ -135,10 +112,10 @@
                 <p>가입일: <span th:text="${#temporals.format(user.userCreatedAt, 'yyyy년 M월 d일')}"></span></p>
             </div>
             <div th:if="${isProfileOwner}" class="profile-actions">
-                <a th:href="@{/users/{userId}/edit(userId=${user.userId})}" class="btn btn-outline-primary btn-sm">수정</a>
+                <a th:href="@{/users/{userId}/edit(userId=${user.userId})}" class="btn btn-edit btn-sm">수정</a>
                 <form th:action="@{/users/{userId}/deactivate(userId=${user.userId})}" method="post"
                       onsubmit="return confirm('이 계정을 탈퇴하시겠습니까?');" class="d-inline">
-                    <button type="submit" class="btn btn-outline-danger btn-sm">탈퇴하기</button>
+                    <button type="submit" class="btn btn-danger btn-sm">탈퇴하기</button>
                 </form>
             </div>
         </div>
