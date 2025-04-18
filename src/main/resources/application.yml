@@ -20,6 +20,9 @@ spring: # spring.datasource : SpringBoot의 JPA와 관련된 DB 연결 정보를
       key-store-password: ${SERVER_SSL_KEY_STORE_PASSWORD}
       key-store-type: PKCS12
       key-alias: tomcat
+      trust-store: file:/usr/lib/jvm/java-17-openjdk/lib/security/cacerts
+      trust-store-password: changeit
+      trust-store-type: JKS
   thymeleaf:
     prefix: classpath:/templates/
     suffix: .html
