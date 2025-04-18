@@ -17,7 +17,7 @@ spring: # spring.datasource : SpringBoot의 JPA와 관련된 DB 연결 정보를
     ssl:
       enabled: true
       key-store: /app/keystore.p12
-      key-store-password: ${SERVER_SSL_KEY_STORE_PASSWORD}
+      key-store-password: Root88**
       key-store-type: PKCS12
       key-alias: tomcat
   thymeleaf:
