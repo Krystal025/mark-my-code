@@ -1,28 +1,17 @@
-# JPA 설정
-spring: # spring.datasource : SpringBoot의 JPA와 관련된 DB 연결 정보를 설정하는 곳
+# 공통 설정
+spring:
   main:
-    lazy-initialization: true  # 빈 초기화를 지연시켜 시작 시간 단축
+    lazy-initialization: true
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://144.24.79.37:3306/mmc}  # 환경 변수 사용, 기본값은 VM MySQL
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://144.24.79.37:3306/mmc}
     username: ${SPRING_DATASOURCE_USERNAME:root}
     password: ${SPRING_DATASOURCE_PASSWORD:Root88**}
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
-      ddl-auto: validate  # 엔티티와 테이블의 일치여부만 확인하고, 변경하지 않음
+      ddl-auto: validate
   profiles:
     include: oauth
-  server:
-    port: 443
-    ssl:
-      enabled: true
-      key-store: /app/keystore.p12
-      key-store-password: ${SERVER_SSL_KEY_STORE_PASSWORD}
-      key-store-type: PKCS12
-      key-alias: tomcat
-      trust-store: file:/usr/lib/jvm/java-17-openjdk/lib/security/cacerts
-      trust-store-password: changeit
-      trust-store-type: JKS
   thymeleaf:
     prefix: classpath:/templates/
     suffix: .html
@@ -41,12 +30,48 @@ spring: # spring.datasource : SpringBoot의 JPA와 관련된 DB 연결 정보를
   security:
     ignored: /actuator/health
 
+# 로깅 설정 추가
+logging:
+  level:
+    org.springframework: DEBUG
+    org.springframework.boot: DEBUG
+    org.springframework.boot.web.embedded.tomcat: DEBUG
+
 # MyBatis 설정
 mybatis:
-  mapper-locations: classpath:mapper/*.xml  # XML 매퍼 위치
+  mapper-locations: classpath:mapper/*.xml
   configuration:
-    map-underscore-to-camel-case: true  # DB 컬럼명 CamelCase로 자동 변환
+    map-underscore-to-camel-case: true
 
 # JWT 설정
 jwt:
   secret: "D72jNk@dG73slP@Ue94R&ZgJ69Fn!Lr@wP$Yb7xQ2wF9nSb5Q"
+
+# 로컬 환경 (dev)
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+  server:
+    port: 8080
+    ssl:
+      enabled: false  # SSL 비활성화 명시
+
+# 배포 환경 (prod)
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+  server:
+    port: 443
+    ssl:
+      enabled: true
+      key-store: /app/keystore.p12
+      key-store-password: ${SERVER_SSL_KEY_STORE_PASSWORD}
+      key-store-type: PKCS12
+      key-alias: tomcat
+      trust-store: file:/usr/lib/jvm/java-17-openjdk/lib/security/cacerts
+      trust-store-password: changeit
+      trust-store-type: JKS
