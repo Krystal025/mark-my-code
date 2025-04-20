@@ -3,15 +3,10 @@ spring:
   main:
     lazy-initialization: true
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://144.24.79.37:3306/mmc}
-    username: ${SPRING_DATASOURCE_USERNAME:root}
-    password: ${SPRING_DATASOURCE_PASSWORD:Root88**}
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
       ddl-auto: validate
-  profiles:
-    include: oauth
   thymeleaf:
     prefix: classpath:/templates/
     suffix: .html
@@ -27,8 +22,6 @@ spring:
       web:
         exposure:
           include: health
-  security:
-    ignored: /actuator/health
 
 # 로깅 설정 추가
 logging:
@@ -46,32 +39,3 @@ mybatis:
 # JWT 설정
 jwt:
   secret: "D72jNk@dG73slP@Ue94R&ZgJ69Fn!Lr@wP$Yb7xQ2wF9nSb5Q"
-
-# 로컬 환경 (dev)
----
-spring:
-  config:
-    activate:
-      on-profile: dev
-  server:
-    port: 8080
-    ssl:
-      enabled: false  # SSL 비활성화 명시
-
-# 배포 환경 (prod)
----
-spring:
-  config:
-    activate:
-      on-profile: prod
-  server:
-    port: 443
-    ssl:
-      enabled: true
-      key-store: /app/keystore.p12
-      key-store-password: ${SERVER_SSL_KEY_STORE_PASSWORD}
-      key-store-type: PKCS12
-      key-alias: tomcat
-      trust-store: file:/usr/lib/jvm/java-17-openjdk/lib/security/cacerts
-      trust-store-password: changeit
-      trust-store-type: JKS
