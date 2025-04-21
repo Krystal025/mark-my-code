@@ -10,10 +10,12 @@ spring:
     include: oauth
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate  # 배포 환경에서는 validate 권장
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.MySQLDialect
+        dialect: org.hibernate.dialect.MySQL8Dialect  # MySQL 8.x 방언
+        show_sql: true
+        format_sql: true
   thymeleaf:
     prefix: classpath:/templates/
     suffix: .html
