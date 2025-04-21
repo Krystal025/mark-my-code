@@ -2,11 +2,19 @@
 spring:
   main:
     lazy-initialization: true
+  profiles:
+    include: oauth
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME:root}
+    password: ${SPRING_DATASOURCE_PASSWORD:Root88*}
   jpa:
     hibernate:
       ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
   thymeleaf:
     prefix: classpath:/templates/
     suffix: .html
@@ -22,13 +30,8 @@ spring:
       web:
         exposure:
           include: health
-
-# 로깅 설정 추가
-logging:
-  level:
-    org.springframework: DEBUG
-    org.springframework.boot: DEBUG
-    org.springframework.boot.web.embedded.tomcat: DEBUG
+  server:
+    port: ${SERVER_PORT:8080}
 
 # MyBatis 설정
 mybatis:

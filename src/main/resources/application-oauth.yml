@@ -1,7 +1,4 @@
 spring:
-  config:
-    activate:
-      on-profile: oauth
   security:
     oauth2:
       client:
@@ -14,4 +11,3 @@ spring:
             scope:
               - email
               - profile
-              - openid
