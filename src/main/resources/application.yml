@@ -7,7 +7,7 @@ spring:
   main:
     lazy-initialization: true
   profiles:
-    include: oauth
+    active: oauth
   jpa:
     hibernate:
       ddl-auto: validate
@@ -48,3 +48,4 @@ logging:
   level:
     org.springframework.boot: DEBUG
     org.springframework.security: DEBUG
+    org.springframework.boot.context.config: TRACE
