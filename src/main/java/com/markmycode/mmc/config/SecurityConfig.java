@@ -76,7 +76,8 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/css/**", "/js/**", "/images/**", "/", "/auth/**", "/login",
-                                "/oauth2/callback", "/oauth2/authorization", "/login_success", "/users", "/users/signup").permitAll()
+                                "/oauth2/callback", "/oauth2/authorization", "/login_success", "/users", "/users/signup",
+                                "/privacy-policy", "/terms-of-service").permitAll()
                         .requestMatchers("/posts/new").authenticated()
                         .requestMatchers(HttpMethod.GET, "/posts/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/comments/**").permitAll()
