@@ -11,3 +11,4 @@ spring:
             scope:
               - email
               - profile
+            client-authentication-method: client_secret_basic
