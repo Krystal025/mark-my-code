@@ -182,6 +182,7 @@ public class PostController {
                 .languageId(post.getLanguageId())
                 .postTitle(post.getPostTitle())
                 .postContent(post.getPostContent())
+                .problemLink(post.getProblemLink() != null ? post.getProblemLink() : "")
                 .build();
         List<CategoryResponseDto> parentCategories = categoryService.getParentCategories();
         List<CategoryResponseDto> childCategories = categoryService.getChildCategories(post.getParentCategoryId());
