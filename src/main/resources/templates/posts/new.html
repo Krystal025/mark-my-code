@@ -6,6 +6,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Post Form</title>
+    <style>
+        .required-asterisk {
+            color: #e74c3c; /* 어두운 빨간색 */
+            font-size: 0.9em;
+            vertical-align: top;
+            margin-right: 4px;
+        }
+    </style>
 </head>
 <body>
 <section layout:fragment="content">
@@ -13,7 +21,9 @@
     <form id="newForm" th:action="@{/posts}" method="post" th:object="${requestDto}">
         <div class="row g-3">
             <div class="col-md-6">
-                <label for="parentCategoryId" class="form-label">카테고리</label>
+                <label for="parentCategoryId" class="form-label">
+                    <span class="required-asterisk">*</span>카테고리
+                </label>
                 <select id="parentCategoryId" th:field="*{parentCategoryId}" class="form-select" onchange="updateChildCategories()" required>
                     <option value="">-- 선택 --</option>
                     <option th:each="category : ${parentCategories}"
@@ -23,7 +33,9 @@
             </div>
 
             <div class="col-md-6">
-                <label for="childCategoryId" class="form-label">세부 카테고리</label>
+                <label for="childCategoryId" class="form-label">
+                    <span class="required-asterisk">*</span>세부 카테고리
+                </label>
                 <select id="childCategoryId" th:field="*{childCategoryId}" class="form-select" required>
                     <option value="">-- 선택 --</option>
                     <option th:each="category : ${childCategories}"
@@ -33,7 +45,9 @@
             </div>
 
             <div class="col-md-6">
-                <label for="platformId" class="form-label">문제 플랫폼</label>
+                <label for="platformId" class="form-label">
+                    <span class="required-asterisk">*</span>문제 플랫폼
+                </label>
                 <select id="platformId" th:field="*{platformId}" class="form-select" required>
                     <option value="">-- 선택 --</option>
                     <option th:each="platform : ${platforms}"
@@ -43,7 +57,9 @@
             </div>
 
             <div class="col-md-6">
-                <label for="languageId" class="form-label">프로그래밍 언어</label>
+                <label for="languageId" class="form-label">
+                    <span class="required-asterisk">*</span>프로그래밍 언어
+                </label>
                 <select id="languageId" th:field="*{languageId}" class="form-select" required>
                     <option value="">-- 선택 --</option>
                     <option th:each="language : ${languages}"
@@ -53,7 +69,9 @@
             </div>
 
             <div class="col-12">
-                <label for="postTitle" class="form-label">제목</label>
+                <label for="postTitle" class="form-label">
+                    <span class="required-asterisk">*</span>제목
+                </label>
                 <input type="text" id="postTitle" th:field="*{postTitle}" class="form-control" placeholder="예: BOJ 1920 - 수 찾기  (문제 번호 또는 제목을 포함하면 쉽게 찾아볼 수 있습니다.)" required/>
             </div>
 
@@ -63,7 +81,9 @@
             </div>
 
             <div class="col-12">
-                <label for="postContent" class="form-label">내용</label>
+                <label for="postContent" class="form-label">
+                    <span class="required-asterisk">*</span>내용
+                </label>
                 <div class="mb-2 small d-flex align-items-center gap-2" style="color: #747474;">
                     <span>코드 작성 시 다음 형식을 사용하세요 : </span>
                     <code id="codeFormat" style="color: #597812;">&lt;pre&gt;&lt;code&gt; <span style="color: #A6A6A6;">코드를 여기에</span> &lt;/code&gt;&lt;/pre&gt;</code>
