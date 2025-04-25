@@ -68,14 +68,27 @@ public class CommentService {
     }
 
     public List<CommentResponseDto> getComments(Long postId){
+        System.out.println("Fetching comments for postId: " + postId);
         PostResponseDto postResponseDto = postMapper.selectPost(postId);
         if (postResponseDto == null) {
+            System.out.println("Post not found for postId: " + postId);
             throw new NotFoundException(ErrorCode.POST_NOT_FOUND);
         }
+        System.out.println("Post found, fetching comments...");
         List<Comment> comments = commentRepository.findByPostPostIdAndParentCommentIsNullOrderByCommentCreatedAt(postId);
-        return comments.stream()
-                .map(Comment::toResponseDto)
+        System.out.println("Found " + comments.size() + " comments for postId: " + postId);
+
+        List<CommentResponseDto> result = comments.stream()
+                .map(comment -> {
+                    System.out.println("Converting commentId: " + comment.getCommentId());
+                    return comment.toResponseDto();
+                })
                 .collect(Collectors.toList());
+        System.out.println("Comments successfully converted to DTOs");
+        return result;
+//        return comments.stream()
+//                .map(Comment::toResponseDto)
+//                .collect(Collectors.toList());
     }
 
     public List<CommentResponseDto> getChildComments(Long parentId) {

@@ -81,6 +81,7 @@ public class SecurityConfig {
                         .requestMatchers("/posts/new").authenticated()
                         .requestMatchers(HttpMethod.GET, "/posts/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/comments/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/posts/comments/**").permitAll()
                         .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
                         .anyRequest().authenticated());
         http
