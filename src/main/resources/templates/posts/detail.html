@@ -45,6 +45,11 @@
         .comment-actions .btn { font-size: 0.875rem; padding: 0.25rem 0.5rem; }
         .toggle-replies { margin-left: 0.5rem; }
         .reply-form, .edit-form { display: none; margin-top: 1rem; }
+        /* 댓글 텍스트 스타일 추가 */
+        .comment-text {
+            white-space: pre-wrap; /* 개행과 공백 유지 */
+            line-height: 1.6; /* 가독성 향상 */
+        }
     </style>
 </head>
 <body>
@@ -208,7 +213,7 @@
                                                 <strong>${child.userNickname}</strong>
                                                 <div class="date-info">${new Date(child.commentCreatedAt).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })}</div>
                                             </div>
-                                            <p>${child.commentStatus === 'ACTIVE' ? child.commentContent : '삭제된 댓글입니다'}</p>
+                                            <p class="comment-text">${child.commentStatus === 'ACTIVE' ? child.commentContent : '삭제된 댓글입니다'}</p>
                                             ${child.commentStatus === 'ACTIVE' ? `
                                             <div class="mb-3 d-flex justify-content-between align-items-center">
                                                 <div class="comment-actions">
