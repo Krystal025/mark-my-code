@@ -2,6 +2,7 @@
 - **개발 기간** : 2025.01.24 ~ 2025.04.10
 - **인원** : BackEnd 1명
 - **서비스 링크** : [https://mark-my-code.com](https://mark-my-code.com) (테스트 계정: test01@code.com / Test1234!)
+<br/>
 
 ## 프로젝트 개요
 - **목표** : 다양한 플랫폼의 코딩 테스트 문제를 카테고리별로 정리하여 복습할 수 있는 블로그 서비스 제공
@@ -47,10 +48,9 @@
 <br/>
 
 ## 설계 문서
-- [Flowchart 보기](https://github.com/Krystal025/mark-my-code/assets/108113552/flowchart)
-- [ERD 보기](https://github.com/Krystal025/mark-my-code/assets/108113552/erd)
+- [ERD 보기](https://github.com/user-attachments/assets/3c89c5ac-b0dc-4473-8162-140dbc5c09c2)
 <br/>
 
 ## 화면 설계
-- [화면 설계 1](https://github.com/Krystal025/mark-my-code/assets/108113552/screen1)
-- [화면 설계 2](https://github.com/Krystal025/mark-my-code/assets/108113552/screen2)
+- [화면 설계 1](https://github.com/user-attachments/assets/22c22019-371e-4b14-b1f7-658a1ba1789c)
+- [화면 설계 2](https://github.com/user-attachments/assets/9772cd82-caea-430b-8635-9147258e70db)
