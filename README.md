@@ -1,4 +1,4 @@
-# MarkMyCode
+# Mark My Code
 - **개발 기간** : 2025.01.24 ~ 2025.04.10
 - **인원** : BackEnd 1명
 - **서비스 링크** : [https://mark-my-code.com](https://mark-my-code.com) (테스트 계정: test01@code.com / Test1234!)
@@ -6,7 +6,7 @@
 
 ## 프로젝트 개요
 - **목표** : 다양한 플랫폼의 코딩 테스트 문제를 카테고리별로 정리하여 복습할 수 있는 블로그 서비스 제공
-- **주요 기능**
+- **주요 구현 기능**
   - **문제 풀이 등록 및 관리** : 사용자 풀이 등록·수정·삭제 기능 구현. 코드 에디터를 도입해 작성 편의성을 높임
   - **검색 및 필터링** : 문제 유형, 플랫폼, 언어별 필터링 기능으로 효율적 문제 검색 지원
   - **인증 시스템 구현** : Spring Security와 JWT 기반 인증, Google OAuth2 소셜 로그인 연동
@@ -52,5 +52,4 @@
 <br/>
 
 ## 화면 설계
-- [화면 설계 1](https://github.com/user-attachments/assets/22c22019-371e-4b14-b1f7-658a1ba1789c)
-- [화면 설계 2](https://github.com/user-attachments/assets/9772cd82-caea-430b-8635-9147258e70db)
+- [화면 설계 1](https://github.com/user-attachments/assets/1ba1e0e0-b306-485c-9b49-7b2ed59c2ca5)
