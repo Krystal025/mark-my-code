@@ -53,3 +53,4 @@
 
 ## 화면 설계
 - [화면 설계 1](https://github.com/user-attachments/assets/1ba1e0e0-b306-485c-9b49-7b2ed59c2ca5)
+- [화면 설계 2](https://github.com/user-attachments/assets/ed7c330d-247e-48f7-b579-e8b8d48b3176)
