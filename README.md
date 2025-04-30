@@ -32,6 +32,7 @@
 <div style="display : flex">
     <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white"/> 
     <img src="https://img.shields.io/badge/Oracle_Cloud-FF8C00?style=for-the-badge&logo=oracle&logoColor=white"/>
+    <img src="https://img.shields.io/badge/GitHub_Actions-2088FF?style=for-the-badge&logo=githubactions&logoColor=white"/>
     <img src="https://img.shields.io/badge/Thymeleaf-005F0F?style=for-the-badge&logo=thymeleaf&logoColor=white"/> 
     <img src="https://img.shields.io/badge/JMeter-FB2E00?style=for-the-badge&logo=jmeter&logoColor=white"/> 
 </div>
