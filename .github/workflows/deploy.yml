@@ -11,5 +11,27 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4  # 저장소 코드를 가져옴
-      - name: Print message
-        run: echo "Hello, MMC CI/CD is running!"
+      
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'corretto'
+
+      - name: Cache Gradle dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: ${{ runner.os }}-gradle-
+
+      - name: Build with Gradle
+        run: ./gradlew clean build
+
+      - name: Run tests
+        run: ./gradlew test
+        continue-on-error: true  # 테스트 코드 추가 후 삭제
+
+      - name: Build Docker image
+        run: |
+          podman build -t mmc:latest .
