@@ -35,6 +35,7 @@ jobs:
       - name: Build Docker image
         run: |
           podman build -t mmc:latest .
+          podman save mmc:latest | gzip > mmc-latest.tar.gz
 
       - name: Deploy to VM
         uses: appleboy/ssh-action@v1.0.3
@@ -53,5 +54,6 @@ jobs:
             export OAUTH2_REDIRECT_URI=${{ secrets.OAUTH2_REDIRECT_URI }}
             cd /home/opc/mmc
             ./deploy.sh
-          script_stop: true
-          source_file: mmc-latest.tar.gz
+      - name: Transfer Docker image to VM
+        run: |
+          scp -P 2222 -i ${{ secrets.SSH_PRIVATE_KEY }} mmc-latest.tar.gz opc@${{ secrets.VM_HOST }}:/home/opc/mmc/
