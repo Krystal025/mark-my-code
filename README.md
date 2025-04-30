@@ -11,9 +11,9 @@
   - **검색 및 필터링** : 문제 유형, 플랫폼, 언어별 필터링 기능으로 효율적 문제 검색 지원
   - **인증 시스템 구현** : Spring Security와 JWT 기반 인증, Google OAuth2 소셜 로그인 연동
   - **성능 개선** : JMeter를 활용한 API 응답 속도 테스트 및 최적화, 페이징 및 복합 인덱스를 통한 조회 성능 향상
-  - **배포 및 클라우드 환경 설정** : Docker를 통한 컨테이너화 및 Oracle Cloud 기반 서비스 배포
+  - **CI/CD 자동화** : GitHub Actions 기반의 빌드·배포 파이프라인 구축 (Gradle → Docker → VM 자동 배포)
   - **서버사이드 렌더링** : Thymeleaf 기반 동적 페이지 렌더링 및 AJAX 비동기 처리로 서버 부하 감소 및 UX 개선
-<br/>
+  <br/>
 
 ## 기술 스택
 ### BackEnd
@@ -35,6 +35,15 @@
     <img src="https://img.shields.io/badge/Thymeleaf-005F0F?style=for-the-badge&logo=thymeleaf&logoColor=white"/> 
     <img src="https://img.shields.io/badge/JMeter-FB2E00?style=for-the-badge&logo=jmeter&logoColor=white"/> 
 </div>
+<br/>
+
+## CI/CD 파이프라인
+- **도구** : GitHub Actions, Docker, Oracle Cloud VM (Ubuntu 기반)
+- **자동화 단계**
+  1. **빌드** : `main` 브랜치로 Push 또는 Merge 발생 시, Gradle을 이용해 프로젝트 자동 빌드
+  2. **Dockerize** : 빌드된 결과물로 Docker 이미지 생성
+  3. **배포 서버 전송** : Oracle Cloud VM으로 이미지 파일 자동 전송 (SCP)
+  4. **컨테이너 실행** : 기존 컨테이너 종료 후 새로운 이미지로 컨테이너 재기동 (Docker CLI)
 <br/>
 
 ## Git Branch 전략
