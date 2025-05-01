@@ -80,7 +80,7 @@ public class PostController {
         // 조회된 목록을 모델에 추가하여 뷰에서 사용할 수 있도록 전달
         model.addAttribute("pagedPosts", pagedPosts);
         model.addAttribute("requestDto" , requestDto);
-        model.addAttribute("pageTitle", "전체 보기");
+        model.addAttribute("pageTitle", "전체 게시글");
         model.addAttribute("currentPath", "/posts");
         addFilterAttributes(model, requestDto);
         // 템플릿 렌더링하여 반환
