@@ -13,7 +13,8 @@
 <section layout:fragment="content">
     <h1 th:text="${pageTitle}"></h1>
     <!-- 검색 폼 -->
-    <form th:action="${currentPath}" method="get" th:object="${requestDto}" class="mb-4">        <div class="row g-3">
+    <form th:action="${currentPath}" method="get" th:object="${requestDto}" class=" mt-4 mb-4">
+        <div class="row g-3">
             <div class="col-md-3">
                 <label for="parentCategoryId" class="form-label">카테고리:</label>
                 <select id="parentCategoryId" th:field="*{parentCategoryId}" class="form-select" onchange="updateChildCategories()">
@@ -55,14 +56,14 @@
                 </select>
             </div>
         </div>
-        <div class="mt-3 text-end">
+        <div class="mt-4 mb-5 text-end">
             <button type="submit" class="btn btn-primary">검색</button>
             <a th:href="${currentPath}" class="btn btn-secondary">초기화</a>
         </div>
     </form>
 
     <!-- 게시글 목록 -->
-    <div class="content-section">
+    <div class="content-section my-5">
         <div class="row g-3">
             <div class="col-md-4 mb-3" th:each="post : ${pagedPosts.posts}">
                 <a th:href="@{/posts/{postId}(postId=${post.postId})}" class="card h-100 text-decoration-none">
@@ -93,7 +94,7 @@
     </div>
 
     <!-- 페이징 -->
-    <nav aria-label="Page navigation" class="mt-4">
+    <nav aria-label="Page navigation" class="mt-5">
         <ul class="pagination justify-content-center">
             <!-- 총 페이지가 0이거나 1일 때 -->
             <th:block th:if="${pagedPosts.totalPages == null or pagedPosts.totalPages <= 1}">
