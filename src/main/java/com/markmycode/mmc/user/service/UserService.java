@@ -38,11 +38,11 @@ public class UserService {
         if(userRepository.existsByUserEmailAndUserStatus(userEmail, Status.ACTIVE)){
             throw new DuplicateException(ErrorCode.EMAIL_ALREADY_EXISTS);
         }
-        if (!requestDto.getUserPwd().equals(requestDto.getConfirmPwd())) {
-            throw new BadRequestException(ErrorCode.INVALID_PASSWORD);
-        }
         if(userRepository.existsByUserNicknameAndUserStatus(requestDto.getUserNickname(), Status.ACTIVE)){
             throw new DuplicateException(ErrorCode.NICKNAME_ALREADY_EXIST);
+        }
+        if (!requestDto.getUserPwd().equals(requestDto.getConfirmPwd())) {
+            throw new BadRequestException(ErrorCode.INVALID_PASSWORD);
         }
         String encodedPassword = passwordEncoder.encode(requestDto.getUserPwd());
         User user = User.fromDto(requestDto, encodedPassword);
@@ -50,7 +50,7 @@ public class UserService {
     }
 
     // 사용자 정보 수정
-    @Transactional // 트랜잭션이 성공적으로 완료되면 변경사항이 자동으로 커밋되어 DB에 반영됨
+    @Transactional
     public void updateUser(Long loggedInUserId, Long userId, UserUpdateDto requestDto){
         // 영속성 컨텍스트에 사용자가 존재하는지 확인
         User user = getUser(userId);
@@ -88,6 +88,7 @@ public class UserService {
         if (!updated) {
             throw new BadRequestException(ErrorCode.NO_CHANGES);
         }
+        userRepository.save(user);
     }
 
     // 사용자 비활성화(탈퇴)
