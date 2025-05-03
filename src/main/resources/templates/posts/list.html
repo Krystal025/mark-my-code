@@ -12,9 +12,9 @@
 <body>
 <section layout:fragment="content">
     <h1 th:text="${pageTitle}"></h1>
-    <!-- 검색 폼 -->
-    <form th:action="${currentPath}" method="get" th:object="${requestDto}" class=" mt-4 mb-4">
-        <div class="row g-3">
+    <!-- 검색 조건 -->
+    <form th:action="${currentPath}" method="get" th:object="${requestDto}" class="mt-4 mb-4">
+        <div class="row g-3 align-items-end">
             <div class="col-md-3">
                 <label for="parentCategoryId" class="form-label">카테고리:</label>
                 <select id="parentCategoryId" th:field="*{parentCategoryId}" class="form-select" onchange="updateChildCategories()">
@@ -35,7 +35,7 @@
                             th:selected="${category.categoryId == requestDto.childCategoryId}"></option>
                 </select>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
                 <label for="platformId" class="form-label">문제 플랫폼:</label>
                 <select id="platformId" th:field="*{platformId}" class="form-select">
                     <option value="">-- 선택 --</option>
@@ -45,7 +45,7 @@
                             th:selected="${platform.platformId == requestDto.platformId}"></option>
                 </select>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
                 <label for="languageId" class="form-label">프로그래밍 언어:</label>
                 <select id="languageId" th:field="*{languageId}" class="form-select">
                     <option value="">-- 선택 --</option>
@@ -55,10 +55,22 @@
                             th:selected="${language.languageId == requestDto.languageId}"></option>
                 </select>
             </div>
+            <div class="col-md-2 text-end">
+                <div class="d-flex justify-content-end gap-2">
+                    <button type="submit" class="btn btn-primary btn-sm">검색</button>
+                    <a th:href="${currentPath}" class="btn btn-secondary btn-sm">초기화</a>
+                </div>
+            </div>
         </div>
-        <div class="mt-4 mb-5 text-end">
-            <button type="submit" class="btn btn-primary">검색</button>
-            <a th:href="${currentPath}" class="btn btn-secondary">초기화</a>
+
+        <!-- 정렬 기준: 오른쪽 끝에 정렬 -->
+        <div class="mt-3 mb-5 d-flex justify-content-end align-items-center">
+            <label for="sortBy" class="form-label mb-0 me-2">정렬 기준:</label>
+            <select id="sortBy" name="sortBy" class="form-select w-auto">
+                <option value="recent" th:selected="${requestDto.sortBy == null or requestDto.sortBy == 'recent'}">최신순</option>
+                <option value="oldest" th:selected="${requestDto.sortBy == 'oldest'}">오래된순</option>
+                <option value="popular" th:selected="${requestDto.sortBy == 'popular'}">인기순</option>
+            </select>
         </div>
     </form>
 
