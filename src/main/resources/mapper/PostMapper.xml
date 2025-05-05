@@ -91,7 +91,17 @@
             </if>
             <include refid="postFilterConditions"/>
         </where>
-        ORDER BY p.post_created_at DESC
+        <choose>
+            <when test="sortBy == 'popular'">
+                ORDER BY p.post_like_count DESC, p.post_created_at DESC
+            </when>
+            <when test="sortBy == 'oldest'">
+                ORDER BY p.post_created_at ASC
+            </when>
+            <otherwise>
+                ORDER BY p.post_created_at DESC
+            </otherwise>
+        </choose>
         <!-- 클라이언트에서 "page" 필드로 페이지를 요청하면 DTO의 getOffset()이 계산해서 전달 -->
         LIMIT #{size} OFFSET #{offset}  <!-- LIMIT {가져올 데이터 개수} OFFSET {건너뛸 데이터 개수} -->
     </select>
