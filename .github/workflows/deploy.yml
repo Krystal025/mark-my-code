@@ -36,7 +36,8 @@ jobs:
         run: |
           podman build -t mmc:latest .
           podman save mmc:latest | gzip > mmc-latest.tar.gz
-
+          ls -lh mmc-latest.tar.gz
+          
       - name: Transfer Docker image to VM
         run: |
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key
