@@ -42,7 +42,10 @@ jobs:
         run: |
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key
           chmod 600 private_key
-          scp -o StrictHostKeyChecking=no -P 2222 -i private_key mmc-latest.tar.gz opc@${{ secrets.VM_HOST }}:/home/opc/mmc/
+          echo "Attempting SCP transfer..."
+          scp -v -o StrictHostKeyChecking=no -P 2222 -i private_key mmc-latest.tar.gz opc@${{ secrets.VM_HOST }}:/home/opc/mmc/ || echo "SCP failed with exit code $?"
+          echo "Checking VM directory..."
+          ssh -v -o StrictHostKeyChecking=no -P 2222 -i private_key opc@${{ secrets.VM_HOST }} "ls -l /home/opc/mmc/" || echo "SSH ls failed with exit code $?"
           rm private_key
 
       - name: Deploy to VM
