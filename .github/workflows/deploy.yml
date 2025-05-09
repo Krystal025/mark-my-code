@@ -43,9 +43,7 @@ jobs:
             echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key
             chmod 600 private_key
             echo "Attempting SCP transfer..."
-            scp -v -o StrictHostKeyChecking=no -P 2222 -i private_key mmc-latest.tar.gz opc@${{ secrets.VM_HOST }}:/home/opc/mmc/
-            
-            echo "Checking if file exists on VM..."
+            scp -v -o StrictHostKeyChecking=no -P 2222 -i private_key mmc-latest.tar.gz opc@${{ secrets.VM_HOST }}:/home/opc/mmc/mmc-latest.tar.gz
             ssh -v -o StrictHostKeyChecking=no -p 2222 -i private_key opc@${{ secrets.VM_HOST }} "ls -l /home/opc/mmc/mmc-latest.tar.gz || { echo 'File not found!'; exit 1; }"
             rm private_key
           
